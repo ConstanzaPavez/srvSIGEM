@@ -1,22 +1,24 @@
-"""
-URL configuration for srvSIGEM project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
+from appSIGEM import views  # Asegúrate de que la importación esté correcta
 
 urlpatterns = [
+    # Ruta al panel de administración de Django
     path('admin/', admin.site.urls),
+
+    # Ruta para el login
+    path('login/', views.LoginView.as_view(), name='login'),
+
+    # Ruta de logout (Cerrar sesión)
+    path('logout/', views.logout_view, name='logout'),  # Asegúrate de que esta línea esté presente
+
+    # Ruta al panel de administración, solo accesible por superusuario
+    path('admin_panel/', views.admin_panel, name='admin_panel'),  # Esta línea debe funcionar correctamente ahora
+
+   path('crear_usuario/', views.crear_usuario, name='crear_usuario'),  # Ruta para crear usuarios
+
+    # Ruta del índice (página de inicio) a la que se redirige el usuario normal después de iniciar sesión
+    path('', views.index, name='index'),  # Redirige la URL vacía a la vista del índice
+    
+    
 ]
