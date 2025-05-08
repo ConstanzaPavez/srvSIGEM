@@ -95,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Configure login URL for the login view
 LOGIN_URL = '/login/'  # Esto redirige a la URL personalizada de login
 # Redirige al usuario al índice después de iniciar sesión
-LOGIN_REDIRECT_URL = '/'  # Esto redirige al índice (la ruta vacía en urls.py)
+LOGIN_REDIRECT_URL = 'index' 
 
 
 # Internationalization
