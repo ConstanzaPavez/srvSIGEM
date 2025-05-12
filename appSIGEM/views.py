@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
-from .forms import LoginForm
+from .forms import LoginForm 
+from .forms import CategoriaForm
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -87,3 +88,14 @@ def crear_usuario(request):
 @user_passes_test(is_admin)
 def admin_panel(request):
     return render(request, 'paginas/inicio/admin_panel.html')
+
+#agregar categoria
+def agregar_categoria(request):
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('agregar_categoria')  # cambiar para redirecionar a otra pagina
+    else:
+        form = CategoriaForm()
+    return render(request, 'paginas/agregar_cosas/agregar_categoria.html', {'form': form})

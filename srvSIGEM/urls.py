@@ -19,6 +19,8 @@ urlpatterns = [
 
     # Ruta del índice (página de inicio) a la que se redirige el usuario normal después de iniciar sesión
     path('', views.index, name='index'),  # Redirige la URL vacía a la vista del índice
+    #agregar categoria 
+    path('agregar-categoria/', views.agregar_categoria, name='agregar_categoria'),
     
     
 ]
