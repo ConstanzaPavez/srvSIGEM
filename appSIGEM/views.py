@@ -4,7 +4,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
 from .forms import LoginForm 
 from .forms import CategoriaForm
-
+from .forms import TipoMaterialForm
+from .forms import MarcaForm
+from .forms import MaterialForm
+from .models import Material
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
 # Función que verifica si el usuario es un superusuario
@@ -99,3 +102,39 @@ def agregar_categoria(request):
     else:
         form = CategoriaForm()
     return render(request, 'paginas/agregar_cosas/agregar_categoria.html', {'form': form})
+
+def agregar_tipo_material(request):
+    if request.method == 'POST':
+        form = TipoMaterialForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('agregar_tipo_material')  # puedes cambiar la redirección
+    else:
+        form = TipoMaterialForm()
+    return render(request, 'paginas/agregar_cosas/agregar_tipo_material.html', {'form': form})
+
+def agregar_marca(request):
+    if request.method == 'POST':
+        form = MarcaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('agregar_marca')  # redirige a la misma página o a otra
+    else:
+        form = MarcaForm()
+    return render(request, 'paginas/agregar_cosas/agregar_marca.html', {'form': form})
+
+#agregar material
+def agregar_material(request):
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('agregar_material')  # o redirige a otra página si lo prefieres
+    else:
+        form = MaterialForm()
+    return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
+
+#listar materiales
+def listar_materiales(request):
+    materiales = Material.objects.all()
+    return render(request, 'paginas/crud_material/listar_materiales.html', {'materiales': materiales})

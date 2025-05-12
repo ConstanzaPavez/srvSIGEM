@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Materiales{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Lista de Materiales</h1>
+    <div class="row">
+        {% for material in materiales %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if material.img_material %}
+                <img src="{{ material.img_material.url }}" class="card-img-top" alt="Imagen de {{ material.nom_material }}">
+                {% else %}
+                <img src="https://via.placeholder.com/300x200.png" class="card-img-top" alt="Imagen por defecto">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ material.nom_material }}</h5>
+                    <p><strong>Stock:</strong> {{ material.stock }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No hay materiales cargados aún.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

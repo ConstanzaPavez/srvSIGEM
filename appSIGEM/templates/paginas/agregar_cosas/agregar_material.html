@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}agregar-categoria{% endblock %}
+{% block title %}agregar-material{% endblock %}
 
 {% block content %}
-
-    <h1>Agregar Categoría</h1>
-    <form method="POST">
+    <h1>Agregar Material</h1>
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
-
 {% endblock %}
