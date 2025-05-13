@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
-from .forms import LoginForm
+from .forms import LoginForm, CrearUsuarioForm
+from .models import PerfilUsuario
+from django.contrib import messages
 
-User = get_user_model()  # Obtiene el modelo de usuario actual de Django
+User = get_user_model()  
 
 # Función que verifica si el usuario es un superusuario
 def is_admin(user):
@@ -49,7 +51,7 @@ class LoginView(View):
             # Formulario no válido: puede deberse a campos vacíos u otros errores
             return render(request, 'paginas/login/login.html', {
                 'form': form,
-                'error': "Usuario y/o contraseña no validos."
+                'error': "Usuario y/o contraseña no válidos."
             })
 
 # Vista del índice
@@ -68,22 +70,32 @@ def logout_view(request):
 @user_passes_test(is_admin)
 def crear_usuario(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        form = CrearUsuarioForm(request.POST, request.FILES)  # Asegúrate de que el archivo se reciba también
+        if form.is_valid():
+            # Guardar el nuevo usuario
+            user = form.save()  # Esto crea el usuario y guarda la imagen de perfil si está presente
+            
+            # Crear el perfil asociado
+            imagen = form.cleaned_data.get('imagen_perfil', 'perfiles/default.jpg')
+            PerfilUsuario.objects.create(usuario=user, imagen_perfil=imagen)
+            
+            # Agregar mensaje de éxito
+            messages.success(request, 'El usuario ha sido creado correctamente.')
+            
+            return redirect('admin_panel')  # Redirigir al panel de administración
 
-        if User.objects.filter(username=username).exists():
-            return render(request, 'paginas/login/crear_usuario.html', {
-                'error': 'El usuario ya existe'
-            })
+    else:
+        form = CrearUsuarioForm()
 
-        # Crear usuario como NO superusuario ni staff
-        User.objects.create_user(username=username, password=password, is_staff=False, is_superuser=False)
-        return redirect('admin_panel')
-
-    return render(request, 'paginas/login/crear_usuario.html')
+    return render(request, 'paginas/login/crear_usuario.html', {'form': form})
 
 # Vista para administrador
 @login_required
 @user_passes_test(is_admin)
 def admin_panel(request):
     return render(request, 'paginas/inicio/admin_panel.html')
+
+@login_required
+def perfil_usuario(request):
+    usuario = request.user
+    return render(request, 'paginas/inicio/perfil.html', {'usuario': usuario})

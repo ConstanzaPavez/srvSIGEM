@@ -17,3 +17,11 @@ class User(AbstractUser):
         related_name='custom_user_set', # <-- Agrega esto
         help_text='Specific permissions for this user.',
     )
+
+
+class PerfilUsuario(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    imagen_perfil = models.ImageField(upload_to='perfiles/', default='perfiles/default.jpg')
+
+    def __str__(self):
+        return self.usuario.username
