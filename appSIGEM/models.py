@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
@@ -21,7 +23,7 @@ class User(AbstractUser):
 class CategoriaDj(models.Model):
     id_categoria = models.AutoField(primary_key=True)
     nombre_categoria = models.CharField(max_length=50, null=False)
-    stock = models.IntegerField()
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nombre_categoria
@@ -60,3 +62,11 @@ class Material(models.Model):
 
     def __str__(self):
         return self.nom_material
+   
+   
+@receiver(post_save, sender=Material)
+def actualizar_stock_categoria(sender, instance, created, **kwargs):
+    if created:
+        categoria = instance.categoria
+        categoria.stock += 1
+        categoria.save()    

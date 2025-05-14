@@ -33,6 +33,6 @@ urlpatterns = [
     path('agregar-material/', views.agregar_material, name='agregar_material'),
 
     # Ruta para listar todos los materiales registrados en el sistema
-    path('listar-material/', views.listar_materiales, name='listar_materiales'),
+    path('listar-materiales/', views.listar_materiales, name='listar_materiales'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
