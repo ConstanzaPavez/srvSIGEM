@@ -34,13 +34,7 @@ urlpatterns = [
     path('agregar-material/', views.agregar_material, name='agregar_material'),
 
     # Ruta para listar todos los materiales registrados en el sistema
-    path('listar-materiales/', views.listar_materiales, name='listar_materiales'),
-    
-    # Ruta para editar un material existente
-    path('materiales/editar/<int:pk>/', views.editar_materiales, name='editar_materiales'),
-    
-    # Ruta para eliminar un material existente
-    path('materiales/eliminar/<int:pk>/', views.eliminar_materiales, name='eliminar_materiales'),
+    path('listar-material/', views.listar_materiales, name='listar_materiales'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
