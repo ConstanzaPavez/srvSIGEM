@@ -14,3 +14,13 @@ srvSIGEM/settings.py
 srvSIGEM/settings.py
 srvSIGEM/settings.py
 srvSIGEM/settings.py
+appSIGEM/__pycache__/admin.cpython-311.pyc
+appSIGEM/__pycache__/admin.cpython-311.pyc
+appSIGEM/__pycache__/apps.cpython-311.pyc
+appSIGEM/__pycache__/forms.cpython-311.pyc
+appSIGEM/__pycache__/models.cpython-311.pyc
+appSIGEM/__pycache__/views.cpython-311.pyc
+appSIGEM/migrations/__pycache__/__init__.cpython-311.pyc
+appSIGEM/migrations/__pycache__/0001_initial.cpython-311.pyc
+srvSIGEM/__pycache__/settings.cpython-311.pyc
+srvSIGEM/__pycache__/urls.cpython-311.pyc

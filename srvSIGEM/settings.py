@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,7 +71,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
-        'PORT': '3307',
+        'PORT': '3306',
     }
 }
 
@@ -101,13 +102,14 @@ LOGIN_REDIRECT_URL = 'index'
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -121,5 +123,14 @@ STATICFILES_DIRS = [BASE_DIR / 'appSIGEM' / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+MEDIA_URL = '/media/'  # URL para acceder a los archivos de medios
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Esta será la carpeta donde se almacenarán los archivos
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
