@@ -10,3 +10,7 @@ appSIGEM/appSIGEM/__pycache__/__init__.cpython-312.pyc
 **/migrations/
 # Ignorar todos los archivos __pycache__
 **/__pycache__/
+srvSIGEM/settings.py
+srvSIGEM/settings.py
+srvSIGEM/settings.py
+srvSIGEM/settings.py

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
@@ -8,8 +8,8 @@ from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
 from .models import Material
+from .models import TipoMaterial
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
-
 # Función que verifica si el usuario es un superusuario
 def is_admin(user):
     return user.is_superuser
@@ -138,3 +138,22 @@ def agregar_material(request):
 def listar_materiales(request):
     materiales = Material.objects.all()
     return render(request, 'paginas/crud_material/listar_materiales.html', {'materiales': materiales})
+
+
+def editar_materiales(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, request.FILES, instance=material)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_materiales')
+    else:
+        form = MaterialForm(instance=material)
+    return render(request, 'paginas/crud_material/editar_materiales.html', {'form': form})
+
+def eliminar_materiales(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    if request.method == 'POST':
+        material.delete()
+        return redirect('listar_materiales')
+    return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})

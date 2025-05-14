@@ -1,0 +1,18 @@
+/* Login Card */
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 1rem;
+    background: white;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #0d6efd;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}

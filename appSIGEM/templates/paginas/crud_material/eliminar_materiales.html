@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Tipo de Material{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">¿Estás seguro que deseas eliminar este tipo de material?</h2>
+    <p><strong>Nombre:</strong> {{ tipo_material.nombre }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <a href="{% url 'inventario' %}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+    </form>
+</div>
+{% endblock %}

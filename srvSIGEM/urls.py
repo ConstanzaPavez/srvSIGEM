@@ -16,11 +16,12 @@ urlpatterns = [
     # Ruta al panel de administración, solo accesible por superusuario
     path('admin_panel/', views.admin_panel, name='admin_panel'),  # Esta línea debe funcionar correctamente ahora
 
-   path('crear_usuario/', views.crear_usuario, name='crear_usuario'),  # Ruta para crear usuarios
+    path('crear_usuario/', views.crear_usuario, name='crear_usuario'),  # Ruta para crear usuarios
 
     # Ruta del índice (página de inicio) a la que se redirige el usuario normal después de iniciar sesión
     path('', views.index, name='index'),  # Redirige la URL vacía a la vista del índice
-   # Ruta para agregar una nueva categoría
+    
+    # Ruta para agregar una nueva categoría
     path('agregar-categoria/', views.agregar_categoria, name='agregar_categoria'),
 
     # Ruta para agregar un nuevo tipo de material
@@ -33,6 +34,14 @@ urlpatterns = [
     path('agregar-material/', views.agregar_material, name='agregar_material'),
 
     # Ruta para listar todos los materiales registrados en el sistema
-    path('listar-material/', views.listar_materiales, name='listar_materiales'),
+    path('listar-materiales/', views.listar_materiales, name='listar_materiales'),
+    
+    # Ruta para editar un material existente
+    path('materiales/editar/<int:pk>/', views.editar_materiales, name='editar_materiales'),
+    
+    # Ruta para eliminar un material existente
+    path('materiales/eliminar/<int:pk>/', views.eliminar_materiales, name='eliminar_materiales'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
