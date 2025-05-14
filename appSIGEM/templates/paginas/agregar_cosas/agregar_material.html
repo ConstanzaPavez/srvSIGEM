@@ -14,6 +14,9 @@
                     {% csrf_token %}
                     {{ form.as_p }}
                     <div class="text-end">
+                        <a href="{% url 'agregar_categoria' %}" class="btn btn-warning mt-auto">
+                        <i class="bi bi-pencil"></i> Añadir Categoria
+                    </a>
                         <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>

@@ -140,8 +140,8 @@ def listar_materiales(request):
     return render(request, 'paginas/crud_material/listar_materiales.html', {'materiales': materiales})
 
 
-def editar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
+def editar_materiales(request, material_id):
+    material = get_object_or_404(Material, pk=material_id)
     if request.method == 'POST':
         form = MaterialForm(request.POST, request.FILES, instance=material)
         if form.is_valid():
@@ -151,9 +151,9 @@ def editar_materiales(request, pk):
         form = MaterialForm(instance=material)
     return render(request, 'paginas/crud_material/editar_materiales.html', {'form': form})
 
-def eliminar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        material.delete()
-        return redirect('listar_materiales')
-    return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})
+
+def eliminar_materiales(request, material_id):
+    material = get_object_or_404(Material, pk=material_id)
+    material.delete()
+    return redirect('listar_materiales')
+

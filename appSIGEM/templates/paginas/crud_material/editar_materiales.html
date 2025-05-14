@@ -1,16 +1,26 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}Editar Tipo de Material{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4">Editar Tipo de Material</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'inventario' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+<div class="d-flex justify-content-center align-items-center min-vh-100 text-white">
+    <div class="col-md-6">
+        <div    class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-o text-center">Editar Tipo de Material</h4>
+            </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="{% url 'agregar_material' %}" class="btn btn-secondary">Cancelar</a>
+                    </form>
+                </div>
+            
+        </div>
+    </div>
 </div>
+
 {% endblock %}
+

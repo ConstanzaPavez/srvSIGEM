@@ -35,5 +35,10 @@ urlpatterns = [
 
     # Ruta para listar todos los materiales registrados en el sistema
     path('listar-materiales/', views.listar_materiales, name='listar_materiales'),
+    
+    path('editar-material/<int:material_id>/', views.editar_materiales, name='editar_materiales'),
+    
+    path('eliminar-material/<int:material_id>/', views.eliminar_materiales, name='eliminar_materiales'),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

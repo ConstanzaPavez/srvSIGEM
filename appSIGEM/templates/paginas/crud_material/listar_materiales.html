@@ -38,6 +38,12 @@
                     <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
                     <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
                     <p class="card-text"><strong>Tipo:</strong> {{ material.tipo }}</p>
+                    <a href="{% url 'editar_materiales' material.pk %}" class="btn btn-warning mt-auto">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'eliminar_materiales' material.pk %}" class="btn btn-danger mt-2" onclick="return confirm('¿Estás seguro de que quieres eliminar este material?');">
+                        <i class="bi bi-trash"></i> Eliminar</a>
+
                 </div>
             </div>
         </div>
