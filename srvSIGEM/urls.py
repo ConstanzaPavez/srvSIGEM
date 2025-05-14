@@ -18,10 +18,10 @@ urlpatterns = [
     
     path('crear_usuario/', views.crear_usuario, name='crear_usuario'),
     
-    path('perfil/', views.perfil_usuario, name='perfil'),  
+   path('perfil/', views.perfil_usuario, name='perfil'),
     
     
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

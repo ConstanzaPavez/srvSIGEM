@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import PerfilUsuario
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.views import LoginView
 
 # Formulario de Login
 class LoginForm(AuthenticationForm):
@@ -21,11 +21,14 @@ class LoginForm(AuthenticationForm):
         })
     )
 
-# Formulario para Crear Nuevo Usuario
 class CrearUsuarioForm(UserCreationForm):
-    email = forms.EmailField()
     imagen_perfil = forms.ImageField(required=False)
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'imagen_perfil']
+        fields = ['username', 'first_name', 'last_name', 'email', 'imagen_perfil', 'password1', 'password2']
+        
+
+class CustomLoginView(LoginView):
+    authentication_form = LoginForm
+    template_name = 'paginas/login/login.html'

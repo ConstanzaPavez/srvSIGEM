@@ -39,14 +39,14 @@
                     <div class="row no-gutters">
                         <div class="col-md-4">
                             <!-- Imagen de perfil -->
-                            <img src="{{ usuario.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
+                            <img src="{{ user.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
                                 <!-- Información del usuario -->
-                                <h5 class="card-title">{{ usuario.first_name }} {{ usuario.last_name }}</h5>
-                                <p class="card-text"><strong>Correo:</strong> {{ usuario.email }}</p>
-                                <p class="card-text"><strong>Rol:</strong> {{ usuario.get_rol_display }}</p>
+                                <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+                                <p class="card-text"><strong>Correo:</strong> {{ user.email }}</p>
+                                <p class="card-text"><strong>Rol:</strong> {{ user.get_rol_display }}</p>
                                 <a href="{% url 'index' %}" class="btn btn-primary">Volver al inicio</a>
                             </div>
                         </div>

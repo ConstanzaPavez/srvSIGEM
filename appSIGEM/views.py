@@ -3,10 +3,10 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
 from .forms import LoginForm, CrearUsuarioForm
-from .models import PerfilUsuario
 from django.contrib import messages
 
-User = get_user_model()  
+User = get_user_model()
+
 
 # Función que verifica si el usuario es un superusuario
 def is_admin(user):
@@ -66,24 +66,18 @@ def logout_view(request):
     return redirect('login')
 
 # Vista solo para superusuarios: crear nuevo usuario
+
 @login_required
 @user_passes_test(is_admin)
 def crear_usuario(request):
     if request.method == 'POST':
         form = CrearUsuarioForm(request.POST, request.FILES)  # Asegúrate de que el archivo se reciba también
         if form.is_valid():
-            # Guardar el nuevo usuario
-            user = form.save()  # Esto crea el usuario y guarda la imagen de perfil si está presente
-            
-            # Crear el perfil asociado
-            imagen = form.cleaned_data.get('imagen_perfil', 'perfiles/default.jpg')
-            PerfilUsuario.objects.create(usuario=user, imagen_perfil=imagen)
-            
-            # Agregar mensaje de éxito
-            messages.success(request, 'El usuario ha sido creado correctamente.')
-            
-            return redirect('admin_panel')  # Redirigir al panel de administración
+            user = form.save()  # Guarda el usuario con la imagen incluida si está en el modelo User
 
+            # Mensaje de éxito
+            messages.success(request, 'El usuario ha sido creado correctamente.')
+            return redirect('admin_panel')  # Redirige al panel de administración
     else:
         form = CrearUsuarioForm()
 
@@ -95,7 +89,10 @@ def crear_usuario(request):
 def admin_panel(request):
     return render(request, 'paginas/inicio/admin_panel.html')
 
+
 @login_required
 def perfil_usuario(request):
-    usuario = request.user
-    return render(request, 'paginas/inicio/perfil.html', {'usuario': usuario})
+    # Asumiendo que tienes un modelo de perfil asociado al usuario
+    # Se puede acceder directamente a la imagen de perfil desde el modelo User si es que la has añadido allí
+    user = request.user  # Obtén el usuario actualmente autenticado
+    return render(request, 'paginas/inicio/perfil.html', {'user': user})

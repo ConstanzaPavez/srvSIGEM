@@ -124,5 +124,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MEDIA_URL = '/media/'  # URL para acceder a los archivos de medios
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directorio donde se almacenarán los archivos subidos
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Esta será la carpeta donde se almacenarán los archivos
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
