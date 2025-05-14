@@ -2,14 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
-from .forms import LoginForm 
-from .forms import CategoriaForm
-from .forms import TipoMaterialForm
-from .forms import MarcaForm
-from .forms import MaterialForm
-from .models import Material
-from .models import TipoMaterial
+from .forms import LoginForm
+
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
+
 # Función que verifica si el usuario es un superusuario
 def is_admin(user):
     return user.is_superuser
@@ -53,7 +49,7 @@ class LoginView(View):
             # Formulario no válido: puede deberse a campos vacíos u otros errores
             return render(request, 'paginas/login/login.html', {
                 'form': form,
-                'error': "Usuario y/o contraseña no validos."
+                'error': "Usuario y/o contraseña no válidos."
             })
 
 # Vista del índice
@@ -68,92 +64,25 @@ def logout_view(request):
     return redirect('login')
 
 # Vista solo para superusuarios: crear nuevo usuario
+
 @login_required
 @user_passes_test(is_admin)
 def crear_usuario(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        form = CrearUsuarioForm(request.POST, request.FILES)  # Asegúrate de que el archivo se reciba también
+        if form.is_valid():
+            user = form.save()  # Guarda el usuario con la imagen incluida si está en el modelo User
 
-        if User.objects.filter(username=username).exists():
-            return render(request, 'paginas/login/crear_usuario.html', {
-                'error': 'El usuario ya existe'
-            })
+            # Mensaje de éxito
+            messages.success(request, 'El usuario ha sido creado correctamente.')
+            return redirect('admin_panel')  # Redirige al panel de administración
+    else:
+        form = CrearUsuarioForm()
 
-        # Crear usuario como NO superusuario ni staff
-        User.objects.create_user(username=username, password=password, is_staff=False, is_superuser=False)
-        return redirect('admin_panel')
-
-    return render(request, 'paginas/login/crear_usuario.html')
+    return render(request, 'paginas/login/crear_usuario.html', {'form': form})
 
 # Vista para administrador
 @login_required
 @user_passes_test(is_admin)
 def admin_panel(request):
     return render(request, 'paginas/inicio/admin_panel.html')
-
-#agregar categoria
-def agregar_categoria(request):
-    if request.method == 'POST':
-        form = CategoriaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('agregar_categoria')  # cambiar para redirecionar a otra pagina
-    else:
-        form = CategoriaForm()
-    return render(request, 'paginas/agregar_cosas/agregar_categoria.html', {'form': form})
-
-def agregar_tipo_material(request):
-    if request.method == 'POST':
-        form = TipoMaterialForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('agregar_tipo_material')  # puedes cambiar la redirección
-    else:
-        form = TipoMaterialForm()
-    return render(request, 'paginas/agregar_cosas/agregar_tipo_material.html', {'form': form})
-
-def agregar_marca(request):
-    if request.method == 'POST':
-        form = MarcaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('agregar_marca')  # redirige a la misma página o a otra
-    else:
-        form = MarcaForm()
-    return render(request, 'paginas/agregar_cosas/agregar_marca.html', {'form': form})
-
-#agregar material
-def agregar_material(request):
-    if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('agregar_material')  # o redirige a otra página si lo prefieres
-    else:
-        form = MaterialForm()
-    return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
-
-#listar materiales
-def listar_materiales(request):
-    materiales = Material.objects.all()
-    return render(request, 'paginas/crud_material/listar_materiales.html', {'materiales': materiales})
-
-
-def editar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES, instance=material)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_materiales')
-    else:
-        form = MaterialForm(instance=material)
-    return render(request, 'paginas/crud_material/editar_materiales.html', {'form': form})
-
-def eliminar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        material.delete()
-        return redirect('listar_materiales')
-    return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})

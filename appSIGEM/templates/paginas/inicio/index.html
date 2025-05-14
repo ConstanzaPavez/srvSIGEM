@@ -1,118 +1,15 @@
-{% extends 'base.html' %}
-{% block title %}Inicio{% endblock %}
-{% block content %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Índice</title>
+</head>
+<body>
+    <h1>Bienvenido al sistema</h1>
+    <p>¡Has iniciado sesión correctamente!</p>
 
-<div class="container my-5">
-    <div id="cittCarousel" class="carousel slide" data-bs-ride="carousel">
-    
-        <div class="carousel-indicators">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="6" aria-label="Slide 7"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="7" aria-label="Slide 8"></button>
-            <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="8" aria-label="Slide 9"></button>
-        </div>
-    </div>
-
-    <div class="carousel-inner rounded shadow">
-
-        <!-- Carrusel 1 -->
-        <div class="carousel-item active">
-            <img src="static/paginas/img/prueba.png" style="d-block w-100" alt="Prueba">    
-        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Impresión 3D</h5>
-            <p>Tecnología que permite fabricar objetos físicos a partir de diseños digitales, ideal para prototipos y producción rápida.</p>
-        </div>
-        </div>
-
-        <!-- Carrusel 2 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/inteligencia_artificial.jpg' %}" class="d-block w-100" alt="IA">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Inteligencia Artificial (IA)</h5>
-            <p>Simulación de inteligencia humana por máquinas para tareas como reconocimiento de voz, visión computacional y automatización.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 3 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/iot5g.jpg' %}" class="d-block w-100" alt="IoT y 5G">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>IoT + 5G</h5>
-            <p>Conectividad de dispositivos en tiempo real usando redes 5G, con aplicaciones en ciudades inteligentes, salud y logística.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 4 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/drones.jpg' %}" class="d-block w-100" alt="Drones">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Drones</h5>
-            <p>Vehículos aéreos no tripulados utilizados en agricultura, inspección, fotografía aérea y entrega de productos.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 5 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/apps_web.jpg' %}" class="d-block w-100" alt="Web Apps">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Desarrollo de Aplicaciones Web</h5>
-            <p>Creación de plataformas accesibles desde cualquier navegador, con tecnologías como Django, React o Node.js.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 6 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/realidad_virtual.jpg' %}" class="d-block w-100" alt="VR">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Realidad Virtual</h5>
-            <p>Simulación digital inmersiva de entornos 3D para entrenamiento, educación, entretenimiento y más.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 7 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/robotica.jpg' %}" class="d-block w-100" alt="Robótica">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Robótica</h5>
-            <p>Diseño y programación de máquinas autónomas que ayudan en tareas industriales, médicas o educativas.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 8 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/videojuegos.jpg' %}" class="d-block w-100" alt="Videojuegos">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Videojuegos</h5>
-            <p>Desarrollo interactivo que combina arte, música y lógica para crear experiencias lúdicas en múltiples plataformas.</p>
-            </div>
-        </div>
-
-        <!-- Carrusel 9 -->
-        <div class="carousel-item">
-            <img src="{% static 'paginas/img/ciberseguridad.jpg' %}" class="d-block w-100" alt="Ciberseguridad">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded animate__animated animate__fadeInUp">
-            <h5>Ciberseguridad</h5>
-            <p>Protección de datos y sistemas frente a amenazas digitales. Clave en cualquier sistema informático moderno.</p>
-            </div>
-        </div>
-
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#cittCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#cittCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-    </div>
-  </div>
-
-{% endblock%}
-
+    <!-- Enlace para cerrar sesión -->
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+</body>
+</html>
