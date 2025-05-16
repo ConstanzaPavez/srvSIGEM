@@ -94,3 +94,18 @@ class ItemCarrito(models.Model):
 
        
         
+class Solicitud(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=50, default='Pendiente')  # Por ejemplo: Pendiente, Aprobada, Rechazada
+
+    def __str__(self):
+        return f'Solicitud #{self.id} de {self.usuario.username}'
+
+class ItemSolicitud(models.Model):
+    solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.CASCADE)
+    material = models.ForeignKey('Material', on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.material.nom_material} x {self.cantidad}'        

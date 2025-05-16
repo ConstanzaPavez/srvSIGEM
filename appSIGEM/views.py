@@ -7,7 +7,7 @@ from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
-from .models import Material, Carrito, ItemCarrito
+from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud
 from .models import TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
@@ -191,3 +191,38 @@ def vaciar_carrito(request):
         pass  # No hay carrito aún
 
     return redirect('ver_carrito')  # O a donde quieras redirigir
+
+
+
+def crear_solicitud(request):
+    try:
+        carrito = Carrito.objects.get(usuario=request.user)
+        items_carrito = carrito.items.all()
+
+        if not items_carrito.exists():
+            messages.error(request, "Tu carrito está vacío, no puedes crear una solicitud.")
+            return redirect('ver_carrito')
+
+        solicitud = Solicitud.objects.create(usuario=request.user)
+
+        for item in items_carrito:
+            ItemSolicitud.objects.create(
+                solicitud=solicitud,
+                material=item.material,
+                cantidad=item.cantidad
+            )
+
+        # Vaciar carrito después de crear la solicitud
+        items_carrito.delete()
+
+        messages.success(request, "Solicitud creada exitosamente.")
+        return redirect('index')  # O donde quieras redirigir
+
+    except Carrito.DoesNotExist:
+        messages.error(request, "No tienes carrito activo.")
+        return redirect('index')
+    
+    
+def listar_solicitudes(request):
+    solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
+    return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    

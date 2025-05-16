@@ -48,6 +48,9 @@ urlpatterns = [
     
     path('vaciar-carrito/', views.vaciar_carrito, name='vaciar_carrito'),
 
+    path('crear_solicitud/', views.crear_solicitud, name='crear_solicitud'),
+
+    path('mis_solicitudes/', views.listar_solicitudes, name='listar_solicitudes'),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
