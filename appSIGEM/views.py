@@ -180,3 +180,14 @@ def agregar_al_carrito(request, material_id):
 def ver_carrito(request):
     carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
     return render(request, 'paginas/carrito/ver_carrito.html', {'carrito': carrito})
+
+
+
+def vaciar_carrito(request):
+    try:
+        carrito = Carrito.objects.get(usuario=request.user)
+        ItemCarrito.objects.filter(carrito=carrito).delete()
+    except Carrito.DoesNotExist:
+        pass  # No hay carrito aún
+
+    return redirect('ver_carrito')  # O a donde quieras redirigir

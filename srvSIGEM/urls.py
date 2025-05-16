@@ -45,6 +45,9 @@ urlpatterns = [
     path('carrito/', views.ver_carrito, name='ver_carrito'),
     
     path('agregar-al-carrito/<int:material_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),
+    
+    path('vaciar-carrito/', views.vaciar_carrito, name='vaciar_carrito'),
+
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
