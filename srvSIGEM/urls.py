@@ -21,6 +21,12 @@ urlpatterns = [
     # Ruta del índice (página de inicio) a la que se redirige el usuario normal después de iniciar sesión
     path('', views.index, name='index'),  # Redirige la URL vacía a la vista del índice
     
+    #Ruta del la pagina crear usuario 
+    path('crear_usuario/', views.crear_usuario, name='crear_usuario'),
+    
+    #Ruta de la pagina perfil 
+     path('perfil/', views.perfil_usuario, name='perfil'),
+    
     # Ruta para agregar una nueva categoría
     path('agregar-categoria/', views.agregar_categoria, name='agregar_categoria'),
 
@@ -37,3 +43,6 @@ urlpatterns = [
     path('listar-materiales/', views.listar_materiales, name='listar_materiales'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
