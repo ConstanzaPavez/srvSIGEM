@@ -7,7 +7,7 @@ from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
-from .models import Material
+from .models import Material, Carrito, ItemCarrito
 from .models import TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
@@ -166,3 +166,28 @@ def eliminar_materiales(request, pk):
         material.delete()
         return redirect('listar_materiales')
     return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})
+
+def agregar_al_carrito(request, material_id):
+    material = get_object_or_404(Material, pk=material_id)
+    carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+
+    item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)
+    if not creado:
+        item.cantidad += 1
+    item.save()
+    return redirect('listar_materiales')
+
+def ver_carrito(request):
+    carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+    return render(request, 'paginas/carrito/ver_carrito.html', {'carrito': carrito})
+
+
+
+def vaciar_carrito(request):
+    try:
+        carrito = Carrito.objects.get(usuario=request.user)
+        ItemCarrito.objects.filter(carrito=carrito).delete()
+    except Carrito.DoesNotExist:
+        pass  # No hay carrito aún
+
+    return redirect('ver_carrito')  # O a donde quieras redirigir

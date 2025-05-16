@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
+
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
@@ -70,3 +72,25 @@ def actualizar_stock_categoria(sender, instance, created, **kwargs):
         categoria = instance.categoria
         categoria.stock += 1
         categoria.save()    
+        
+        
+class Carrito(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Carrito de {self.usuario}'
+
+    def total_items(self):
+        return sum(item.cantidad for item in self.items.all())
+
+class ItemCarrito(models.Model):
+    carrito = models.ForeignKey(Carrito, related_name='items', on_delete=models.CASCADE)
+    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.material.nom_material} x {self.cantidad}'
+
+       
+        
