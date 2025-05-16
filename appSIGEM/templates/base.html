@@ -17,11 +17,13 @@
     <nav class="navbar navbar-expand-lg navbar-light custom-navbar shadow-sm">
         <div class="container-fluid">
             <img src="{% static 'paginas/img/logo.png' %}" alt="Logo Prueba" class="d-block" style="height: 50px;">
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrito' %}"><i class="bi bi-cart"></i> Carrito</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Inicio</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'listar_materiales' %}">Inventario</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'agregar_material' %}">Material</a></li>
@@ -29,7 +31,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'agregar_marca' %}"> Marca</a></li> 
                     <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>  
                     <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Cerrar sesión</a></li>
-                    
+
                     <!-- Agrega más enlaces según sea necesario -->
                 </ul>
             </div>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Mi Carrito{% endblock %}
+
+{% block content %}
+<h2>Mi Carrito</h2>
+{% if carrito.items.all %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Material</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in carrito.items.all %}
+        <tr>
+            <td>{{ item.material.nom_material }}</td>
+            <td>{{ item.cantidad }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Tu carrito está vacío.</p>
+{% endif %}
+{% endblock %}

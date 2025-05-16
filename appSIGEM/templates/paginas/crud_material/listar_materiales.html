@@ -38,6 +38,15 @@
                     <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
                     <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
                     <p class="card-text"><strong>Tipo:</strong> {{ material.tipo }}</p>
+                    
+
+                    <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="mt-auto">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-cart-plus"></i> Agregar al carrito
+                        </button>
+                    </form>                
+
                 </div>
             </div>
         </div>
