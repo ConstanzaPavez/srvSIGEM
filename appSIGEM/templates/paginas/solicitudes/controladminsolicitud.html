@@ -6,7 +6,7 @@
 
   <div class="btn-group mb-3" role="group" aria-label="Filtro de estado">
     <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-primary {% if not estado_filtrado %}active{% endif %}">Todas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=Pendi" class="btn btn-outline-primary {% if estado_filtrado == 'Pendi' %}active{% endif %}">Pendientes</a>
+    <a href="{% url 'control_solicitudes' %}?estado=Pend" class="btn btn-outline-primary {% if estado_filtrado == 'Pend' %}active{% endif %}">Pendientes</a>
     <a href="{% url 'control_solicitudes' %}?estado=APR" class="btn btn-outline-primary {% if estado_filtrado == 'APR' %}active{% endif %}">Aprobadas</a>
     <a href="{% url 'control_solicitudes' %}?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}">Aprobadas Parcialmente</a>
     <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}">Rechazadas</a>

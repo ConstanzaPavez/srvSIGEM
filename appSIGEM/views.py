@@ -285,7 +285,7 @@ def control_admin_solicitud(request):
 
     estado = request.GET.get('estado')
     
-    estados_validos = ['Pendi', 'APR', 'PAR', 'RECH']
+    estados_validos = ['Pend', 'APR', 'PAR', 'RECH']
 
     if estado in estados_validos:
         solicitudes = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
