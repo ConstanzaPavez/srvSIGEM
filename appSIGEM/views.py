@@ -205,6 +205,18 @@ def crear_solicitud(request):
             solicitud = form.save(commit=False)
             solicitud.usuario = request.user
             solicitud.save()
+
+            # Copiar los ítems del carrito a solicitud
+            carrito = Carrito.objects.get(usuario=request.user)
+            for item_carrito in carrito.items.all():
+                ItemSolicitud.objects.create(
+                    solicitud=solicitud,
+                    material=item_carrito.material,
+                    cantidad=item_carrito.cantidad
+                )
+            # Opcional: vaciar el carrito
+            carrito.items.all().delete()
+
             messages.success(request, "Solicitud enviada correctamente.")
             return redirect('listar_solicitudes')
     else:
@@ -227,10 +239,8 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def gestionar_solicitud(request, solicitud_id):
-    # Obtener la solicitud por id
     solicitud = get_object_or_404(Solicitud, id=solicitud_id)
 
-    # Verifica si el usuario es admin (staff) o es el propietario de la solicitud
     if not (request.user.is_staff or solicitud.usuario == request.user):
         messages.error(request, 'No tienes permiso para gestionar esta solicitud.')
         return redirect('detalle_solicitud', id=solicitud.id)
@@ -238,11 +248,20 @@ def gestionar_solicitud(request, solicitud_id):
     if request.method == 'POST':
         form = GestionarSolicitudForm(request.POST, instance=solicitud)
         if form.is_valid():
-            form.save()
+            solicitud_previa = Solicitud.objects.get(id=solicitud_id)  # estado previo
+            solicitud_actualizada = form.save()
+
+            # Solo restar stock si el estado pasó a aprobado o aprobado parcialmente y antes no estaba aprobado
+            if solicitud_previa.estado != solicitud_actualizada.estado and solicitud_actualizada.estado in ['APR', 'PAR']:
+                # Iterar los items de la solicitud
+                for item in solicitud_actualizada.items.all():
+
+                    categoria = item.material.categoria
+                    categoria.stock -= item.cantidad
+                    categoria.save()
+
             messages.success(request, 'La solicitud fue actualizada correctamente.')
             return redirect('control_solicitudes')
-
-
     else:
         form = GestionarSolicitudForm(instance=solicitud)
 
