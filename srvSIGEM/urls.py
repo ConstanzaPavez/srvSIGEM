@@ -69,6 +69,10 @@ urlpatterns = [
     
     path('usuarios/<int:user_id>/solicitudes/', views.ver_solicitudes_usuario, name='ver_solicitudes_usuario'),
 
+    path('reporte/prestamos/', views.reporte_prestamos, name='reporte_prestamos'),
+
+    path('reporte/prestamos/pdf/', views.exportar_reporte_pdf, name='reporte_prestamos_pdf'),
+
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

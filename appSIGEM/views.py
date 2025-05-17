@@ -14,6 +14,14 @@ from django.contrib import messages
 from .forms import GestionarSolicitudForm
 from .forms import SolicitudForm
 from .forms import DevolverItemForm
+from django.db.models import Q
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.timezone import now
+from .models import Solicitud
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+from io import BytesIO
 
 
 
@@ -373,3 +381,60 @@ def ver_solicitudes_usuario(request, user_id):
         'usuario': usuario,
         'solicitudes': solicitudes
     })
+    
+@login_required
+@user_passes_test(is_admin)
+def reporte_prestamos(request):
+    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
+
+    # Filtros
+    fecha_inicio = request.GET.get('inicio')
+    fecha_fin = request.GET.get('fin')
+    usuario_id = request.GET.get('usuario')
+
+    if fecha_inicio:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
+    if fecha_fin:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__lte=fecha_fin)
+    if usuario_id:
+        solicitudes = solicitudes.filter(usuario__id=usuario_id)
+
+    usuarios = get_user_model().objects.all()
+
+    return render(request, 'paginas/reportes/reporte_prestamos.html', {
+        'solicitudes': solicitudes,
+        'usuarios': usuarios,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'usuario_id': usuario_id,
+    })    
+    
+    
+@login_required
+@user_passes_test(is_admin)
+def exportar_reporte_pdf(request):
+    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
+
+    # Filtros desde GET
+    fecha_inicio = request.GET.get('inicio')
+    fecha_fin = request.GET.get('fin')
+    usuario_id = request.GET.get('usuario')
+
+    if fecha_inicio:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
+    if fecha_fin:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__lte=fecha_fin)
+    if usuario_id:
+        solicitudes = solicitudes.filter(usuario__id=usuario_id)
+
+    template = get_template('paginas/reportes/reporte_prestamos_pdf.html')
+    html = template.render({'solicitudes': solicitudes})
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_prestamos.pdf"'
+
+    pisa_status = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
+
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    return response
