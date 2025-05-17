@@ -335,7 +335,7 @@ def gestionar_devolucion(request, item_id):
             categoria.stock += item_devuelto.cantidad
             categoria.save()
             messages.success(request, "Devolución registrada correctamente.")
-            return redirect('control_solicitudes')
+            return redirect('gestionar_devoluciones')
     else:
         form = DevolverItemForm(instance=item)
     
