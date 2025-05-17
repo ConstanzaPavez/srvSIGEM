@@ -31,4 +31,8 @@ footer {
     margin-top: auto;
 }
 
-
+.carousel-img {
+    height: 450px;
+    object-fit: cover;
+    width: 100%;
+}
