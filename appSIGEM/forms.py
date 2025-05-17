@@ -5,6 +5,7 @@ from .models import TipoMaterial
 from .models import Marca
 from .models import Material
 from .models import Solicitud
+from .models import ItemSolicitud
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LoginView
@@ -129,3 +130,12 @@ class SolicitudForm(forms.ModelForm):
 
         if retiro and devolucion and devolucion <= retiro:
             raise forms.ValidationError("La fecha de devolución debe ser posterior a la fecha de retiro.")        
+        
+        
+class DevolverItemForm(forms.ModelForm):
+    class Meta:
+        model = ItemSolicitud
+        fields = ['estado_ingreso', 'fecha_devolucion_real']
+        widgets = {
+            'fecha_devolucion_real': forms.DateInput(attrs={'type': 'date'}),
+        }

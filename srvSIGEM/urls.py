@@ -59,9 +59,12 @@ urlpatterns = [
     
     path('solicitudes/<int:id>/', views.detalle_solicitud, name='detalle_solicitud'),
 
-    path('control_solicitudes/', views.control_admin_solicitud, name='control_solicitudes')
+    path('control_solicitudes/', views.control_admin_solicitud, name='control_solicitudes'),
 
-    
+    path('devoluciones/<int:item_id>/', views.gestionar_devolucion, name='gestionar_devolucion'),
+
+    path('devoluciones/', views.gestionar_devoluciones, name='gestionar_devoluciones'),
+
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -13,6 +13,8 @@ from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
 from .forms import SolicitudForm
+from .forms import DevolverItemForm
+
 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -316,3 +318,43 @@ def control_admin_solicitud(request):
         'solicitudes': solicitudes,
         'estado_filtrado': estado
     })
+
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def gestionar_devolucion(request, item_id):
+    item = get_object_or_404(ItemSolicitud, id=item_id)
+    if request.method == 'POST':
+        form = DevolverItemForm(request.POST, instance=item)
+        if form.is_valid():
+            item_devuelto = form.save()
+            # Sumar al stock de la categoría correspondiente
+            categoria = item_devuelto.material.categoria
+            categoria.stock += item_devuelto.cantidad
+            categoria.save()
+            messages.success(request, "Devolución registrada correctamente.")
+            return redirect('control_solicitudes')
+    else:
+        form = DevolverItemForm(instance=item)
+    
+    return render(request, 'paginas/devoluciones/gestionar_devolucion.html', {
+        'form': form,
+        'item': item
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def gestionar_devoluciones(request):
+    solicitudes_aprobadas = Solicitud.objects.filter(estado='APR').prefetch_related('items')
+
+    solicitudes_con_pendientes = [
+        solicitud for solicitud in solicitudes_aprobadas
+        if solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
+    ]
+
+    return render(request, 'paginas/devoluciones/gestionar_devoluciones.html', {
+        'solicitudes': solicitudes_con_pendientes
+    })
+
