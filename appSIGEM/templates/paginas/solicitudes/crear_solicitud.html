@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Tipo de Material{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="mb-3">
+        <label for="id_fecha_retiro">Fecha de Retiro:</label>
+        {{ form.fecha_retiro }}
+        {{ form.fecha_retiro.errors }}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_fecha_devolucion">Fecha de Devolución:</label>
+        {{ form.fecha_devolucion }}
+        {{ form.fecha_devolucion.errors }}
+    </div>
+
+    <!-- Aquí otros campos del formulario -->
+
+    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+    </form>
+
+{% endblock %}

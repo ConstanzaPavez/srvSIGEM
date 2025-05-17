@@ -106,6 +106,9 @@ class Solicitud(models.Model):
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=5, choices=ESTADOS, default='PEND')
     comentario_respuesta = models.TextField(blank=True, null=True)
+    fecha_retiro = models.DateField(null=True, blank=True)
+    fecha_devolucion = models.DateField(null=True, blank=True)
+
 
     def __str__(self):
         return f'Solicitud #{self.id} - {self.get_estado_display()}'

@@ -110,3 +110,22 @@ class GestionarSolicitudForm(forms.ModelForm):
             'estado': forms.Select(attrs={'class': 'form-control'}),
             'comentario_respuesta': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Comentario opcional'}),
         }        
+        
+        
+class SolicitudForm(forms.ModelForm):
+    class Meta:
+        model = Solicitud
+        fields = ['fecha_retiro', 'fecha_devolucion']  # agrega otros campos que tengas
+        widgets = {
+            'fecha_retiro': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_devolucion': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+    # Opcional: validación para que fecha_devolucion > fecha_retiro
+    def clean(self):
+        cleaned_data = super().clean()
+        retiro = cleaned_data.get('fecha_retiro')
+        devolucion = cleaned_data.get('fecha_devolucion')
+
+        if retiro and devolucion and devolucion <= retiro:
+            raise forms.ValidationError("La fecha de devolución debe ser posterior a la fecha de retiro.")        

@@ -12,6 +12,7 @@ from .models import TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
+from .forms import SolicitudForm
 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -196,34 +197,23 @@ def vaciar_carrito(request):
 
 
 
+@login_required
 def crear_solicitud(request):
-    try:
-        carrito = Carrito.objects.get(usuario=request.user)
-        items_carrito = carrito.items.all()
-
-        if not items_carrito.exists():
-            messages.error(request, "Tu carrito está vacío, no puedes crear una solicitud.")
-            return redirect('ver_carrito')
-
-        solicitud = Solicitud.objects.create(usuario=request.user)
-
-        for item in items_carrito:
-            ItemSolicitud.objects.create(
-                solicitud=solicitud,
-                material=item.material,
-                cantidad=item.cantidad
-            )
-
-        # Vaciar carrito después de crear la solicitud
-        items_carrito.delete()
-
-        messages.success(request, "Solicitud creada exitosamente.")
-        return redirect('index')  # O donde quieras redirigir
-
-    except Carrito.DoesNotExist:
-        messages.error(request, "No tienes carrito activo.")
-        return redirect('index')
+    if request.method == 'POST':
+        form = SolicitudForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.usuario = request.user
+            solicitud.save()
+            messages.success(request, "Solicitud enviada correctamente.")
+            return redirect('listar_solicitudes')
+    else:
+        form = SolicitudForm()
     
+    return render(request, 'paginas/solicitudes/crear_solicitud.html', {
+        'form': form
+    })
+
     
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
