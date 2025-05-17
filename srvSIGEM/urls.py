@@ -62,6 +62,7 @@ urlpatterns = [
     path('control_solicitudes/', views.control_admin_solicitud, name='control_solicitudes')
 
     
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

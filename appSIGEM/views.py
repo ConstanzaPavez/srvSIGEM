@@ -279,15 +279,20 @@ def listar_solicitudes(request):
  
 @login_required
 def control_admin_solicitud(request):
-    # Por ejemplo, traer todas las solicitudes para que el admin las gestione
-    # Si quieres que solo lo vea admin, agregar filtro o permiso aquí
-    if not request.user.is_staff:  # o is_superuser si quieres
+    if not request.user.is_staff:
         messages.error(request, "No tienes permiso para acceder a esta página.")
         return redirect('listar_solicitudes')
 
-    solicitudes = Solicitud.objects.all().order_by('-fecha_solicitud')
+    estado = request.GET.get('estado')
     
+    estados_validos = ['Pendi', 'APR', 'PAR', 'RECH']
+
+    if estado in estados_validos:
+        solicitudes = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
+    else:
+        solicitudes = Solicitud.objects.all().order_by('-fecha_solicitud')
+
     return render(request, 'paginas/solicitudes/controladminsolicitud.html', {
         'solicitudes': solicitudes,
-    })    
-    
+        'estado_filtrado': estado
+    })
