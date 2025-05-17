@@ -1,10 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base_usuario.html' %}
 {% load static %}
 
-{% block title %}Eliminar Tipo de Material{% endblock %}
-
 {% block content %}
-
+<div class="container d-flex justify-content-center align-items-center min-vh-50">
+    <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
+        <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
+        <p class="text-center">Por favor, completa el siguiente formulario para crear una solicitud.</p>
     <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -25,5 +26,7 @@
 
     <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
     </form>
+</div>
+</div>
 
 {% endblock %}

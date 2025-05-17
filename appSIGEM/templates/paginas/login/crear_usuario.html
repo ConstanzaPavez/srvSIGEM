@@ -1,47 +1,11 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #e9f0fb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .login-box {
-            background: white;
-            padding: 2rem 2.5rem;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-        .btn-primary {
-            background-color: #0d6efd;
-        }
-    </style>
-</head>
-<body>
-    {% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">
-      {{ message }}
-    </div>
-  {% endfor %}
-{% endif %}
-    <div class="login-box">
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-50">
+    <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
         <h2 class="text-center text-primary mb-4">Crear Nuevo Usuario</h2>
         
-      
-
-        <!-- Aclaración del rol automático -->
         <div class="alert alert-info" role="alert">
             El nuevo usuario será asignado automáticamente con el rol de <strong>Profesor</strong>.
         </div>
@@ -78,14 +42,17 @@
                 {{ form.imagen_perfil }}
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Crear Usuario</button>
+            
         </form>
         
-        <div class="mt-3">
-           <a href="{% url 'admin_panel' %}" class="btn btn-secondary btn-block">Volver al Panel</a>
+        <div class="mt-4 d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-block">Crear Usuario</button>
+            
+            <a href="{% url 'admin_panel' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">
+                Volver al Panel
+            </a>
         </div>
     </div>
-
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

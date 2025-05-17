@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Gestionar Solicitud{% endblock %}
+{% block content %}
 <h1>Gestionar Solicitud #{{ solicitud.id }}</h1>
 
 <form method="post">
@@ -7,3 +11,5 @@
     <button type="submit" class="btn btn-primary">Actualizar</button>
     <a href="{% url 'control_solicitudes' %}" class="btn btn-secondary">Cancelar</a>
 </form>
+
+{% endblock %}

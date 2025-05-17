@@ -21,6 +21,7 @@ class User(AbstractUser):
         related_name='custom_user_set', # <-- Agrega esto
         help_text='Specific permissions for this user.',
     )
+    
 
 class CategoriaDj(models.Model):
     id_categoria = models.AutoField(primary_key=True)
@@ -92,8 +93,7 @@ class ItemCarrito(models.Model):
     def __str__(self):
         return f'{self.material.nom_material} x {self.cantidad}'
 
-       
-        
+
 class Solicitud(models.Model):
     ESTADOS = [
         ('PEND', 'Pendiente'),

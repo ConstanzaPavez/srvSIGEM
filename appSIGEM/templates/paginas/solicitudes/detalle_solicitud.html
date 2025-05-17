@@ -1,20 +1,43 @@
-{% extends 'base.html' %}
+{% extends 'base_usuario.html' %}
 
 {% block content %}
-  <h2>Detalle de la Solicitud #{{ solicitud.id }}</h2>
-  <p>Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
-  <p>Estado: {{ solicitud.get_estado_display }}</p>
+<div class="container d-flex justify-content-center align-items-center min-vh-50">
+    <div class="card shadow-lg p-5 bg-white rounded-3" style="width: 100%; max-width: 700px;">
+        <h2 class="text-center text-primary mb-4">Detalle de la Solicitud #{{ solicitud.id }}</h2>
 
-  <p><strong>Comentario respuesta:</strong> {{ solicitud.comentario_respuesta|default:"-" }}</p>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Fecha de Solicitud:</label>
+            <p>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+        </div>
 
-  <h3>Items:</h3>
-  <ul>
-    {% for item in solicitud.items.all %}
-      <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
-    {% empty %}
-      <li>No hay items en esta solicitud.</li>
-    {% endfor %}
-  </ul>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Estado:</label>
+            <p>{{ solicitud.get_estado_display }}</p>
+        </div>
 
-  <a href="{% url 'listar_solicitudes' %}">Volver a Solicitudes</a>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Comentario respuesta:</label>
+            <p>{{ solicitud.comentario_respuesta|default:"-" }}</p>
+        </div>
+
+        <div class="mb-3">
+            <h5 class="fw-semibold">Items Solicitados:</h5>
+            <ul class="list-group list-group-flush">
+                {% for item in solicitud.items.all %}
+                <li class="list-group-item">
+                    {{ item.material.nom_material }} - <strong>Cantidad:</strong> {{ item.cantidad }}
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">No hay items en esta solicitud.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="text-end mt-4">
+            <a href="{% url 'listar_solicitudes' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left-circle"></i> Volver a Solicitudes
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
