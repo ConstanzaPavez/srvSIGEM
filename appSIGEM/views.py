@@ -248,20 +248,30 @@ def gestionar_solicitud(request, solicitud_id):
     if request.method == 'POST':
         form = GestionarSolicitudForm(request.POST, instance=solicitud)
         if form.is_valid():
-            solicitud_previa = Solicitud.objects.get(id=solicitud_id)  # estado previo
-            solicitud_actualizada = form.save()
+            # Guardar cambios en la solicitud temporalmente
+            solicitud_actualizada = form.save(commit=False)
 
-            # Solo restar stock si el estado pasó a aprobado o aprobado parcialmente y antes no estaba aprobado
-            if solicitud_previa.estado != solicitud_actualizada.estado and solicitud_actualizada.estado in ['APR', 'PAR']:
-                # Iterar los items de la solicitud
+            # Validar stock solo si la solicitud se aprueba
+            if solicitud_actualizada.estado == 'APR':
+                # Recorremos cada item y comprobamos stock
                 for item in solicitud_actualizada.items.all():
+                    categoria = item.material.categoria
+                    if categoria.stock < item.cantidad:
+                        messages.error(request, f"No hay stock suficiente para {item.material.nom_material}. Stock disponible: {categoria.stock}, requerido: {item.cantidad}")
+                        return redirect('gestionar_solicitud', solicitud_id=solicitud.id)
 
+                # Si hay stock suficiente, restamos el stock
+                for item in solicitud_actualizada.items.all():
                     categoria = item.material.categoria
                     categoria.stock -= item.cantidad
                     categoria.save()
 
+            # Guardar la solicitud después de modificar el stock
+            solicitud_actualizada.save()
+
             messages.success(request, 'La solicitud fue actualizada correctamente.')
             return redirect('control_solicitudes')
+
     else:
         form = GestionarSolicitudForm(instance=solicitud)
 
@@ -269,6 +279,7 @@ def gestionar_solicitud(request, solicitud_id):
         'form': form,
         'solicitud': solicitud,
     })
+
 
 def detalle_solicitud(request, id):
     solicitud = get_object_or_404(Solicitud, id=id)
