@@ -3,7 +3,9 @@
 {% block content %}
   <h2>Detalle de la Solicitud #{{ solicitud.id }}</h2>
   <p>Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
-  <p>Estado: {{ solicitud.estado }}</p>
+  <p>Estado: {{ solicitud.get_estado_display }}</p>
+
+  <p><strong>Comentario respuesta:</strong> {{ solicitud.comentario_respuesta|default:"-" }}</p>
 
   <h3>Items:</h3>
   <ul>

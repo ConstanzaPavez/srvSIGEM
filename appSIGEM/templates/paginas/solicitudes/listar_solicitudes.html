@@ -10,7 +10,8 @@
         <div class="accordion-item mb-3">
           <h2 class="accordion-header" id="heading{{ solicitud.id }}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false" aria-controls="collapse{{ solicitud.id }}">
-              Solicitud #{{ solicitud.id }} - Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }} - Estado: {{ solicitud.estado }}
+              Solicitud #{{ solicitud.id }} - Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }} - Estado: {{ solicitud.get_estado_display }}
+
             </button>
           </h2>
           <div id="collapse{{ solicitud.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ solicitud.id }}" data-bs-parent="#accordionSolicitudes">
@@ -23,19 +24,7 @@
                   </li>
                 {% endfor %}
               </ul>
-
-              {# Aquí agregamos el botón SOLO si el usuario es admin #}
-              {% if user.is_superuser %}
-                <div class="mt-3">
-                    
-
-                    <a href="{% url 'gestionar_solicitud' solicitud.id %}">Gestionar</a>
-
-                  </a>
-                </div>
-              {% endif %}
               <a href="{% url 'detalle_solicitud' solicitud.id %}">Ver detalle</a>
-              
             </div>
           </div>
         </div>

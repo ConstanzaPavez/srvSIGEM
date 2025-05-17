@@ -21,7 +21,7 @@
         <th>Usuario</th>
         <th>Fecha Solicitud</th>
         <th>Estado</th>
-        <th>Comentario Respuesta</th>
+        <th>Comentario</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -31,7 +31,7 @@
         <td>{{ solicitud.id }}</td>
         <td>{{ solicitud.usuario.username }}</td>
         <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
-        <td>{{ solicitud.estado }}</td>
+        <td>{{ solicitud.get_estado_display }}</td>
         <td>{{ solicitud.comentario_respuesta|default:"-" }}</td>
         <td>
           <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
