@@ -95,12 +95,20 @@ class ItemCarrito(models.Model):
        
         
 class Solicitud(models.Model):
+    ESTADOS = [
+        ('PEND', 'Pendiente'),
+        ('APR', 'Aprobada'),
+        ('PAR', 'Aprobada Parcialmente'),
+        ('RECH', 'Rechazada'),
+    ]
+
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=50, default='Pendiente')  # Por ejemplo: Pendiente, Aprobada, Rechazada
+    estado = models.CharField(max_length=5, choices=ESTADOS, default='PEND')
+    comentario_respuesta = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'Solicitud #{self.id} de {self.usuario.username}'
+        return f'Solicitud #{self.id} - {self.get_estado_display()}'
 
 class ItemSolicitud(models.Model):
     solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.CASCADE)

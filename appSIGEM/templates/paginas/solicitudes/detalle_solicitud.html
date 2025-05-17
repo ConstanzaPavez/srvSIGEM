@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Detalle de la Solicitud #{{ solicitud.id }}</h2>
+  <p>Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+  <p>Estado: {{ solicitud.estado }}</p>
+
+  <h3>Items:</h3>
+  <ul>
+    {% for item in solicitud.items.all %}
+      <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
+    {% empty %}
+      <li>No hay items en esta solicitud.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'listar_solicitudes' %}">Volver a Solicitudes</a>
+{% endblock %}

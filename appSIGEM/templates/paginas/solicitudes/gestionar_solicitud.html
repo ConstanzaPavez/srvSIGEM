@@ -1,0 +1,9 @@
+<h1>Gestionar Solicitud #{{ solicitud.id }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="{% url 'control_solicitudes' %}" class="btn btn-secondary">Cancelar</a>
+</form>

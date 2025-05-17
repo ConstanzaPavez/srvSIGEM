@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Control de Solicitudes (Admin)</h2>
+  
+
+  
+  {% if solicitudes %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Fecha Solicitud</th>
+        <th>Estado</th>
+        <th>Comentario Respuesta</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for solicitud in solicitudes %}
+      <tr>
+        <td>{{ solicitud.id }}</td>
+        <td>{{ solicitud.usuario.username }}</td>
+        <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+        <td>{{ solicitud.estado }}</td>
+        <td>{{ solicitud.comentario_respuesta|default:"-" }}</td>
+        <td>
+          <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No hay solicitudes para mostrar.</p>
+  {% endif %}
+</div>
+{% endblock %}

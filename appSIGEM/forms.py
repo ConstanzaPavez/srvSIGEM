@@ -4,6 +4,7 @@ from .models import CategoriaDj
 from .models import TipoMaterial
 from .models import Marca
 from .models import Material
+from .models import Solicitud
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LoginView
@@ -96,3 +97,16 @@ class MaterialForm(forms.ModelForm):
         self.fields['categoria'].label_from_instance = lambda obj: obj.nombre_categoria
         self.fields['tipo_material'].label_from_instance = lambda obj: obj.nombre_tipo_material
         self.fields['marca'].label_from_instance = lambda obj: obj.nom_marca
+        
+        
+        
+        
+
+class GestionarSolicitudForm(forms.ModelForm):
+    class Meta:
+        model = Solicitud
+        fields = ['estado', 'comentario_respuesta']
+        widgets = {
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+            'comentario_respuesta': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Comentario opcional'}),
+        }        

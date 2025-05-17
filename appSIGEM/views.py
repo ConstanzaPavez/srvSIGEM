@@ -11,6 +11,8 @@ from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud
 from .models import TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
+from .forms import GestionarSolicitudForm
+
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -226,3 +228,66 @@ def crear_solicitud(request):
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    
+
+
+
+def is_admin(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def gestionar_solicitud(request, solicitud_id):
+    # Obtener la solicitud por id
+    solicitud = get_object_or_404(Solicitud, id=solicitud_id)
+
+    # Verifica si el usuario es admin (staff) o es el propietario de la solicitud
+    if not (request.user.is_staff or solicitud.usuario == request.user):
+        messages.error(request, 'No tienes permiso para gestionar esta solicitud.')
+        return redirect('detalle_solicitud', id=solicitud.id)
+
+    if request.method == 'POST':
+        form = GestionarSolicitudForm(request.POST, instance=solicitud)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'La solicitud fue actualizada correctamente.')
+            return redirect('control_solicitudes')
+
+
+    else:
+        form = GestionarSolicitudForm(instance=solicitud)
+
+    return render(request, 'paginas/solicitudes/gestionar_solicitud.html', {
+        'form': form,
+        'solicitud': solicitud,
+    })
+
+def detalle_solicitud(request, id):
+    solicitud = get_object_or_404(Solicitud, id=id)
+    return render(request, 'paginas/solicitudes/detalle_solicitud.html', {'solicitud': solicitud})
+
+@login_required
+def listar_solicitudes(request):
+    if request.user.is_staff:
+        solicitudes = Solicitud.objects.all()
+    else:
+        solicitudes = Solicitud.objects.filter(usuario=request.user)
+
+    return render(request, 'paginas/solicitudes/listar_solicitudes.html', {
+        'solicitudes': solicitudes
+    })
+    
+ 
+@login_required
+def control_admin_solicitud(request):
+    # Por ejemplo, traer todas las solicitudes para que el admin las gestione
+    # Si quieres que solo lo vea admin, agregar filtro o permiso aquí
+    if not request.user.is_staff:  # o is_superuser si quieres
+        messages.error(request, "No tienes permiso para acceder a esta página.")
+        return redirect('listar_solicitudes')
+
+    solicitudes = Solicitud.objects.all().order_by('-fecha_solicitud')
+    
+    return render(request, 'paginas/solicitudes/controladminsolicitud.html', {
+        'solicitudes': solicitudes,
+    })    
+    

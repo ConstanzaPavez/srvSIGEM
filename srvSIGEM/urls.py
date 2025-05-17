@@ -3,6 +3,9 @@ from django.urls import path
 from appSIGEM import views  # Asegúrate de que la importación esté correcta
 from django.conf.urls.static import static
 from django.conf import settings
+from appSIGEM.views import gestionar_solicitud
+
+
 urlpatterns = [
     # Ruta al panel de administración de Django
     path('admin/', admin.site.urls),
@@ -52,7 +55,13 @@ urlpatterns = [
 
     path('mis_solicitudes/', views.listar_solicitudes, name='listar_solicitudes'),
 
+    path('solicitudes/<int:solicitud_id>/gestionar/', gestionar_solicitud, name='gestionar_solicitud'),
+    
+    path('solicitudes/<int:id>/', views.detalle_solicitud, name='detalle_solicitud'),
 
+    path('control_solicitudes/', views.control_admin_solicitud, name='control_solicitudes')
+
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
