@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Solicitudes de {{ usuario.get_full_name|default:usuario.username }}</h2>
+
+    {% if solicitudes %}
+        {% for solicitud in solicitudes %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <strong>Solicitud #{{ solicitud.id }}</strong> 
+                    <span class="badge bg-secondary float-end">{{ solicitud.get_estado_display }}</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d M Y" }}</p>
+                    <p><strong>Fecha Retiro:</strong> {{ solicitud.fecha_retiro|default:"—" }}</p>
+                    <p><strong>Fecha Devolución Esperada:</strong> {{ solicitud.fecha_devolucion|default:"—" }}</p>
+
+                    {% if solicitud.items.exists %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered mt-3">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Cantidad</th>
+                                        <th>Estado Ingreso</th>
+                                        <th>Fecha Devolución Real</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in solicitud.items.all %}
+                                        <tr>
+                                            <td>{{ item.material.nom_material }}</td>
+                                            <td>{{ item.cantidad }}</td>
+                                            <td>
+                                                {% if item.estado_ingreso %}
+                                                    {{ item.get_estado_ingreso_display }}
+                                                {% else %}
+                                                    <span class="text-muted">Pendiente</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ item.fecha_devolucion_real|default:"—" }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hay ítems registrados en esta solicitud.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">Este usuario no tiene solicitudes.</p>
+    {% endif %}
+
+    <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-primary mt-3">← Volver a la lista de usuarios</a>
+</div>
+{% endblock %}

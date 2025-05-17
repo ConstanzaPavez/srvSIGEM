@@ -358,3 +358,18 @@ def gestionar_devoluciones(request):
         'solicitudes': solicitudes_con_pendientes
     })
 
+@login_required
+@user_passes_test(is_admin)
+def listar_usuarios(request):
+    usuarios = User.objects.all()
+    return render(request, 'paginas/admin/listar_usuarios.html', {'usuarios': usuarios})
+
+@login_required
+@user_passes_test(is_admin)
+def ver_solicitudes_usuario(request, user_id):
+    usuario = get_object_or_404(User, id=user_id)
+    solicitudes = Solicitud.objects.filter(usuario=usuario).order_by('-fecha_solicitud')
+    return render(request, 'paginas/admin/solicitudes_usuario.html', {
+        'usuario': usuario,
+        'solicitudes': solicitudes
+    })

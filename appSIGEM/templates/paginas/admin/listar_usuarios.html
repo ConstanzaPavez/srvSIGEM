@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Usuarios</h2>
+    <div class="list-group">
+        {% for usuario in usuarios %}
+            <a href="{% url 'ver_solicitudes_usuario' usuario.id %}" class="list-group-item list-group-item-action">
+                <strong>{{ usuario.get_full_name|default:usuario.username }}</strong> ({{ usuario.email }})
+            </a>
+        {% empty %}
+            <p class="text-muted">No hay usuarios registrados.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
