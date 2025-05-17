@@ -6,8 +6,8 @@
     {% for solicitud in solicitudes %}
         <div class="card mb-4">
             <div class="card-header">
-                Solicitud #{{ solicitud.id }} - Usuario: {{ solicitud.usuario.username }}<br>
-                Fecha Retiro: {{ solicitud.fecha_retiro }} | Fecha Devolución Estimada: {{ solicitud.fecha_devolucion }}
+                Usuario: {{ solicitud.usuario.username }}<br>
+                Retiro: {{ solicitud.fecha_retiro }} | Devolución: {{ solicitud.fecha_devolucion }}
             </div>
             <div class="card-body">
                 <ul class="list-group">
