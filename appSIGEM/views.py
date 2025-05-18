@@ -415,7 +415,7 @@ def reporte_prestamos(request):
 def exportar_reporte_pdf(request):
     solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
 
-    # Filtros desde GET
+    # Filtros igual que en la vista HTML
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
     usuario_id = request.GET.get('usuario')
@@ -433,8 +433,5 @@ def exportar_reporte_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="reporte_prestamos.pdf"'
 
-    pisa_status = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
-
-    if pisa_status.err:
-        return HttpResponse('Error al generar el PDF', status=500)
+    pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
     return response

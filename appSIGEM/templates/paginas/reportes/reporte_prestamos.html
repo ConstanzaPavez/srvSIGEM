@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Reporte de Préstamos</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Reporte de Préstamos</h2>
+        <a href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-danger">
+            Descargar PDF
+        </a>
+    </div>
 
     <form method="get" class="row g-3 mb-4">
         <div class="col-md-3">
@@ -32,8 +37,6 @@
                 <div class="card-header bg-light">
                     {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}
                 </div>
-                <a href="{% url 'reporte_prestamos_pdf' %}" class="btn btn-success mb-3" target="_blank">📄 Descargar PDF</a>
-
                 <div class="card-body">
                     <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y" }}</p>
                     <p><strong>Fecha Retiro:</strong> {{ solicitud.fecha_retiro }}</p>
