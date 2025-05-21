@@ -410,22 +410,32 @@ def reporte_prestamos(request):
     })    
     
     
+from django.utils.dateparse import parse_date
+
 @login_required
 @user_passes_test(is_admin)
 def exportar_reporte_pdf(request):
     solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
 
-    # Filtros igual que en la vista HTML
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
     usuario_id = request.GET.get('usuario')
 
     if fecha_inicio:
-        solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
+        fecha_inicio = parse_date(fecha_inicio)
+        if fecha_inicio:
+            solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
+
     if fecha_fin:
-        solicitudes = solicitudes.filter(fecha_solicitud__date__lte=fecha_fin)
-    if usuario_id:
-        solicitudes = solicitudes.filter(usuario__id=usuario_id)
+        fecha_fin = parse_date(fecha_fin)
+        if fecha_fin:
+            solicitudes = solicitudes.filter(fecha_solicitud__date__lte=fecha_fin)
+
+    if usuario_id and usuario_id.isdigit():
+        solicitudes = solicitudes.filter(usuario__id=int(usuario_id))
+
+    # Debug temporal (puedes quitarlo luego)
+    print("Total solicitudes encontradas:", solicitudes.count())
 
     template = get_template('paginas/reportes/reporte_prestamos_pdf.html')
     html = template.render({'solicitudes': solicitudes})
