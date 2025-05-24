@@ -6,18 +6,17 @@
 
   <!-- Filtros de estado -->
   <div class="btn-group mb-3" role="group" aria-label="Filtro de estado">
-    <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-primary {% if not estado_filtrado %}active{% endif %}">Todas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=Pend" class="btn btn-outline-primary {% if estado_filtrado == 'Pend' %}active{% endif %}">Pendientes</a>
-    <a href="{% url 'control_solicitudes' %}?estado=APR" class="btn btn-outline-primary {% if estado_filtrado == 'APR' %}active{% endif %}">Aprobadas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}">Aprobadas Parcialmente</a>
-    <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}">Rechazadas</a>
+    <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-primary {% if not estado_filtrado %}active{% endif %}" onclick="filtrarSinHistorial(event, '')">Todas</a>
+    <a href="{% url 'control_solicitudes' %}?estado=Pend" class="btn btn-outline-primary {% if estado_filtrado == 'Pend' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=Pend')">Pendientes</a>
+    <a href="{% url 'control_solicitudes' %}?estado=APR" class="btn btn-outline-primary {% if estado_filtrado == 'APR' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=APR')">Aprobadas</a>
+    <a href="{% url 'control_solicitudes' %}?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=PAR')">Aprobadas Parcialmente</a>
+    <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=RECH')">Rechazadas</a>
   </div>
 
   {% if solicitudes %}
   <table class="table table-striped">
     <thead>
       <tr>
-  
         <th>Usuario</th>
         <th>Fecha Solicitud</th>
         <th>Fecha Retiro</th>
@@ -30,7 +29,6 @@
     <tbody>
       {% for solicitud in solicitudes %}
       <tr>
-   
         <td>{{ solicitud.usuario.username }}</td>
         <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
         <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
@@ -48,4 +46,13 @@
     <p>No hay solicitudes para mostrar.</p>
   {% endif %}
 </div>
+
+<!-- Script para evitar que el cambio de filtro se agregue al historial -->
+<script>
+  function filtrarSinHistorial(event, query) {
+    event.preventDefault();
+    const base = window.location.origin + window.location.pathname;
+    location.replace(base + query);
+  }
+</script>
 {% endblock %}
