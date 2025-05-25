@@ -385,7 +385,7 @@ def ver_solicitudes_usuario(request, user_id):
 @login_required
 @user_passes_test(is_admin)
 def reporte_prestamos(request):
-    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
+    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario').order_by('-fecha_solicitud')
 
     # Filtros
     fecha_inicio = request.GET.get('inicio')
@@ -415,7 +415,7 @@ from django.utils.dateparse import parse_date
 @login_required
 @user_passes_test(is_admin)
 def exportar_reporte_pdf(request):
-    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario')
+    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario').order_by('-fecha_solicitud')
 
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
