@@ -2,41 +2,45 @@
 {% block title %}Mi Carrito{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-50">
-    <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
-        <h2>Mi Carrito</h2>
+<div class="container py-5 d-flex justify-content-center">
+  <div class="card shadow-lg" style="width: 100%; max-width: 700px;">
+    <div class="card-header bg-primary text-white text-center">
+      <h2 class="mb-0">Mi Carrito</h2>
+    </div>
 
-    {% if carrito.items.all %}
-        
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Material</th>
-                    <th>Cantidad</th>
-                </tr>
+    <div class="card-body">
+      {% if carrito.items.all %}
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Material</th>
+                <th class="text-center" style="width: 120px;">Cantidad</th>
+              </tr>
             </thead>
             <tbody>
-                {% for item in carrito.items.all %}
-                <tr>
-                    <td>{{ item.material.nom_material }}</td>
-                    <td>{{ item.cantidad }}</td>
-                </tr>
-                
-                {% endfor %}
+              {% for item in carrito.items.all %}
+              <tr>
+                <td>{{ item.material.nom_material }}</td>
+                <td class="text-center">{{ item.cantidad }}</td>
+              </tr>
+              {% endfor %}
             </tbody>
-        </table>
-    {% else %}
-        <p>Tu carrito está vacío.</p>
-    {% endif %}
-    <!-- Botón para vaciar el carrito -->
-        <div class="d-flex justify-content-end mb-3">
-            <a href="{% url 'vaciar_carrito' %}" class="btn btn-danger">
-                <i class="bi bi-trash"></i> Vaciar Carrito</a>
-            
-            <a href="{% url 'crear_solicitud' %}" class="btn btn-primary">Crear Solicitud</a>
+          </table>
         </div>
-
+      {% else %}
+        <p class="text-center fs-5 my-4 text-muted">Tu carrito está vacío.</p>
+      {% endif %}
     </div>
-</div>
 
+    <div class="card-footer d-flex justify-content-between">
+      <a href="{% url 'vaciar_carrito' %}" class="btn btn-outline-danger d-flex align-items-center gap-2">
+        <i class="bi bi-trash-fill"></i> Vaciar Carrito
+      </a>
+      <a href="{% url 'crear_solicitud' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-check2-circle"></i> Crear Solicitud
+      </a>
+    </div>
+  </div>
+</div>
 {% endblock %}

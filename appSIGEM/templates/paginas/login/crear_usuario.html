@@ -1,57 +1,64 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Iniciar Sesión{% endblock %}
+{% load widget_tweaks %}
+{% block title %}Crear Nuevo Usuario{% endblock %}
+
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-50">
-    <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
-        <h2 class="text-center text-primary mb-4">Crear Nuevo Usuario</h2>
-        
-        <div class="alert alert-info" role="alert">
-            El nuevo usuario será asignado automáticamente con el rol de <strong>Profesor</strong>.
-        </div>
+<div class="container d-flex justify-content-center align-items-center min-vh-75 py-5">
+  <div class="card shadow-lg p-4 p-md-5" style="width: 100%; max-width: 600px;">
+    <h2 class="text-center text-primary mb-4">Crear Nuevo Usuario</h2>
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="mb-3">
-                <label for="id_username" class="form-label">Nombre de usuario</label>
-                {{ form.username }}
-            </div>
-            <div class="mb-3">
-                <label for="id_first_name" class="form-label">Nombre</label>
-                {{ form.first_name }}
-            </div>
-            <div class="mb-3">
-                <label for="id_last_name" class="form-label">Apellido</label>
-                {{ form.last_name }}
-            </div>
-            <div class="mb-3">
-                <label for="id_email" class="form-label">Correo electrónico</label>
-                {{ form.email }}
-            </div>
-            <div class="mb-3">
-                <label for="id_password1" class="form-label">Contraseña</label>
-                {{ form.password1 }}
-            </div>
-            <div class="mb-3">
-                <label for="id_password2" class="form-label">Confirmar contraseña</label>
-                {{ form.password2 }}
-            </div>
-            <div class="mb-3">
-                <label for="id_imagen_perfil" class="form-label">Imagen de perfil</label>
-                {{ form.imagen_perfil }}
-            </div>
-            <div class="mt-4 d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary btn-block">Crear Usuario</button>
-            
-                <a href="{% url 'admin_panel' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">Volver al Panel</a>
-        </div>
-
-            
-        </form>
-        
-
+    <div class="alert alert-info text-center" role="alert">
+      El nuevo usuario será asignado automáticamente con el rol de <strong>Profesor</strong>.
     </div>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Nombre de usuario</label>
+        {{ form.username|add_class:"form-control" }}
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="id_first_name" class="form-label">Nombre</label>
+          {{ form.first_name|add_class:"form-control" }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="id_last_name" class="form-label">Apellido</label>
+          {{ form.last_name|add_class:"form-control" }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_email" class="form-label">Correo electrónico</label>
+        {{ form.email|add_class:"form-control" }}
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="id_password1" class="form-label">Contraseña</label>
+          {{ form.password1|add_class:"form-control" }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="id_password2" class="form-label">Confirmar contraseña</label>
+          {{ form.password2|add_class:"form-control" }}
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="id_imagen_perfil" class="form-label">Imagen de perfil</label>
+        {{ form.imagen_perfil|add_class:"form-control" }}
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary px-4">Crear Usuario</button>
+        <a href="{% url 'admin_panel' %}" class="btn btn-outline-primary px-4">Volver al Panel</a>
+      </div>
+    </form>
+  </div>
 </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
