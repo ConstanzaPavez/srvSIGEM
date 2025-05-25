@@ -3,68 +3,115 @@
 
 {% block title %}Lista de Materiales{% endblock %}
 
+
+
 {% block content %}
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Lista de Materiales</h2>
+  <div class="row">
+    <!-- FILTROS -->
+    <aside class="col-md-3 mb-4">
+      <div class="card p-3 shadow-sm rounded-3 bg-light">
+        <h5 class="mb-3 fw-bold">Filtrar por</h5>
+        <form method="GET">
+          <div class="mb-3">
+            <label for="marca" class="form-label fw-semibold">Marca</label>
+            <select name="marca" id="marca" class="form-select">
+              <option value="">Todas</option>
+              {% for m in marcas %}
+                <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-    </div>
+          <div class="mb-3">
+            <label for="tipo" class="form-label fw-semibold">Tipo</label>
+            <select name="tipo" id="tipo" class="form-select">
+              <option value="">Todos</option>
+              {% for t in tipos %}
+                <option value="{{ t }}" {% if request.GET.tipo == t %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-    <form method="GET" class="mb-4 d-flex">
-    <input 
-        type="text" 
-        name="q" 
-        value="{{ request.GET.q|default_if_none:'' }}" 
-        class="form-control me-2" 
-        placeholder="Buscar por nombre, marca, categoría o tipo..."
-        autocomplete="off"
-    >
-    <button type="submit" class="btn btn-primary">
-        <i class="bi bi-search"></i> Buscar
-    </button>
-    </form>
+          <div class="mb-3">
+            <label for="categoria" class="form-label fw-semibold">Categoría</label>
+            <select name="categoria" id="categoria" class="form-select">
+              <option value="">Todas</option>
+              {% for cat in categorias_stock %}
+                <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
+                  {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-filter-circle"></i> Aplicar filtros
+            </button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <!-- LISTADO DE MATERIALES -->
+    <main class="col-md-9">
+      <form method="GET" class="mb-4 d-flex">
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ request.GET.q|default_if_none:'' }}" 
+          class="form-control me-2" 
+          placeholder="Buscar por nombre, marca, categoría o tipo..."
+          autocomplete="off"
+        >
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+      </form>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {% for material in materiales %}
-        <div class="col">
+          <div class="col">
             <div class="card h-100 shadow-sm">
-                {% if material.img_material %}
-                    <img src="{{ material.img_material.url }}" 
-                         class="card-img-top object-fit-cover" 
-                         alt="Imagen de {{ material.nom_material }}" 
-                         style="height: 200px;">
+              {% if material.img_material %}
+                <img src="{{ material.img_material.url }}" 
+                     class="card-img-top object-fit-cover" 
+                     alt="Imagen de {{ material.nom_material }}" 
+                     style="height: 200px;">
+              {% else %}
+                <img src="{% static 'img/default_material.png' %}" 
+                     class="card-img-top object-fit-cover" 
+                     alt="Imagen por defecto" 
+                     style="height: 200px;">
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ material.nom_material }}</h5>
+                <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
+                <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
+                <p class="card-text"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
+
+                {% if material.id_material in materiales_en_carrito %}
+                  <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="mt-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100">
+                      <i class="bi bi-cart-dash"></i> Quitar del carrito
+                    </button>
+                  </form>
                 {% else %}
-                    <img src="{{ material.img_material}}" 
-                         class="card-img-top object-fit-cover" 
-                         alt="Imagen por defecto" 
-                         style="height: 200px;">
+                  <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="mt-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="bi bi-cart-plus"></i> Agregar al carrito
+                    </button>
+                  </form>
                 {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ material.nom_material }}</h5>
-                    <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
-                    <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
-                    <p class="card-text"><strong>Tipo:</strong> {{ material.tipo }}</p>
-
-                    {% if material.id_material in materiales_en_carrito %}
-                        <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="mt-auto">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="bi bi-cart-dash"></i> Quitar del carrito
-                            </button>
-                        </form>
-                    {% else %}
-                        <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="mt-auto">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-cart-plus"></i> Agregar al carrito
-                            </button>
-                        </form>
-                    {% endif %}
-
-                </div>
+              </div>
             </div>
-        </div>
+          </div>
         {% endfor %}
-    </div>
+      </div>
+    </main>
+  </div>
 </div>
 {% endblock %}

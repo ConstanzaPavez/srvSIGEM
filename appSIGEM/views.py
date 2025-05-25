@@ -156,9 +156,17 @@ def agregar_material(request):
     return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
 
 #listar materiales
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from .models import Material, CategoriaDj  # importa tu modelo categoria
+
 @login_required
 def listar_materiales(request):
     q = request.GET.get('q', '').strip()
+    marca = request.GET.get('marca', '').strip()
+    tipo = request.GET.get('tipo', '').strip()
+    categoria = request.GET.get('categoria', '').strip()
+
     materiales = Material.objects.all()
 
     if q:
@@ -168,6 +176,18 @@ def listar_materiales(request):
             Q(categoria__nombre_categoria__icontains=q) |
             Q(tipo_material__nombre_tipo_material__icontains=q)
         )
+    if marca:
+        materiales = materiales.filter(marca__nom_marca=marca)
+    if tipo:
+        materiales = materiales.filter(tipo_material__nombre_tipo_material=tipo)
+    if categoria:
+        materiales = materiales.filter(categoria__nombre_categoria=categoria)
+
+    marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
+    tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
+
+    # Traemos las categorías desde CategoriaDJ (con stock)
+    categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
 
     carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
@@ -175,7 +195,11 @@ def listar_materiales(request):
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
+        'marcas': marcas,
+        'tipos': tipos,
+        'categorias_stock': categorias_stock,  # aquí van las categorías con stock
     })
+
 
 
 
