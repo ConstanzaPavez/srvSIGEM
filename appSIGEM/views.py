@@ -298,9 +298,9 @@ def detalle_solicitud(request, id):
 @login_required
 def listar_solicitudes(request):
     if request.user.is_staff:
-        solicitudes = Solicitud.objects.all()
+        solicitudes = Solicitud.objects.all().order_by('-fecha_solicitud')
     else:
-        solicitudes = Solicitud.objects.filter(usuario=request.user)
+        solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
 
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {
         'solicitudes': solicitudes
