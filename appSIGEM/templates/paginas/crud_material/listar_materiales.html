@@ -11,10 +11,17 @@
     </div>
 
     <form method="GET" class="mb-4 d-flex">
-        <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre...">
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-search"></i> Buscar
-        </button>
+    <input 
+        type="text" 
+        name="q" 
+        value="{{ request.GET.q|default_if_none:'' }}" 
+        class="form-control me-2" 
+        placeholder="Buscar por nombre, marca, categoría o tipo..."
+        autocomplete="off"
+    >
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i> Buscar
+    </button>
     </form>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">

@@ -22,8 +22,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from io import BytesIO
-
-
+from django.db.models import Q 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -159,13 +158,28 @@ def agregar_material(request):
 #listar materiales
 @login_required
 def listar_materiales(request):
+    q = request.GET.get('q', '').strip()
     materiales = Material.objects.all()
+
+    if q:
+        materiales = materiales.filter(
+            Q(nom_material__icontains=q) |
+            Q(marca__nom_marca__icontains=q) |
+            Q(categoria__nombre_categoria__icontains=q) |
+            Q(tipo_material__nombre_tipo_material__icontains=q)
+        )
+
     carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
+
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
     })
+
+
+
+
 
 def editar_materiales(request, pk):
     material = get_object_or_404(Material, pk=pk)
