@@ -387,7 +387,6 @@ def ver_solicitudes_usuario(request, user_id):
 def reporte_prestamos(request):
     solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario').order_by('-fecha_solicitud')
 
-    # Filtros
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
     usuario_id = request.GET.get('usuario')
@@ -401,14 +400,20 @@ def reporte_prestamos(request):
 
     usuarios = get_user_model().objects.all()
 
-    return render(request, 'paginas/reportes/reporte_prestamos.html', {
+    context = {
         'solicitudes': solicitudes,
         'usuarios': usuarios,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
         'usuario_id': usuario_id,
-    })    
-    
+    }
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Si es AJAX devolvemos solo el fragmento HTML con los resultados
+        return render(request, 'paginas/reportes/_lista_solicitudes.html', context)
+    else:
+        # Vista normal completa
+        return render(request, 'paginas/reportes/reporte_prestamos.html', context)
     
 from django.utils.dateparse import parse_date
 

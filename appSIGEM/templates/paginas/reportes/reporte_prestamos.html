@@ -3,12 +3,12 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Reporte de Préstamos</h2>
-        <a href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-danger">
+        <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-danger">
             Descargar PDF
         </a>
     </div>
 
-    <form method="get" class="row g-3 mb-4">
+    <form id="filtro-form" class="row g-3 mb-4">
         <div class="col-md-3">
             <label>Desde:</label>
             <input type="date" name="inicio" class="form-control" value="{{ fecha_inicio }}">
@@ -31,41 +31,37 @@
         </div>
     </form>
 
-    {% if solicitudes %}
-        {% for solicitud in solicitudes %}
-            <div class="card mb-3">
-                <div class="card-header bg-light">
-                    {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}
-                </div>
-                <div class="card-body">
-                    <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y" }}</p>
-                    <p><strong>Fecha Retiro:</strong> {{ solicitud.fecha_retiro }}</p>
-                    <p><strong>Fecha Devolución Esperada:</strong> {{ solicitud.fecha_devolucion }}</p>
-                    <table class="table table-sm table-bordered mt-2">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Material</th>
-                                <th>Cantidad</th>
-                                <th>Fecha Devolución Real</th>
-                                <th>Estado Ingreso</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in solicitud.items.all %}
-                                <tr>
-                                    <td>{{ item.material.nom_material }}</td>
-                                    <td>{{ item.cantidad }}</td>
-                                    <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
-                                    <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="text-muted">No hay préstamos en el período indicado.</p>
-    {% endif %}
+    <div id="lista-solicitudes">
+        {% include 'paginas/reportes/_lista_solicitudes.html' %}
+    </div>
 </div>
+
+<script>
+document.getElementById('filtro-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData).toString();
+    const url = `${window.location.pathname}?${params}`;
+
+    fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('lista-solicitudes').innerHTML = html;
+
+        // Actualiza la URL sin crear historial nuevo
+        window.history.replaceState({}, '', url);
+
+        // Actualiza el link del PDF con los nuevos filtros
+        document.getElementById('descargar-pdf').href = "{% url 'reporte_prestamos_pdf' %}?" + params;
+    })
+    .catch(err => {
+        console.error('Error al filtrar:', err);
+        alert('Error al cargar los datos. Intenta nuevamente.');
+    });
+});
+</script>
 {% endblock %}
