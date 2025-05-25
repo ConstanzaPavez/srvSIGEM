@@ -380,15 +380,23 @@ def gestionar_devolucion(request, item_id):
 @login_required
 @user_passes_test(is_admin)
 def gestionar_devoluciones(request):
+    # Cargar todas las solicitudes aprobadas con sus ítems
     solicitudes_aprobadas = Solicitud.objects.filter(estado='APR').prefetch_related('items')
 
+    # Filtrar solo las que tienen al menos un ítem no devuelto
     solicitudes_con_pendientes = [
         solicitud for solicitud in solicitudes_aprobadas
         if solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
     ]
 
+    # Ordenar por la fecha de devolución planeada (más próxima primero)
+    solicitudes_ordenadas = sorted(
+        solicitudes_con_pendientes,
+        key=lambda s: s.fecha_devolucion or s.fecha_retiro  # fallback si no tiene fecha_devolucion
+    )
+
     return render(request, 'paginas/devoluciones/gestionar_devoluciones.html', {
-        'solicitudes': solicitudes_con_pendientes
+        'solicitudes': solicitudes_ordenadas
     })
 
 @login_required
