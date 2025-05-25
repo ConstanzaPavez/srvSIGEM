@@ -3,30 +3,44 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-50">
-    <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
-        <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
-        <p class="text-center">Por favor, completa el siguiente formulario para crear una solicitud.</p>
-    <form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
+  <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
+    <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
+    <p class="text-center mb-4">Por favor, completa el siguiente formulario para crear una solicitud.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
 
-    <div class="mb-3">
-        <label for="id_fecha_retiro">Fecha de Retiro:</label>
+      <div class="mb-3">
+        <label for="{{ form.fecha_retiro.id_for_label }}" class="form-label">Fecha de Retiro:</label>
+        <!-- Aquí insertamos el input, pero sin filtros -->
         {{ form.fecha_retiro }}
-        {{ form.fecha_retiro.errors }}
-    </div>
+        {% if form.fecha_retiro.errors %}
+          <div class="text-danger small mt-1">{{ form.fecha_retiro.errors }}</div>
+        {% endif %}
+      </div>
 
-    <div class="mb-3">
-        <label for="id_fecha_devolucion">Fecha de Devolución:</label>
+      <div class="mb-3">
+        <label for="{{ form.fecha_devolucion.id_for_label }}" class="form-label">Fecha de Devolución:</label>
         {{ form.fecha_devolucion }}
-        {{ form.fecha_devolucion.errors }}
-    </div>
+        {% if form.fecha_devolucion.errors %}
+          <div class="text-danger small mt-1">{{ form.fecha_devolucion.errors }}</div>
+        {% endif %}
+      </div>
 
-    <!-- Aquí otros campos del formulario -->
+      <!-- Más campos similares -->
 
-    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+      <button type="submit" class="btn btn-primary w-100">Enviar Solicitud</button>
     </form>
+  </div>
 </div>
-</div>
+
+<script>
+  // JS simple para agregar clase form-control a inputs dentro del form (sin tocar el backend)
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("form input, form select, form textarea").forEach(function(el) {
+      el.classList.add("form-control");
+    });
+  });
+</script>
 
 {% endblock %}
