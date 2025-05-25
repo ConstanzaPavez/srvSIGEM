@@ -73,6 +73,7 @@ urlpatterns = [
 
     path('reporte/prestamos/pdf/', views.exportar_reporte_pdf, name='reporte_prestamos_pdf'),
 
+    path('carrito/quitar/<int:material_id>/', views.quitar_del_carrito, name='quitar_del_carrito'),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

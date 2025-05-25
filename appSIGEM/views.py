@@ -157,10 +157,15 @@ def agregar_material(request):
     return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
 
 #listar materiales
+@login_required
 def listar_materiales(request):
     materiales = Material.objects.all()
-    return render(request, 'paginas/crud_material/listar_materiales.html', {'materiales': materiales})
-
+    carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+    materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
+    return render(request, 'paginas/crud_material/listar_materiales.html', {
+        'materiales': materiales,
+        'materiales_en_carrito': materiales_en_carrito,
+    })
 
 def editar_materiales(request, pk):
     material = get_object_or_404(Material, pk=pk)
@@ -186,8 +191,12 @@ def agregar_al_carrito(request, material_id):
 
     item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)
     if not creado:
-        item.cantidad += 1
-    item.save()
+        # Ya está en el carrito, no agregar más (o mostrar mensaje)
+        messages.warning(request, "Este material ya está en tu carrito.")
+    else:
+        item.cantidad = 1  # Siempre 1
+        item.save()
+
     return redirect('listar_materiales')
 
 def ver_carrito(request):
@@ -204,6 +213,22 @@ def vaciar_carrito(request):
         pass  # No hay carrito aún
 
     return redirect('ver_carrito')  # O a donde quieras redirigir
+
+
+
+
+from django.contrib import messages
+
+@login_required
+def quitar_del_carrito(request, material_id):
+    carrito = Carrito.objects.get(usuario=request.user)
+    try:
+        item = ItemCarrito.objects.get(carrito=carrito, material_id=material_id)
+        item.delete()
+        messages.success(request, "Material eliminado del carrito.")
+    except ItemCarrito.DoesNotExist:
+        messages.error(request, "Material no encontrado en el carrito.")
+    return redirect('listar_materiales')
 
 
 
