@@ -75,7 +75,8 @@ class LoginView(View):
 # Vista del índice
 @login_required
 def index(request):
-    return render(request, 'paginas/inicio/index.html')
+    indices = range(9)  # para 9 slides (0 a 8)
+    return render(request, 'paginas/inicio/index.html', {'indices': indices})
 
 # Vista de logout
 @login_required
