@@ -73,9 +73,9 @@
   </form>
 
   <!-- LISTADO DE MATERIALES -->
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="listado-materiales">
     {% for material in materiales %}
-      <div class="col">
+      <div class="col" id="material-{{ material.id_material }}">
         <div class="card h-100 shadow-sm">
           {% if material.img_material %}
             <img src="{{ material.img_material.url }}" class="card-img-top object-fit-cover" style="height: 200px;">
@@ -87,26 +87,79 @@
             <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
             <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
             <p class="card-text"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
-
-            {% if material.id_material in materiales_en_carrito %}
-              <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="mt-auto">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger w-100">
-                  <i class="bi bi-cart-dash"></i> Quitar del carrito
-                </button>
-              </form>
-            {% else %}
-              <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="mt-auto">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary w-100">
-                  <i class="bi bi-cart-plus"></i> Agregar al carrito
-                </button>
-              </form>
-            {% endif %}
+            <div class="btn-carrito-container mt-auto">
+              {% if material.id_material in materiales_en_carrito %}
+                <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="bi bi-cart-dash"></i> Quitar del carrito
+                  </button>
+                </form>
+              {% else %}
+                <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                  </button>
+                </form>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     {% endfor %}
   </div>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.addEventListener('submit', function(event) {
+    const form = event.target;
+    if (form.classList.contains('agregar-carrito') || form.classList.contains('quitar-carrito')) {
+      event.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: new FormData(form)
+      })
+      .then(response => response.json())
+      .then(data => {
+        const contBoton = form.closest('.btn-carrito-container');
+        if (data.estado === 'agregado') {
+          contBoton.innerHTML = `
+            <form action="${data.url_quitar}" method="post" class="quitar-carrito">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${form.querySelector('[name=csrfmiddlewaretoken]').value}">
+              <button type="submit" class="btn btn-danger w-100">
+                <i class="bi bi-cart-dash"></i> Quitar del carrito
+              </button>
+            </form>
+          `;
+        } else if (data.estado === 'quitado') {
+          contBoton.innerHTML = `
+            <form action="${data.url_agregar}" method="post" class="agregar-carrito">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${form.querySelector('[name=csrfmiddlewaretoken]').value}">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-cart-plus"></i> Agregar al carrito
+              </button>
+            </form>
+          `;
+        } else if (data.estado === 'error') {
+          alert(data.mensaje);
+        }
+      })
+      .catch(() => alert('Error en la petición.'))
+      .finally(() => btn.disabled = false);
+    }
+  });
+});
+
+</script>
+
 {% endblock %}

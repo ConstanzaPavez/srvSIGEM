@@ -223,19 +223,35 @@ def eliminar_materiales(request, pk):
         return redirect('listar_materiales')
     return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})
 
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.urls import reverse
+
+
+
+@login_required
 def agregar_al_carrito(request, material_id):
-    material = get_object_or_404(Material, pk=material_id)
-    carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+    if request.method == 'POST':
+        material = get_object_or_404(Material, pk=material_id)
+        carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+        item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)
+        if not creado:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya está en tu carrito.'})
+            messages.warning(request, "Este material ya está en tu carrito.")
+        else:
+            item.cantidad = 1
+            item.save()
 
-    item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)
-    if not creado:
-        # Ya está en el carrito, no agregar más (o mostrar mensaje)
-        messages.warning(request, "Este material ya está en tu carrito.")
-    else:
-        item.cantidad = 1  # Siempre 1
-        item.save()
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'estado': 'agregado',
+                'url_quitar': reverse('quitar_del_carrito', args=[material_id])
+            })
 
-    return redirect('listar_materiales')
+        return redirect('listar_materiales')
+
 
 def ver_carrito(request):
     carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
@@ -256,17 +272,32 @@ def vaciar_carrito(request):
 
 
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+
+from django.urls import reverse
 
 @login_required
 def quitar_del_carrito(request, material_id):
-    carrito = Carrito.objects.get(usuario=request.user)
-    try:
-        item = ItemCarrito.objects.get(carrito=carrito, material_id=material_id)
-        item.delete()
-        messages.success(request, "Material eliminado del carrito.")
-    except ItemCarrito.DoesNotExist:
-        messages.error(request, "Material no encontrado en el carrito.")
-    return redirect('listar_materiales')
+    if request.method == 'POST':
+        carrito = Carrito.objects.get(usuario=request.user)
+        try:
+            item = ItemCarrito.objects.get(carrito=carrito, material_id=material_id)
+            item.delete()
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'estado': 'quitado',
+                    'url_agregar': reverse('agregar_al_carrito', args=[material_id])
+                })
+            messages.success(request, "Material eliminado del carrito.")
+        except ItemCarrito.DoesNotExist:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'estado': 'error', 'mensaje': 'Material no encontrado en el carrito.'})
+            messages.error(request, "Material no encontrado en el carrito.")
+        return redirect('listar_materiales')
+
+
 
 
 
