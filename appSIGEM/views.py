@@ -428,9 +428,9 @@ def control_admin_solicitud(request):
         messages.error(request, "No tienes permiso para acceder a esta página.")
         return redirect('listar_solicitudes')
 
-    estado = request.GET.get('estado')
+    estado = request.GET.get('estado', '').upper()
     
-    estados_validos = ['Pend', 'APR', 'PAR', 'RECH']
+    estados_validos = ['PEND', 'APR', 'PAR', 'RECH', 'FIN']
 
     if estado in estados_validos:
         solicitudes = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
@@ -441,6 +441,7 @@ def control_admin_solicitud(request):
         'solicitudes': solicitudes,
         'estado_filtrado': estado
     })
+
 
 
 
@@ -519,7 +520,8 @@ def ver_solicitudes_usuario(request, user_id):
 @login_required
 @user_passes_test(is_admin)
 def reporte_prestamos(request):
-    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario').order_by('-fecha_solicitud')
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN']).select_related('usuario').prefetch_related('items').order_by('-fecha_solicitud')
+
 
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
@@ -554,7 +556,8 @@ from django.utils.dateparse import parse_date
 @login_required
 @user_passes_test(is_admin)
 def exportar_reporte_pdf(request):
-    solicitudes = Solicitud.objects.filter(estado='APR').prefetch_related('items', 'usuario').order_by('-fecha_solicitud')
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN']).select_related('usuario').prefetch_related('items').order_by('-fecha_solicitud')
+
 
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
