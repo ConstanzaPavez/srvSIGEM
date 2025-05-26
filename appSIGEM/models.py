@@ -101,11 +101,13 @@ class Solicitud(models.Model):
         ('APR', 'Aprobada'),
         ('PAR', 'Aprobada Parcialmente'),
         ('RECH', 'Rechazada'),
+        ('FIN', 'cerrado')
     ]
 
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=5, choices=ESTADOS, default='PEND')
+    estado_anterior = models.CharField(max_length=5, choices=ESTADOS[:-1], blank=True, null=True)
     comentario_respuesta = models.TextField(blank=True, null=True)
     fecha_retiro = models.DateField(null=True, blank=True)
     fecha_devolucion = models.DateField(null=True, blank=True)

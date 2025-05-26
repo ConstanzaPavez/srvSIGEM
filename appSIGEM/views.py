@@ -2,13 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views import View
-from .forms import LoginForm 
 from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
 from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud
-from .models import TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
@@ -17,12 +15,13 @@ from .forms import DevolverItemForm
 from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.timezone import now
-from .models import Solicitud
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from io import BytesIO
 from django.db.models import Q 
+from django.urls import reverse
+from django.http import JsonResponse
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -190,17 +189,23 @@ def listar_materiales(request):
     # Traemos las categorías desde CategoriaDJ (con stock)
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
 
-    carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
+    carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
+
+    # Identificar materiales que están en solicitudes aprobadas y no han sido devueltos
+    materiales_no_disponibles = ItemSolicitud.objects.filter(
+        solicitud__estado='APR',
+        fecha_devolucion_real__isnull=True
+    ).values_list('material__id_material', flat=True)
 
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
+        'materiales_no_disponibles': list(materiales_no_disponibles),  # añadido
         'marcas': marcas,
         'tipos': tipos,
-        'categorias_stock': categorias_stock,  # aquí van las categorías con stock
+        'categorias_stock': categorias_stock,
     })
-
 
 
 
@@ -235,8 +240,23 @@ from django.urls import reverse
 def agregar_al_carrito(request, material_id):
     if request.method == 'POST':
         material = get_object_or_404(Material, pk=material_id)
+
+        # Verificar si el material está actualmente solicitado y no devuelto
+        esta_solicitado = ItemSolicitud.objects.filter(
+            material=material,
+            solicitud__estado='APR',
+            fecha_devolucion_real__isnull=True
+        ).exists()
+
+        if esta_solicitado:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.'})
+            messages.warning(request, "Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.")
+            return redirect('listar_materiales')
+
         carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
         item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)
+
         if not creado:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya está en tu carrito.'})
@@ -433,10 +453,21 @@ def gestionar_devolucion(request, item_id):
         form = DevolverItemForm(request.POST, instance=item)
         if form.is_valid():
             item_devuelto = form.save()
+
             # Sumar al stock de la categoría correspondiente
             categoria = item_devuelto.material.categoria
             categoria.stock += item_devuelto.cantidad
             categoria.save()
+
+            # Verificar si todos los ítems están devueltos
+            solicitud = item_devuelto.solicitud
+            hay_no_devuelto = solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
+
+
+            if not hay_no_devuelto:
+                # Todos devueltos, marcar solicitud como finalizada
+                marcar_solicitud_finalizada(solicitud)
+
             messages.success(request, "Devolución registrada correctamente.")
             return redirect('gestionar_devoluciones')
     else:
@@ -553,3 +584,9 @@ def exportar_reporte_pdf(request):
 
     pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
     return response
+
+def marcar_solicitud_finalizada(solicitud):
+    if solicitud.estado != 'FIN':
+        solicitud.estado_anterior = solicitud.estado
+        solicitud.estado = 'FIN'
+        solicitud.save()
