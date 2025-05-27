@@ -12,12 +12,12 @@
                     <div class="row no-gutters">
                         <div class="col-md-4">
                             <!-- Imagen de perfil -->
-                            {% if user.imagen_perfil %}
-                                <img src="{{ user.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
-                            {% else %}
+                            {% if user.perfil.imagen_perfil %}
+                                <img src="{{ user.perfil.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
+                                    {% else %}
                                 <img src="{% static 'paginas/img/logo.png' %}" class="card-img" alt="Imagen por defecto">
                             {% endif %}
-                        </div>
+                    </div>
                         <div class="col-md-8">
                             <div class="card-body">
                                 <!-- Información del usuario -->
