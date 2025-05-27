@@ -2,9 +2,9 @@
 {% load static %}
 {% block title %} Perfil de Usuario {% endblock %}
 {% block content %}
-    <div class="container">
-        <h1 class="text-center mt-5">Tu Perfil </h1>
-        <hr>
+<div class="container">
+    <h1 class="text-center mt-5">Tu Perfil</h1>
+    <hr>
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -14,10 +14,10 @@
                             <!-- Imagen de perfil -->
                             {% if user.perfil.imagen_perfil %}
                                 <img src="{{ user.perfil.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
-                                    {% else %}
+                            {% else %}
                                 <img src="{% static 'paginas/img/logo.png' %}" class="card-img" alt="Imagen por defecto">
                             {% endif %}
-                    </div>
+                        </div>
                         <div class="col-md-8">
                             <div class="card-body">
                                 <!-- Información del usuario -->
@@ -30,17 +30,17 @@
                                         Usuario
                                     {% endif %}
                                 </p>
-                                <a href="{% url 'index' %}" class="btn btn-primary">Volver al inicio</a>
+
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
     </div>
+</div>
 
-    <!-- Scripts de Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<!-- Scripts de Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

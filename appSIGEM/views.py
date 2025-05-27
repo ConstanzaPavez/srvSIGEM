@@ -392,11 +392,10 @@ def crear_solicitud(request):
     else:
         form = SolicitudForm()
     
-    return render(request, 'paginas/solicitudes/crear_solicitud.html', {
-        'form': form
+    return render(request, 'paginas/solicitudes/crear_solicitud.html', {'form': form
     })
 
-    
+   
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    

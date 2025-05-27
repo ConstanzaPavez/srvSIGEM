@@ -6,6 +6,7 @@
   <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
     <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
     <p class="text-center mb-4">Por favor, completa el siguiente formulario para crear una solicitud.</p>
+
     <form id="form-solicitud" method="post" novalidate>
       {% csrf_token %}
       {{ form.non_field_errors }}
@@ -26,7 +27,7 @@
         {% endif %}
       </div>
 
-      <!-- Otros campos aquí -->
+      <!-- Agrega aquí otros campos si hay -->
 
       <button type="submit" class="btn btn-primary w-100">Enviar Solicitud</button>
     </form>
@@ -36,10 +37,10 @@
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- JS: clase bootstrap y validación -->
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Agregar clase Bootstrap a todos los campos del formulario
+    // Agregar clase form-control a todos los campos
     document.querySelectorAll("form input, form select, form textarea").forEach(function (el) {
       el.classList.add("form-control");
     });
@@ -49,7 +50,6 @@
 
     form.addEventListener("submit", function (e) {
       const fechaRetiro = document.getElementById("id_fecha_retiro");
-
       if (!fechaRetiro.value.trim()) {
         e.preventDefault();
         Swal.fire({
