@@ -160,6 +160,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Material, CategoriaDj  # importa tu modelo categoria
 
+
 @login_required
 def listar_materiales(request):
     q = request.GET.get('q', '').strip()
@@ -168,6 +169,12 @@ def listar_materiales(request):
     categoria = request.GET.get('categoria', '').strip()
 
     materiales = Material.objects.all()
+
+    # Excluir materiales que tengan ítems devueltos con estado 'DAN'
+    materiales = materiales.exclude(
+        itemsolicitud__estado_ingreso='DAN',
+        itemsolicitud__fecha_devolucion_real__isnull=False
+    )
 
     if q:
         materiales = materiales.filter(
@@ -186,13 +193,11 @@ def listar_materiales(request):
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
     tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
 
-    # Traemos las categorías desde CategoriaDJ (con stock)
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
 
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
 
-    # Identificar materiales que están en solicitudes aprobadas y no han sido devueltos
     materiales_no_disponibles = ItemSolicitud.objects.filter(
         solicitud__estado='APR',
         fecha_devolucion_real__isnull=True
@@ -201,13 +206,45 @@ def listar_materiales(request):
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
-        'materiales_no_disponibles': list(materiales_no_disponibles),  # añadido
+        'materiales_no_disponibles': list(materiales_no_disponibles),
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
     })
 
 
+
+
+@login_required
+@user_passes_test(is_admin)
+def listar_materiales_danados(request):
+    # Traer todos los items con estado_ingreso 'DAN'
+    items_danados = ItemSolicitud.objects.filter(estado_ingreso='DAN', fecha_devolucion_real__isnull=False)
+
+    return render(request, 'paginas/panel_admin/materiales_danados.html', {
+        'items_danados': items_danados
+    })
+
+
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def reparar_material(request, item_id):
+    item = get_object_or_404(ItemSolicitud, id=item_id, estado_ingreso='DAN')
+    
+    # Cambiar estado_ingreso a 'UTI' (o 'SIN' si prefieres)
+    item.estado_ingreso = 'UTI'
+    item.save()
+
+    # Sumar stock a la categoría
+    categoria = item.material.categoria
+    categoria.stock += item.cantidad
+    categoria.save()
+
+    messages.success(request, f"Material '{item.material.nom_material}' devuelto a inventario correctamente.")
+    return redirect('listar_materiales_danados')
 
 
 

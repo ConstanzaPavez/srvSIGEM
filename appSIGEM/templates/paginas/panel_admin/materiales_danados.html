@@ -1,0 +1,37 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+<div class="container my-5">
+  <h2>Materiales Dañados</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Material</th>
+        <th>Categoría</th>
+        <th>Cantidad</th>
+        <th>Observación</th>
+        <th>Estado Ingreso</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items_danados %}
+      <tr>
+        <td>{{ item.material.nom_material }}</td>
+        <td>{{ item.material.categoria.nombre_categoria }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>{{ item.observacion|default:"-" }}</td>
+        <td>{{ item.get_estado_ingreso_display }}</td>
+        <td>
+          <form method="post" action="{% url 'reparar_material' item.id %}">
+            {% csrf_token %}
+            <button class="btn btn-success btn-sm" type="submit">Devolver a Inventario</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center">No hay materiales dañados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -75,6 +75,12 @@ urlpatterns = [
 
     path('carrito/quitar/<int:material_id>/', views.quitar_del_carrito, name='quitar_del_carrito'),
     
+    path('panel-admin/materiales-danados/', views.listar_materiales_danados, name='listar_materiales_danados'),
+
+    path('panel-admin/materiales-danados/reparar/<int:item_id>/', views.reparar_material, name='reparar_material'),
+
+
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
