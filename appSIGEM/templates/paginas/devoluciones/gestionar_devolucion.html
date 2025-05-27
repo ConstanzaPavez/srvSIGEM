@@ -48,16 +48,37 @@
 </div>
 
 <script>
-  (() => {
-    'use strict'
-    const form = document.getElementById('devolucionForm');
-    form.addEventListener('submit', event => {
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-    }, false);
-  })();
+(() => {
+  'use strict'
+  const form = document.getElementById('devolucionForm');
+  const estadoIngreso = form.querySelector('select[name="estado_ingreso"]');
+  const observacion = form.querySelector('textarea[name="observacion"]');
+
+  function checkObservacionRequired() {
+    if (estadoIngreso.value === 'DAN') {
+      observacion.setAttribute('required', 'required');
+    } else {
+      observacion.removeAttribute('required');
+      observacion.setCustomValidity('');
+    }
+  }
+
+  estadoIngreso.addEventListener('change', () => {
+    checkObservacionRequired();
+  });
+
+  form.addEventListener('submit', event => {
+    checkObservacionRequired();
+
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+
+  // Inicializa el estado correcto al cargar la página
+  checkObservacionRequired();
+})();
 </script>
 {% endblock %}

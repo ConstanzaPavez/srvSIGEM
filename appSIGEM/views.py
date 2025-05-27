@@ -450,23 +450,23 @@ def control_admin_solicitud(request):
 @user_passes_test(is_admin)
 def gestionar_devolucion(request, item_id):
     item = get_object_or_404(ItemSolicitud, id=item_id)
+    
     if request.method == 'POST':
         form = DevolverItemForm(request.POST, instance=item)
         if form.is_valid():
             item_devuelto = form.save()
 
-            # Sumar al stock de la categoría correspondiente
-            categoria = item_devuelto.material.categoria
-            categoria.stock += item_devuelto.cantidad
-            categoria.save()
+            # Sumar al stock solo si NO está dañado
+            if item_devuelto.estado_ingreso in ['SIN', 'MIN', 'UTI']:
+                categoria = item_devuelto.material.categoria
+                categoria.stock += item_devuelto.cantidad
+                categoria.save()
 
             # Verificar si todos los ítems están devueltos
             solicitud = item_devuelto.solicitud
             hay_no_devuelto = solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
 
-
             if not hay_no_devuelto:
-                # Todos devueltos, marcar solicitud como finalizada
                 marcar_solicitud_finalizada(solicitud)
 
             messages.success(request, "Devolución registrada correctamente.")
@@ -478,7 +478,8 @@ def gestionar_devolucion(request, item_id):
         'form': form,
         'item': item
     })
-
+    
+    
 @login_required
 @user_passes_test(is_admin)
 def gestionar_devoluciones(request):

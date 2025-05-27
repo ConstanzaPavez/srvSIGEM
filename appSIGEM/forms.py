@@ -138,8 +138,16 @@ class DevolverItemForm(forms.ModelForm):
         fields = ['estado_ingreso', 'fecha_devolucion_real', 'observacion']
         widgets = {
             'fecha_devolucion_real': forms.DateInput(attrs={'type': 'date'}),
-            'observacion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Solo si el material presenta daños'}),
+            'observacion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Opcional a menos que este dañado.'}),
         }
         help_texts = {
             'observacion': 'Este campo es opcional. Úsalo para detallar el daño si corresponde.',
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        estado = cleaned_data.get('estado_ingreso')
+        observacion = cleaned_data.get('observacion')
+
+        if estado == 'DAN' and not observacion:
+            self.add_error('observacion', 'Debes ingresar una observación si el material está dañado.')
