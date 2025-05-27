@@ -134,10 +134,3 @@ class ItemSolicitud(models.Model):
 
     def __str__(self):
         return f'{self.material.nom_material} x {self.cantidad}'
-
-class Perfil(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    imagen_perfil = models.ImageField(upload_to='perfiles/', default='perfiles/default.jpg')
-
-    def __str__(self):
-        return f'Perfil de {self.user.username}'
