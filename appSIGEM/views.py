@@ -112,45 +112,53 @@ def perfil_usuario(request):
     # Se puede acceder directamente a la imagen de perfil desde el modelo User si es que la has añadido allí
     user = request.user  # Obtén el usuario actualmente autenticado
     return render(request, 'paginas/inicio/perfil.html', {'user': user})
-
-#agregar categoria
+# Agregar categoría
 def agregar_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('agregar_categoria')  # cambiar para redirecionar a otra pagina
+            messages.success(request, 'Categoría agregada exitosamente.')
+            return redirect('agregar_categoria')  # Puedes redirigir a otra vista si prefieres
     else:
         form = CategoriaForm()
     return render(request, 'paginas/agregar_cosas/agregar_categoria.html', {'form': form})
 
+
+# Agregar tipo de material
 def agregar_tipo_material(request):
     if request.method == 'POST':
         form = TipoMaterialForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('agregar_tipo_material')  # puedes cambiar la redirección
+            messages.success(request, 'Tipo de material agregado exitosamente.')
+            return redirect('agregar_tipo_material')
     else:
         form = TipoMaterialForm()
     return render(request, 'paginas/agregar_cosas/agregar_tipo_material.html', {'form': form})
 
+
+# Agregar marca
 def agregar_marca(request):
     if request.method == 'POST':
         form = MarcaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('agregar_marca')  # redirige a la misma página o a otra
+            messages.success(request, 'Marca agregada exitosamente.')
+            return redirect('agregar_marca')
     else:
         form = MarcaForm()
     return render(request, 'paginas/agregar_cosas/agregar_marca.html', {'form': form})
 
-#agregar material
+
+# Agregar material
 def agregar_material(request):
     if request.method == 'POST':
         form = MaterialForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('agregar_material')  # o redirige a otra página si lo prefieres
+            messages.success(request, 'Material agregado exitosamente.')
+            return redirect('agregar_material')
     else:
         form = MaterialForm()
     return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})

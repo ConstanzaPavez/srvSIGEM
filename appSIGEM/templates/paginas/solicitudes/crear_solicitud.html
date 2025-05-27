@@ -6,13 +6,12 @@
   <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
     <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
     <p class="text-center mb-4">Por favor, completa el siguiente formulario para crear una solicitud.</p>
-    <form method="post" novalidate>
+    <form id="form-solicitud" method="post" novalidate>
       {% csrf_token %}
       {{ form.non_field_errors }}
 
       <div class="mb-3">
         <label for="{{ form.fecha_retiro.id_for_label }}" class="form-label">Fecha de Retiro:</label>
-        <!-- Aquí insertamos el input, pero sin filtros -->
         {{ form.fecha_retiro }}
         {% if form.fecha_retiro.errors %}
           <div class="text-danger small mt-1">{{ form.fecha_retiro.errors }}</div>
@@ -27,18 +26,39 @@
         {% endif %}
       </div>
 
-      <!-- Más campos similares -->
+      <!-- Otros campos aquí -->
 
       <button type="submit" class="btn btn-primary w-100">Enviar Solicitud</button>
     </form>
   </div>
 </div>
 
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JS: clase bootstrap y validación -->
 <script>
-  // JS simple para agregar clase form-control a inputs dentro del form (sin tocar el backend)
   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll("form input, form select, form textarea").forEach(function(el) {
+    // Agregar clase Bootstrap a todos los campos del formulario
+    document.querySelectorAll("form input, form select, form textarea").forEach(function (el) {
       el.classList.add("form-control");
+    });
+
+    // Validar que no esté vacía la fecha de retiro
+    const form = document.getElementById("form-solicitud");
+
+    form.addEventListener("submit", function (e) {
+      const fechaRetiro = document.getElementById("id_fecha_retiro");
+
+      if (!fechaRetiro.value.trim()) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campo obligatorio',
+          text: 'Debes ingresar una fecha de retiro para enviar la solicitud.',
+          confirmButtonText: 'Entendido'
+        });
+      }
     });
   });
 </script>

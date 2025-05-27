@@ -37,10 +37,33 @@
       <a href="{% url 'vaciar_carrito' %}" class="btn btn-outline-danger d-flex align-items-center gap-2">
         <i class="bi bi-trash-fill"></i> Vaciar Carrito
       </a>
-      <a href="{% url 'crear_solicitud' %}" class="btn btn-primary d-flex align-items-center gap-2">
+      <a href="{% url 'crear_solicitud' %}" class="btn btn-primary d-flex align-items-center gap-2" id="btn-crear-solicitud">
         <i class="bi bi-check2-circle"></i> Crear Solicitud
       </a>
     </div>
+
   </div>
 </div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script para alerta si carrito está vacío -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const btnCrear = document.getElementById('btn-crear-solicitud');
+
+    {% if not carrito.items.all %}
+      btnCrear.addEventListener('click', function (e) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Carrito vacío',
+          text: 'No puedes enviar una solicitud sin materiales en el carrito.',
+          confirmButtonText: 'Entendido'
+        });
+      });
+    {% endif %}
+  });
+</script>
 {% endblock %}
