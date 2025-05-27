@@ -120,6 +120,7 @@ class ItemSolicitud(models.Model):
     solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.CASCADE)
     material = models.ForeignKey('Material', on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
+    observacion = models.TextField(blank=True, null=True)
 
     ESTADOS_INGRESO = [
         ('SIN', 'Sin daño'),

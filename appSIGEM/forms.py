@@ -135,7 +135,11 @@ class SolicitudForm(forms.ModelForm):
 class DevolverItemForm(forms.ModelForm):
     class Meta:
         model = ItemSolicitud
-        fields = ['estado_ingreso', 'fecha_devolucion_real']
+        fields = ['estado_ingreso', 'fecha_devolucion_real', 'observacion']
         widgets = {
             'fecha_devolucion_real': forms.DateInput(attrs={'type': 'date'}),
+            'observacion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Solo si el material presenta daños'}),
+        }
+        help_texts = {
+            'observacion': 'Este campo es opcional. Úsalo para detallar el daño si corresponde.',
         }
