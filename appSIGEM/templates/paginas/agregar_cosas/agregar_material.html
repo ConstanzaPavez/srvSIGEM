@@ -21,6 +21,20 @@
         </div>
     </div>
 </div>
+{% if messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% for message in messages %}
+                Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ message }}',
+                confirmButtonText: 'Aceptar'
+                });
+            {% endfor %}
+        });
+    </script>
+{% endif %}
 {% endblock %}
 
 
