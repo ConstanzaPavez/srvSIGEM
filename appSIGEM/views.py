@@ -90,11 +90,13 @@ def crear_usuario(request):
     if request.method == 'POST':
         form = CrearUsuarioForm(request.POST, request.FILES)  # Asegúrate de que el archivo se reciba también
         if form.is_valid():
-            user = form.save()  # Guarda el usuario con la imagen incluida si está en el modelo User
-
-            # Mensaje de éxito
-            messages.success(request, 'El usuario ha sido creado correctamente.')
-            return redirect('admin_panel')  # Redirige al panel de administración
+            user = form.save(commit=False)
+            user.is_staff = True  # o lo que necesites
+            user.save()
+            messages.success(request, "Usuario creado exitosamente.")
+            return redirect('crear_usuario')  # redirige para evitar reenvío doble
+        else:
+            messages.error(request, "Hubo un error al crear el usuario. Revisa los campos.")
     else:
         form = CrearUsuarioForm()
 
