@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -138,3 +139,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sigemcontacto2025@gmail.com'
 EMAIL_HOST_PASSWORD = 'ytzn ehmi lqas lpje'  # Usa una clave de aplicación si es Gmail
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+

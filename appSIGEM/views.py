@@ -23,6 +23,9 @@ from io import BytesIO
 from django.db.models import Q 
 from django.urls import reverse
 from django.http import JsonResponse
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -642,13 +645,24 @@ def marcar_solicitud_finalizada(solicitud):
         solicitud.estado = 'FIN'
         solicitud.save()
 
+
 @login_required
 def editar_perfil(request):
     if request.method == 'POST':
-        form = EditarPerfilForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('perfil')  # o la vista que quieras después de editar
+        perfil_form = EditarPerfilForm(request.POST, instance=request.user)
+        password_form = PasswordChangeForm(user=request.user, data=request.POST)
+
+        if perfil_form.is_valid() and password_form.is_valid():
+            perfil_form.save()
+            password_form.save()
+            update_session_auth_hash(request, password_form.user)  # Mantiene la sesión activa
+            messages.success(request, '¡Tu perfil y contraseña se han actualizado correctamente!')
+            return redirect('index')  # CORREGIDO: antes decía 'inicio'
     else:
-        form = EditarPerfilForm(instance=request.user)
-    return render(request, 'paginas/inicio/editar_perfil.html', {'form': form})
+        perfil_form = EditarPerfilForm(instance=request.user)
+        password_form = PasswordChangeForm(user=request.user)
+
+    return render(request, 'paginas/inicio/editar_perfil.html', {
+        'perfil_form': perfil_form,
+        'password_form': password_form,
+    })

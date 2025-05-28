@@ -9,7 +9,7 @@ from .models import ItemSolicitud
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LoginView
-
+from django.contrib.auth.forms import PasswordChangeForm
 
 # Formulario de Login
 class LoginForm(AuthenticationForm):
