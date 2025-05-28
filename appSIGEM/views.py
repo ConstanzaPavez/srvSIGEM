@@ -26,6 +26,9 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from datetime import date
+
+
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -403,7 +406,7 @@ def crear_solicitud(request):
         'form': form,
         'hoy': hoy.strftime('%d/%m/%Y')  # formato legible
     })
-   
+
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    
