@@ -4,18 +4,43 @@
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center min-vh-50">
   <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
+    <div class="d-flex justify-content-between mb-3">
+      <div><strong>Usuario:</strong> {{ request.user.username }}</div>
+      <div><strong>Fecha de creación:</strong> {{ hoy }}</div>
+    </div>
+
     <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
     <p class="text-center">Por favor, completa el siguiente formulario para crear una solicitud.</p>
 
+    <!-- 🧾 Mostrar materiales en el carrito en una tabla -->
+    {% if items_carrito %}
+      <h5 class="mb-3 text-secondary">Materiales en tu carrito:</h5>
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Material</th>
+              <th class="text-center" style="width: 120px;">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items_carrito %}
+              <tr>
+                <td>{{ item.material.nom_material }}</td>
+                <td class="text-center">{{ item.cantidad }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted text-center mb-4">No hay materiales en tu carrito.</p>
+    {% endif %}
+
+    <!-- 📋 Formulario para la solicitud -->
     <form method="post">
       {% csrf_token %}
       {{ form.non_field_errors }}
-
-      <!-- Mostrar fecha actual (no editable) -->
-      <div class="mb-3">
-        <label class="form-label">Fecha de creación:</label>
-        <input type="text" class="form-control" value="{{ hoy }}" readonly>
-      </div>
 
       <div class="mb-3">
         <label for="id_fecha_retiro" class="form-label">Fecha de Retiro:</label>
@@ -29,7 +54,7 @@
         {{ form.fecha_devolucion.errors }}
       </div>
 
-      <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+      <button type="submit" class="btn btn-primary w-100">Enviar Solicitud</button>
     </form>
 
     <div class="mt-3 text-end">

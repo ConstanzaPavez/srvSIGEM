@@ -26,7 +26,6 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from datetime import date
 
 
 
@@ -377,8 +376,12 @@ def quitar_del_carrito(request, material_id):
 
 
 @login_required
+@login_required
 def crear_solicitud(request):
     hoy = now().date()  # obtener fecha actual
+
+    # ✅ Asegurarse de obtener el carrito desde el inicio
+    carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
 
     if request.method == 'POST':
         form = SolicitudForm(request.POST)
@@ -388,7 +391,6 @@ def crear_solicitud(request):
             solicitud.save()
 
             # Copiar ítems del carrito
-            carrito = Carrito.objects.get(usuario=request.user)
             for item_carrito in carrito.items.all():
                 ItemSolicitud.objects.create(
                     solicitud=solicitud,
@@ -401,12 +403,15 @@ def crear_solicitud(request):
             return redirect('index')
     else:
         form = SolicitudForm()
-    
+
     return render(request, 'paginas/solicitudes/crear_solicitud.html', {
         'form': form,
-        'hoy': hoy.strftime('%d/%m/%Y')  # formato legible
+        'hoy': hoy,
+        'carrito': carrito, 
+        'items_carrito': carrito.items.all()
     })
 
+    
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    
