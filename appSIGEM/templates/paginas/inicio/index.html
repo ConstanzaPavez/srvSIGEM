@@ -249,4 +249,19 @@
 </div>
 
 
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for message in messages %}
+      Swal.fire({
+        icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+        title: '{{ message.tags|capfirst }}',
+        text: '{{ message }}',
+        confirmButtonText: 'Aceptar'
+      });
+    {% endfor %}
+  });
+</script>
+{% endif %}
 {% endblock %}

@@ -390,7 +390,7 @@ def crear_solicitud(request):
             carrito.items.all().delete()
 
             messages.success(request, "Solicitud enviada correctamente.")
-            return redirect('listar_solicitudes')
+            return redirect('index')
     else:
         form = SolicitudForm()
     
