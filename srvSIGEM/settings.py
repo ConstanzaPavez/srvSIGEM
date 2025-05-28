@@ -105,7 +105,7 @@ LOGIN_REDIRECT_URL = 'index'
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
