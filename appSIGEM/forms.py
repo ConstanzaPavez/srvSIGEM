@@ -116,11 +116,12 @@ class GestionarSolicitudForm(forms.ModelForm):
 class SolicitudForm(forms.ModelForm):
     class Meta:
         model = Solicitud
-        fields = ['fecha_retiro', 'fecha_devolucion']  # agrega otros campos que tengas
+        fields = ['fecha_retiro', 'fecha_devolucion']
         widgets = {
-            'fecha_retiro': forms.DateInput(attrs={'type': 'date'}),
-            'fecha_devolucion': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_retiro': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha_devolucion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+
         
     # Opcional: validación para que fecha_devolucion > fecha_retiro
     def clean(self):

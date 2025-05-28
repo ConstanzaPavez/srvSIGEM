@@ -375,6 +375,8 @@ def quitar_del_carrito(request, material_id):
 
 @login_required
 def crear_solicitud(request):
+    hoy = now().date()  # obtener fecha actual
+
     if request.method == 'POST':
         form = SolicitudForm(request.POST)
         if form.is_valid():
@@ -382,7 +384,7 @@ def crear_solicitud(request):
             solicitud.usuario = request.user
             solicitud.save()
 
-            # Copiar los ítems del carrito a solicitud
+            # Copiar ítems del carrito
             carrito = Carrito.objects.get(usuario=request.user)
             for item_carrito in carrito.items.all():
                 ItemSolicitud.objects.create(
@@ -390,7 +392,6 @@ def crear_solicitud(request):
                     material=item_carrito.material,
                     cantidad=item_carrito.cantidad
                 )
-            # Opcional: vaciar el carrito
             carrito.items.all().delete()
 
             messages.success(request, "Solicitud enviada correctamente.")
@@ -398,9 +399,10 @@ def crear_solicitud(request):
     else:
         form = SolicitudForm()
     
-    return render(request, 'paginas/solicitudes/crear_solicitud.html', {'form': form
+    return render(request, 'paginas/solicitudes/crear_solicitud.html', {
+        'form': form,
+        'hoy': hoy.strftime('%d/%m/%Y')  # formato legible
     })
-
    
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')

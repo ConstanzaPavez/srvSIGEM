@@ -10,7 +10,7 @@
         <div class="accordion-item mb-3">
           <h2 class="accordion-header" id="heading{{ solicitud.id }}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false" aria-controls="collapse{{ solicitud.id }}">
-              Solicitud - Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }} - Estado: {{ solicitud.get_estado_display }}
+              Solicitud - Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i " }} - Estado: {{ solicitud.get_estado_display }}
 
             </button>
           </h2>
