@@ -4,6 +4,7 @@ from appSIGEM import views  # Asegúrate de que la importación esté correcta
 from django.conf.urls.static import static
 from django.conf import settings
 from appSIGEM.views import gestionar_solicitud
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -78,8 +79,16 @@ urlpatterns = [
     path('panel-admin/materiales-danados/', views.listar_materiales_danados, name='listar_materiales_danados'),
 
     path('panel-admin/materiales-danados/reparar/<int:item_id>/', views.reparar_material, name='reparar_material'),
+    
+    path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
 
-
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+     
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Editar Perfil</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <h4>Datos personales</h4>
+        {{ perfil_form.as_p }}
+
+        <hr>
+
+        <h4>Cambiar contraseña</h4>
+        {{ password_form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+</div>
+{% endblock %}

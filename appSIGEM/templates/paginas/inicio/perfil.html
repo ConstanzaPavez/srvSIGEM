@@ -2,6 +2,7 @@
 {% load static %}
 {% block title %} Perfil de Usuario {% endblock %}
 {% block content %}
+
 <div class="container">
     <h1 class="text-center mt-5">Tu Perfil</h1>
     <hr>
@@ -12,11 +13,13 @@
                     <div class="row no-gutters">
                         <div class="col-md-4">
                             <!-- Imagen de perfil -->
-                            {% if user.perfil.imagen_perfil %}
-                                <img src="{{ user.perfil.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
-                            {% else %}
-                                <img src="{% static 'paginas/img/logo.png' %}" class="card-img" alt="Imagen por defecto">
-                            {% endif %}
+                            {% with user.perfilusuario_set.first as perfil %}
+                                {% if perfil and perfil.imagen_perfil %}
+                                    <img src="{{ perfil.imagen_perfil.url }}" class="card-img" alt="Imagen de perfil">
+                                {% else %}
+                                    <img src="{% static 'paginas/img/logo.png' %}" class="card-img" alt="Imagen por defecto">
+                                {% endif %}
+                            {% endwith %}
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
@@ -30,8 +33,11 @@
                                         Usuario
                                     {% endif %}
                                 </p>
-
-
+                                
+                                <!-- Botón para editar perfil -->
+                                <div class="mt-3">
+                                    <a href="{% url 'editar_perfil' %}" class="btn btn-outline-primary btn-sm">Editar perfil</a>
+                                </div>
                             </div>
                         </div>
                     </div>

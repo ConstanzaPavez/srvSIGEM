@@ -9,7 +9,7 @@ from .models import ItemSolicitud
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LoginView
-
+from django.contrib.auth.forms import PasswordChangeForm
 
 # Formulario de Login
 class LoginForm(AuthenticationForm):
@@ -151,3 +151,14 @@ class DevolverItemForm(forms.ModelForm):
 
         if estado == 'DAN' and not observacion:
             self.add_error('observacion', 'Debes ingresar una observación si el material está dañado.')
+
+
+class EditarPerfilForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+        }
