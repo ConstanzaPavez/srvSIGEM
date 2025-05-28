@@ -11,6 +11,7 @@ from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
 from .forms import SolicitudForm
+from .forms import EditarPerfilForm
 from .forms import DevolverItemForm
 from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
@@ -640,3 +641,14 @@ def marcar_solicitud_finalizada(solicitud):
         solicitud.estado_anterior = solicitud.estado
         solicitud.estado = 'FIN'
         solicitud.save()
+
+@login_required
+def editar_perfil(request):
+    if request.method == 'POST':
+        form = EditarPerfilForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('perfil')  # o la vista que quieras después de editar
+    else:
+        form = EditarPerfilForm(instance=request.user)
+    return render(request, 'paginas/inicio/editar_perfil.html', {'form': form})
