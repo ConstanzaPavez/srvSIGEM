@@ -7,26 +7,43 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+  <div class="container bg-light rounded p-3 mb-3 shadow-sm">
+    <div class="row g-2 align-items-center justify-content-between">
+      
+      <!-- Botón de filtros -->
+      
 
-  <!-- Botones superiores -->
-  <div class="mb-3 d-flex justify-content-between align-items-center">
-    <!-- Mostrar filtros -->
-    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse" aria-expanded="false" aria-controls="filtrosCollapse">
-      <i class="bi bi-sliders"></i> Mostrar filtros
+      <div class="container bg-light rounded p-2 mb-3 shadow-sm">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
 
-    </button>
-    <form method="get" action="{% url 'listar_materiales' %}" class="mb-3">
-        <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}">
-        <input type="date" name="fecha_fin" value="{{ fecha_fin }}">
-        <button type="submit" class="btn btn-primary">Filtrar por fechas</button>
-    </form>
+          <!-- Botón de filtros avanzados -->
+          <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
+            <i class="bi bi-sliders"></i> Filtros avanzados
+          </button>
+
+          <!-- Formulario de fechas en línea -->
+          <form method="get" action="{% url 'listar_materiales' %}" class="d-flex align-items-center gap-2 flex-wrap m-0">
+            <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="form-control form-control-sm" style="width: 150px;">
+            <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="form-control form-control-sm" style="width: 150px;">
+            <button type="submit" class="btn btn-sm btn-primary">
+              <i class="bi bi-funnel"></i> Filtrar
+            </button>
+            {% if request.GET.fecha_inicio or request.GET.fecha_fin %}
+              <a href="{% url 'listar_materiales' %}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+            {% endif %}
+          </form>
+
+          <!-- Botón carrito -->
+          <a href="{% url 'ver_carrito' %}" class="btn btn-sm btn-success">
+            <i class="bi bi-cart"></i> Ir al carrito
+          </a>
+
+        </div>
+      </div>
 
 
-    <!-- Ver carrito -->
-    <a href="{% url 'ver_carrito' %}" class="btn btn-success">
-      <i class="bi bi-cart"></i> Ir al carrito
-    </a>
-  </div>
+
+
 
   <!-- Filtros colapsables -->
   <div class="collapse mb-4" id="filtrosCollapse">
