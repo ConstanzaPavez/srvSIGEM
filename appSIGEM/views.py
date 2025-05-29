@@ -696,27 +696,3 @@ def editar_perfil(request):
     })
     
 
-@login_required
-
-def listar_materiales(request):
-    materiales = Material.objects.all()
-
-    solicitudes_activas = Solicitud.objects.filter(
-        estado='pendiente'
-    )
-
-    materiales_no_disponibles = {}
-    for solicitud in solicitudes_activas:
-        materiales_no_disponibles[solicitud.material.id_material] = solicitud.fecha_devolucion
-
-    categorias_stock = CategoriaDj.objects.all()
-
-    context = {
-        'materiales': materiales,
-        'materiales_no_disponibles': materiales_no_disponibles,
-        'marcas': Material.objects.values_list('marca', flat=True).distinct(),
-        'tipos': Material.objects.values_list('tipo_material', flat=True).distinct(),
-        'categorias_stock': categorias_stock,
-    }
-
-    return render(request, 'paginas/crud_material/listar_materiales.html', context)
