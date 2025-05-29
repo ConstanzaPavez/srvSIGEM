@@ -21,7 +21,6 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.http import HttpResponse
 from io import BytesIO
-from django.db.models import Q 
 from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
@@ -177,18 +176,26 @@ def agregar_material(request):
 #listar materiales
 from datetime import date, timedelta
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from .models import Material, CategoriaDj
-from .models import Carrito, ItemSolicitud
+
+
+from datetime import date, timedelta, datetime
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.shortcuts import render
+from .models import Material, CategoriaDj, Carrito, ItemSolicitud
 
 @login_required
 def listar_materiales(request):
     hoy = date.today()
 
+    # Parámetros GET para filtro
     q = request.GET.get('q', '').strip()
     marca = request.GET.get('marca', '').strip()
     tipo = request.GET.get('tipo', '').strip()
     categoria = request.GET.get('categoria', '').strip()
+    fecha_inicio_str = request.GET.get('fecha_inicio', '').strip()
+    fecha_fin_str = request.GET.get('fecha_fin', '').strip()
 
     materiales = Material.objects.all()
 
@@ -212,6 +219,23 @@ def listar_materiales(request):
     if categoria:
         materiales = materiales.filter(categoria__nombre_categoria=categoria)
 
+    # Filtrado por rango de fechas para disponibilidad
+    if fecha_inicio_str and fecha_fin_str:
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+        except ValueError:
+            fecha_inicio = fecha_fin = None
+
+        if fecha_inicio and fecha_fin and fecha_inicio <= fecha_fin:
+            # Excluir materiales que estén reservados y no devueltos con solapamiento en el rango
+            materiales = materiales.exclude(
+                itemsolicitud__solicitud__estado__in=['PEND', 'APR'],  # estados que bloquean el material
+                itemsolicitud__fecha_devolucion_real__isnull=True,  # no devueltos
+                itemsolicitud__solicitud__fecha_retiro__lt=fecha_fin,
+                itemsolicitud__solicitud__fecha_devolucion__gt=fecha_inicio
+            )
+
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
     tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
@@ -227,8 +251,7 @@ def listar_materiales(request):
         solicitud__fecha_retiro__lte=hoy,
         fecha_devolucion_real__isnull=True,
         solicitud__fecha_devolucion__gte=hoy,
-        solicitud__estado__in=['PEND', 'APR', 'FIN']  # Ajusta estados que consideres reservados 
-        
+        solicitud__estado__in=['PEND', 'APR', 'FIN']  # Ajusta estados que consideres reservados
     )
 
     for item in reservas_activas:
@@ -244,7 +267,6 @@ def listar_materiales(request):
             elif estado_solicitud == 'PEND':
                 reserva_info[mat_id] = f"Reserva activa"
 
-
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
@@ -252,6 +274,8 @@ def listar_materiales(request):
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
+        'fecha_inicio': fecha_inicio_str,
+        'fecha_fin': fecha_fin_str,
     })
 
 

@@ -13,7 +13,14 @@
     <!-- Mostrar filtros -->
     <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse" aria-expanded="false" aria-controls="filtrosCollapse">
       <i class="bi bi-sliders"></i> Mostrar filtros
+
     </button>
+    <form method="get" action="{% url 'listar_materiales' %}" class="mb-3">
+        <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}">
+        <input type="date" name="fecha_fin" value="{{ fecha_fin }}">
+        <button type="submit" class="btn btn-primary">Filtrar por fechas</button>
+    </form>
+
 
     <!-- Ver carrito -->
     <a href="{% url 'ver_carrito' %}" class="btn btn-success">
