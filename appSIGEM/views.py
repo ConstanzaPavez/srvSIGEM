@@ -418,21 +418,41 @@ def quitar_del_carrito(request, material_id):
 
 
 @login_required
-@login_required
 def crear_solicitud(request):
-    hoy = now().date()  # obtener fecha actual
-
-    # ✅ Asegurarse de obtener el carrito desde el inicio
+    hoy = now().date()
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
 
     if request.method == 'POST':
         form = SolicitudForm(request.POST)
         if form.is_valid():
+            fecha_retiro = form.cleaned_data['fecha_retiro']
+            fecha_devolucion = form.cleaned_data['fecha_devolucion']
+
+            # Validar solapamientos para cada material del carrito
+            materiales_solapados = []
+            for item_carrito in carrito.items.all():
+                existe_solapamiento = ItemSolicitud.objects.filter(
+                    material=item_carrito.material,
+                    solicitud__estado='APR',
+                    fecha_devolucion_real__isnull=True
+                ).filter(
+                    solicitud__fecha_retiro__lte=fecha_devolucion,
+                    solicitud__fecha_devolucion__gte=fecha_retiro,
+                ).exists()
+
+                if existe_solapamiento:
+                    materiales_solapados.append(item_carrito.material.nom_material)
+
+            if materiales_solapados:
+                nombres = ", ".join(materiales_solapados)
+                messages.error(request, f"No se puede crear la solicitud porque estos materiales están reservados en las fechas indicadas: {nombres}")
+                return redirect('crear_solicitud')
+
+            # Si no hay solapamientos, crear la solicitud
             solicitud = form.save(commit=False)
             solicitud.usuario = request.user
             solicitud.save()
 
-            # Copiar ítems del carrito
             for item_carrito in carrito.items.all():
                 ItemSolicitud.objects.create(
                     solicitud=solicitud,
@@ -443,13 +463,14 @@ def crear_solicitud(request):
 
             messages.success(request, "Solicitud enviada correctamente.")
             return redirect('index')
+
     else:
         form = SolicitudForm()
 
     return render(request, 'paginas/solicitudes/crear_solicitud.html', {
         'form': form,
         'hoy': hoy,
-        'carrito': carrito, 
+        'carrito': carrito,
         'items_carrito': carrito.items.all()
     })
 
