@@ -128,7 +128,7 @@ class ItemSolicitud(models.Model):
         ('MIN', 'Daños mínimos'),
         ('UTI', 'Utilizable'),
         ('DAN', 'Dañado'),
-        ('ROT', 'Roto'),
+       
     ]
     estado_ingreso = models.CharField(max_length=3, choices=ESTADOS_INGRESO, blank=True, null=True)
 
