@@ -13,7 +13,31 @@
     <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=RECH')">Rechazadas</a>
     <a href="{% url 'control_solicitudes' %}?estado=FIN" class="btn btn-outline-primary {% if estado_filtrado == 'FIN' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=FIN')">Finalizadas</a>
   </div>
-
+  
+  <!-- Búsqueda -->
+  <form id="filtro-form" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label>Desde:</label>
+            <input type="date" name="inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-3">
+            <label>Hasta:</label>
+            <input type="date" name="fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-4">
+            <label>Usuario:</label>
+            <select name="usuario" class="form-select">
+                <option value="">Todos</option>
+                {% for user in usuarios %}
+                    <option value="{{ user.id }}" {% if user.id|stringformat:"s" == usuario_id %}selected{% endif %}>{{ user.get_full_name|default:user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+  
   {% if solicitudes %}
   <table class="table table-striped">
     <thead>
