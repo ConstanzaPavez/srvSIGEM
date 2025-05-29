@@ -72,7 +72,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
-        'PORT': '3308',
+        'PORT': '3306',
     }
 }
 
@@ -109,7 +109,7 @@ TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 

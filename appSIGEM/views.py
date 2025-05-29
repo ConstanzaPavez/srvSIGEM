@@ -7,7 +7,7 @@ from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
-from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud, ReservaMaterial, CategoriaDj
+from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud, CategoriaDj
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm

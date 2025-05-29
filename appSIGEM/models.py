@@ -67,15 +67,6 @@ class Material(models.Model):
     def __str__(self):
         return self.nom_material
 
-class ReservaMaterial(models.Model):
-    material = models.ForeignKey('Material', on_delete=models.CASCADE)
-    solicitud = models.ForeignKey('Solicitud', on_delete=models.CASCADE)  # Esto ahora funciona
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
-
-    def __str__(self):
-        return f"{self.material.nom_material} reservado hasta {self.fecha_fin}"
-
 
 @receiver(post_save, sender=Material)
 def actualizar_stock_categoria(sender, instance, created, **kwargs):
@@ -140,7 +131,7 @@ class ItemSolicitud(models.Model):
         ('ROT', 'Roto'),
     ]
     estado_ingreso = models.CharField(max_length=3, choices=ESTADOS_INGRESO, blank=True, null=True)
-    fecha_devolucion_real = models.DateField(blank=True, null=True)
+
 
     def __str__(self):
         return f'{self.material.nom_material} x {self.cantidad}'
