@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
+
 {% load static %}
 {% load filtros %}
+{% load custom_tags %}
+
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -49,10 +52,10 @@
             <select name="categoria" id="categoria" class="form-select">
               <option value="">Todas</option>
               {% for cat in categorias_stock %}
-  <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
-    {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
-  </option>
-{% endfor %}
+                <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
+                  {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
+                </option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -107,10 +110,13 @@
                     <i class="bi bi-cart-dash"></i> Quitar del carrito
                   </button>
                 </form>
-              {% elif material.id_material in materiales_no_disponibles %}
-                <button class="btn btn-secondary w-100" disabled title="Material no disponible porque está solicitado y no devuelto">
-                  <i class="bi bi-lock-fill"></i> No disponible
+
+              {% elif material.id_material in reserva_info %}
+                <!-- Mostrar botón deshabilitado con mensaje de reserva -->
+                <button class="btn btn-secondary w-100" disabled title="{{ reserva_info|dict_key:material.id_material }}">
+                  <i class="bi bi-lock-fill"></i> {{ reserva_info|dict_key:material.id_material }}
                 </button>
+
               {% else %}
                 <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
                   {% csrf_token %}

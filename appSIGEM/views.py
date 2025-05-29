@@ -175,13 +175,16 @@ def agregar_material(request):
     return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
 
 #listar materiales
+from datetime import date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from .models import Material, CategoriaDj  # importa tu modelo categoria
-
+from .models import Material, CategoriaDj
+from .models import Carrito, ItemSolicitud
 
 @login_required
 def listar_materiales(request):
+    hoy = date.today()
+
     q = request.GET.get('q', '').strip()
     marca = request.GET.get('marca', '').strip()
     tipo = request.GET.get('tipo', '').strip()
@@ -189,7 +192,7 @@ def listar_materiales(request):
 
     materiales = Material.objects.all()
 
-    # Excluir materiales que tengan ítems devueltos con estado 'DAN'
+    # Excluir materiales con items dañados devueltos
     materiales = materiales.exclude(
         itemsolicitud__estado_ingreso='DAN',
         itemsolicitud__fecha_devolucion_real__isnull=False
@@ -211,25 +214,46 @@ def listar_materiales(request):
 
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
     tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
-
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
 
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
 
-    materiales_no_disponibles = ItemSolicitud.objects.filter(
-        solicitud__estado='APR',
-        fecha_devolucion_real__isnull=True
-    ).values_list('material__id_material', flat=True)
+    # Diccionario para estado de reserva: {material_id: texto_estado}
+    reserva_info = {}
+
+    # Obtener reservas activas cuyo rango incluye hoy o reservas aprobadas que ya pasaron devolucion + 1 dia
+    reservas_activas = ItemSolicitud.objects.filter(
+        solicitud__fecha_retiro__lte=hoy,
+        fecha_devolucion_real__isnull=True,
+        solicitud__fecha_devolucion__gte=hoy,
+        solicitud__estado__in=['PEND', 'APR', 'FIN']  # Ajusta estados que consideres reservados 
+        
+    )
+
+    for item in reservas_activas:
+        mat_id = item.material.id_material
+        estado_solicitud = item.solicitud.estado
+        fecha_dev = item.solicitud.fecha_devolucion
+        disponible_desde = fecha_dev + timedelta(days=1)
+
+        # Siempre se bloquea si estamos dentro del rango de reserva
+        if hoy <= fecha_dev:
+            if estado_solicitud == 'APR':
+                reserva_info[mat_id] = f"Disponible desde {disponible_desde.strftime('%d-%m-%Y')}"
+            elif estado_solicitud == 'PEND':
+                reserva_info[mat_id] = f"Reserva activa"
+
 
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
         'materiales_en_carrito': materiales_en_carrito,
-        'materiales_no_disponibles': list(materiales_no_disponibles),
+        'reserva_info': reserva_info,
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
     })
+
 
 
 
@@ -293,10 +317,13 @@ def agregar_al_carrito(request, material_id):
     if request.method == 'POST':
         material = get_object_or_404(Material, pk=material_id)
 
-        # Verificar si el material está actualmente solicitado y no devuelto
+        hoy = date.today()
+
         esta_solicitado = ItemSolicitud.objects.filter(
             material=material,
             solicitud__estado='APR',
+            solicitud__fecha_retiro__lte=hoy,
+            solicitud__fecha_devolucion__gte=hoy,
             fecha_devolucion_real__isnull=True
         ).exists()
 
