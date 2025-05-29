@@ -13,8 +13,10 @@
                 <form method="POST"  enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">Guardar</button>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left-circle"></i> Guardar
+                        </button>
                     </div>
                 </form>
             </div>
