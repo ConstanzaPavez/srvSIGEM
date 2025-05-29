@@ -26,7 +26,7 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-
+from time import timezone
 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -510,11 +510,14 @@ def control_admin_solicitud(request):
 @user_passes_test(is_admin)
 def gestionar_devolucion(request, item_id):
     item = get_object_or_404(ItemSolicitud, id=item_id)
-    
     if request.method == 'POST':
         form = DevolverItemForm(request.POST, instance=item)
         if form.is_valid():
-            item_devuelto = form.save()
+            item_devuelto = form.save(commit=False)
+
+            # Establecer fecha de devolución real como la fecha actual
+            item_devuelto.fecha_devolucion_real = now().date()
+            item_devuelto.save()
 
             # Sumar al stock solo si NO está dañado
             if item_devuelto.estado_ingreso in ['SIN', 'MIN', 'UTI']:
@@ -533,7 +536,7 @@ def gestionar_devolucion(request, item_id):
             return redirect('gestionar_devoluciones')
     else:
         form = DevolverItemForm(instance=item)
-    
+
     return render(request, 'paginas/devoluciones/gestionar_devolucion.html', {
         'form': form,
         'item': item

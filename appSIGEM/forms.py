@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils import timezone
+from django import forms
 
 # Formulario de Login
 class LoginForm(AuthenticationForm):
@@ -138,12 +140,24 @@ class DevolverItemForm(forms.ModelForm):
         model = ItemSolicitud
         fields = ['estado_ingreso', 'fecha_devolucion_real', 'observacion']
         widgets = {
-            'fecha_devolucion_real': forms.DateInput(attrs={'type': 'date'}),
-            'observacion': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Opcional a menos que este dañado.'}),
+            'fecha_devolucion_real': forms.DateInput(attrs={
+                'type': 'date',
+                'readonly': 'readonly',  # Para que no sea editable
+                'class': 'form-control'
+            }),
+            'observacion': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'Opcional a menos que esté dañado.',
+                'class': 'form-control'
+            }),
         }
         help_texts = {
             'observacion': 'Este campo es opcional. Úsalo para detallar el daño si corresponde.',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fecha_devolucion_real'].initial = timezone.now().date()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -152,6 +166,9 @@ class DevolverItemForm(forms.ModelForm):
 
         if estado == 'DAN' and not observacion:
             self.add_error('observacion', 'Debes ingresar una observación si el material está dañado.')
+
+        return cleaned_data
+
 
 
 class EditarPerfilForm(forms.ModelForm):
