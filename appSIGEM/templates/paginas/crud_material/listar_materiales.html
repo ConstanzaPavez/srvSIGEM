@@ -1,13 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load filtros %}
 
 {% block content %}
 <div class="container-fluid py-4">
-  <!-- Botón para mostrar/ocultar filtros -->
-  <div class="mb-3 text-start">
+
+  <!-- Botones superiores -->
+  <div class="mb-3 d-flex justify-content-between align-items-center">
+    <!-- Mostrar filtros -->
     <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse" aria-expanded="false" aria-controls="filtrosCollapse">
       <i class="bi bi-sliders"></i> Mostrar filtros
     </button>
+
+    <!-- Ver carrito -->
+    <a href="{% url 'ver_carrito' %}" class="btn btn-success">
+      <i class="bi bi-cart"></i> Ir al carrito
+    </a>
   </div>
 
   <!-- Filtros colapsables -->
@@ -41,14 +49,17 @@
             <select name="categoria" id="categoria" class="form-select">
               <option value="">Todas</option>
               {% for cat in categorias_stock %}
-                <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
-                  {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
-                </option>
-              {% endfor %}
+  <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
+    {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
+  </option>
+{% endfor %}
             </select>
           </div>
         </div>
-        <div class="d-grid d-md-flex justify-content-end">
+        <div class="d-grid d-md-flex justify-content-between">
+          <a href="{% url 'listar_materiales' %}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i> Limpiar filtros
+          </a>
           <button type="submit" class="btn btn-primary">
             <i class="bi bi-filter-circle"></i> Aplicar filtros
           </button>
@@ -57,7 +68,7 @@
     </div>
   </div>
 
-  <!-- BÚSQUEDA -->
+  <!-- Búsqueda -->
   <form method="GET" class="mb-4 d-flex">
     <input 
       type="text" 
@@ -72,7 +83,7 @@
     </button>
   </form>
 
-  <!-- LISTADO DE MATERIALES -->
+  <!-- Listado de materiales -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="listado-materiales">
     {% for material in materiales %}
       <div class="col" id="material-{{ material.id_material }}">
@@ -87,6 +98,7 @@
             <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
             <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
             <p class="card-text"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
+
             <div class="btn-carrito-container mt-auto">
               {% if material.id_material in materiales_en_carrito %}
                 <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
@@ -115,7 +127,7 @@
   </div>
 </div>
 
-
+<!-- JS para AJAX -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('submit', function(event) {
@@ -163,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-
 </script>
 
 {% endblock %}

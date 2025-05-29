@@ -1,3 +1,4 @@
+from itertools import count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -6,7 +7,7 @@ from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
-from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud
+from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud, ReservaMaterial, CategoriaDj
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
@@ -27,6 +28,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from time import timezone
+from datetime import date
+
 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -230,7 +233,6 @@ def listar_materiales(request):
 
 
 
-
 @login_required
 @user_passes_test(is_admin)
 def listar_materiales_danados(request):
@@ -240,9 +242,6 @@ def listar_materiales_danados(request):
     return render(request, 'paginas/panel_admin/materiales_danados.html', {
         'items_danados': items_danados
     })
-
-
-
 
 
 @login_required
@@ -325,6 +324,22 @@ def agregar_al_carrito(request, material_id):
             })
 
         return redirect('listar_materiales')
+
+
+@login_required
+def aprobar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(Solicitud, id=solicitud_id)
+    solicitud.estado = 'APR'
+    solicitud.save()
+
+    # Actualizar cada material con la fecha de devolución
+    for item in solicitud.itemsolicitud_set.all():
+        material = item.material
+        if solicitud.fecha_devolucion:
+            material.reservado_hasta = solicitud.fecha_devolucion
+            material.save()
+
+
 
 
 def ver_carrito(request):
@@ -679,3 +694,29 @@ def editar_perfil(request):
         'perfil_form': perfil_form,
         'password_form': password_form,
     })
+    
+
+@login_required
+
+def listar_materiales(request):
+    materiales = Material.objects.all()
+
+    solicitudes_activas = Solicitud.objects.filter(
+        estado='pendiente'
+    )
+
+    materiales_no_disponibles = {}
+    for solicitud in solicitudes_activas:
+        materiales_no_disponibles[solicitud.material.id_material] = solicitud.fecha_devolucion
+
+    categorias_stock = CategoriaDj.objects.all()
+
+    context = {
+        'materiales': materiales,
+        'materiales_no_disponibles': materiales_no_disponibles,
+        'marcas': Material.objects.values_list('marca', flat=True).distinct(),
+        'tipos': Material.objects.values_list('tipo_material', flat=True).distinct(),
+        'categorias_stock': categorias_stock,
+    }
+
+    return render(request, 'paginas/crud_material/listar_materiales.html', context)

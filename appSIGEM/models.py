@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.utils import timezone
-
+from django.contrib.auth.models import Group, Permission
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
@@ -66,8 +66,17 @@ class Material(models.Model):
 
     def __str__(self):
         return self.nom_material
-   
-   
+
+class ReservaMaterial(models.Model):
+    material = models.ForeignKey('Material', on_delete=models.CASCADE)
+    solicitud = models.ForeignKey('Solicitud', on_delete=models.CASCADE)  # Esto ahora funciona
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+
+    def __str__(self):
+        return f"{self.material.nom_material} reservado hasta {self.fecha_fin}"
+
+
 @receiver(post_save, sender=Material)
 def actualizar_stock_categoria(sender, instance, created, **kwargs):
     if created:
@@ -121,6 +130,7 @@ class ItemSolicitud(models.Model):
     material = models.ForeignKey('Material', on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField()
     observacion = models.TextField(blank=True, null=True)
+    fecha_devolucion_real = models.DateField(blank=True, null=True)
 
     ESTADOS_INGRESO = [
         ('SIN', 'Sin daño'),
@@ -134,3 +144,6 @@ class ItemSolicitud(models.Model):
 
     def __str__(self):
         return f'{self.material.nom_material} x {self.cantidad}'
+
+
+
