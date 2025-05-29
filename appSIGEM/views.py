@@ -571,7 +571,7 @@ def control_admin_solicitud(request):
         messages.error(request, "No tienes permiso para acceder a esta página.")
         return redirect('listar_solicitudes')
 
-    estado = request.GET.get('estado', '').upper()
+    estado = request.GET.get('estado', 'PEND').upper()
     
     estados_validos = ['PEND', 'APR', 'PAR', 'RECH', 'FIN']
 
