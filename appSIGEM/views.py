@@ -186,25 +186,25 @@ from django.shortcuts import render
 from .models import Material, CategoriaDj, Carrito, ItemSolicitud
 
 @login_required
+@login_required
 def listar_materiales(request):
     hoy = date.today()
-
-    # Parámetros GET para filtro
     q = request.GET.get('q', '').strip()
     marca = request.GET.get('marca', '').strip()
     tipo = request.GET.get('tipo', '').strip()
     categoria = request.GET.get('categoria', '').strip()
-    fecha_inicio_str = request.GET.get('fecha_inicio', '').strip()
-    fecha_fin_str = request.GET.get('fecha_fin', '').strip()
+    fecha_inicio_str = request.GET.get('fecha_inicio')
+    fecha_fin_str = request.GET.get('fecha_fin')
 
     materiales = Material.objects.all()
 
-    # Excluir materiales con items dañados devueltos
+    # Excluir materiales dañados
     materiales = materiales.exclude(
         itemsolicitud__estado_ingreso='DAN',
         itemsolicitud__fecha_devolucion_real__isnull=False
     )
 
+    # Filtros de búsqueda
     if q:
         materiales = materiales.filter(
             Q(nom_material__icontains=q) |
@@ -219,23 +219,24 @@ def listar_materiales(request):
     if categoria:
         materiales = materiales.filter(categoria__nombre_categoria=categoria)
 
-    # Filtrado por rango de fechas para disponibilidad
+    # Filtro por rango de fechas personalizado
     if fecha_inicio_str and fecha_fin_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
+
+            materiales_reservados_ids = ItemSolicitud.objects.filter(
+                solicitud__estado__in=['PEND', 'APR', 'PAR'],
+                solicitud__fecha_retiro__lte=fecha_fin,
+                solicitud__fecha_devolucion__gte=fecha_inicio,
+                fecha_devolucion_real__isnull=True
+            ).values_list('material__id_material', flat=True).distinct()
+
+            materiales = materiales.exclude(id_material__in=materiales_reservados_ids)
         except ValueError:
-            fecha_inicio = fecha_fin = None
+            pass
 
-        if fecha_inicio and fecha_fin and fecha_inicio <= fecha_fin:
-            # Excluir materiales que estén reservados y no devueltos con solapamiento en el rango
-            materiales = materiales.exclude(
-                itemsolicitud__solicitud__estado__in=['PEND', 'APR'],  # estados que bloquean el material
-                itemsolicitud__fecha_devolucion_real__isnull=True,  # no devueltos
-                itemsolicitud__solicitud__fecha_retiro__lt=fecha_fin,
-                itemsolicitud__solicitud__fecha_devolucion__gt=fecha_inicio
-            )
-
+    # Info general
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
     tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
@@ -243,15 +244,13 @@ def listar_materiales(request):
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
 
-    # Diccionario para estado de reserva: {material_id: texto_estado}
+    # Diccionario para mostrar estado visual de reserva actual
     reserva_info = {}
-
-    # Obtener reservas activas cuyo rango incluye hoy o reservas aprobadas que ya pasaron devolucion + 1 dia
     reservas_activas = ItemSolicitud.objects.filter(
         solicitud__fecha_retiro__lte=hoy,
         fecha_devolucion_real__isnull=True,
         solicitud__fecha_devolucion__gte=hoy,
-        solicitud__estado__in=['PEND', 'APR', 'FIN']  # Ajusta estados que consideres reservados
+        solicitud__estado__in=['PEND', 'APR', 'PAR']
     )
 
     for item in reservas_activas:
@@ -260,7 +259,6 @@ def listar_materiales(request):
         fecha_dev = item.solicitud.fecha_devolucion
         disponible_desde = fecha_dev + timedelta(days=1)
 
-        # Siempre se bloquea si estamos dentro del rango de reserva
         if hoy <= fecha_dev:
             if estado_solicitud == 'APR':
                 reserva_info[mat_id] = f"Disponible desde {disponible_desde.strftime('%d-%m-%Y')}"
@@ -274,8 +272,6 @@ def listar_materiales(request):
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
-        'fecha_inicio': fecha_inicio_str,
-        'fecha_fin': fecha_fin_str,
     })
 
 
