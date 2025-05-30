@@ -28,9 +28,9 @@
             <button type="submit" class="btn btn-sm btn-primary">
               <i class="bi bi-funnel"></i> Filtrar
             </button>
-            {% if request.GET.fecha_inicio or request.GET.fecha_fin %}
+           
               <a href="{% url 'listar_materiales' %}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
-            {% endif %}
+           
           </form>
 
           <!-- Botón carrito -->

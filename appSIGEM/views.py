@@ -528,12 +528,6 @@ def gestionar_solicitud(request, solicitud_id):
                         messages.error(request, f"No hay stock suficiente para {item.material.nom_material}. Stock disponible: {categoria.stock}, requerido: {item.cantidad}")
                         return redirect('gestionar_solicitud', solicitud_id=solicitud.id)
 
-                # Si hay stock suficiente, restamos el stock
-                for item in solicitud_actualizada.items.all():
-                    categoria = item.material.categoria
-                    categoria.stock -= item.cantidad
-                    categoria.save()
-
             # Guardar la solicitud después de modificar el stock
             solicitud_actualizada.save()
 
@@ -601,12 +595,6 @@ def gestionar_devolucion(request, item_id):
             # Establecer fecha de devolución real como la fecha actual
             item_devuelto.fecha_devolucion_real = now().date()
             item_devuelto.save()
-
-            # Sumar al stock solo si NO está dañado
-            if item_devuelto.estado_ingreso in ['SIN', 'MIN', 'UTI']:
-                categoria = item_devuelto.material.categoria
-                categoria.stock += item_devuelto.cantidad
-                categoria.save()
 
             # Verificar si todos los ítems están devueltos
             solicitud = item_devuelto.solicitud
