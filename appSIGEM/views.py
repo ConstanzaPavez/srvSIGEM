@@ -442,7 +442,7 @@ from django.urls import reverse
 @login_required
 def quitar_del_carrito(request, material_id):
     if request.method == 'POST':
-        carrito = Carrito.objects.get(usuario=request.user)
+        carrito = get_object_or_404(Carrito, usuario=request.user)
         try:
             item = ItemCarrito.objects.get(carrito=carrito, material_id=material_id)
             item.delete()
@@ -452,12 +452,14 @@ def quitar_del_carrito(request, material_id):
                     'url_agregar': reverse('agregar_al_carrito', args=[material_id])
                 })
             messages.success(request, "Material eliminado del carrito.")
+            return redirect('listar_materiales')
         except ItemCarrito.DoesNotExist:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'estado': 'error', 'mensaje': 'Material no encontrado en el carrito.'})
             messages.error(request, "Material no encontrado en el carrito.")
-        return redirect('listar_materiales')
-
+            return redirect('listar_materiales')
+    else:
+        return JsonResponse({'estado': 'error', 'mensaje': 'Método no permitido'}, status=405)
 
 
 

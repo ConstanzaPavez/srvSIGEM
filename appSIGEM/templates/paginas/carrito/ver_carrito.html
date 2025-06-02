@@ -13,19 +13,32 @@
         <div class="table-responsive">
           <table class="table table-striped align-middle">
             <thead class="table-light">
-              <tr>
-                <th>Material</th>
-                <th class="text-center" style="width: 120px;">Cantidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in carrito.items.all %}
-              <tr>
-                <td>{{ item.material.nom_material }}</td>
-                <td class="text-center">{{ item.cantidad }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
+       
+              <thead class="table-light">
+                <tr>
+                  <th>Material</th>
+                  <th class="text-center" style="width: 120px;">Cantidad</th>
+                  <th class="text-center" style="width: 60px;">Eliminar</th>
+                </tr>
+              </thead>
+              <tbody id="carrito-body">
+                {% for item in carrito.items.all %}
+                <tr data-material-id="{{ item.material.id_material }}">
+                  <td>{{ item.material.nom_material }}</td>
+                  <td class="text-center">{{ item.cantidad }}</td>
+                  <td class="text-end">
+                    <form action="{% url 'quitar_del_carrito' item.material.id_material %}" method="post" class="form-quitar">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+
           </table>
         </div>
       {% else %}
@@ -48,22 +61,105 @@
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Script para alerta si carrito está vacío -->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const btnCrear = document.getElementById('btn-crear-solicitud');
 
-    {% if not carrito.items.all %}
-      btnCrear.addEventListener('click', function (e) {
-        e.preventDefault();
-        Swal.fire({
-          icon: 'warning',
-          title: 'Carrito vacío',
-          text: 'No puedes enviar una solicitud sin materiales en el carrito.',
-          confirmButtonText: 'Entendido'
-        });
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const btnCrear = document.getElementById('btn-crear-solicitud');
+
+  function actualizarEstadoCarrito() {
+    const filas = document.querySelectorAll('#carrito-body tr');
+    if (filas.length === 0) {
+      btnCrear.addEventListener('click', bloquearEnvio);
+      btnCrear.classList.add('disabled');
+    } else {
+      btnCrear.removeEventListener('click', bloquearEnvio);
+      btnCrear.classList.remove('disabled');
+    }
+  }
+
+  function bloquearEnvio(e) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'warning',
+      title: 'Carrito vacío',
+      text: 'No puedes enviar una solicitud sin materiales en el carrito.',
+      confirmButtonText: 'Entendido'
+    });
+  }
+
+  // Aplica bloqueo si ya está vacío al cargar
+  actualizarEstadoCarrito();
+
+  // Manejar eliminación de ítems
+  document.querySelectorAll('.form-quitar').forEach(form => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.estado === 'quitado') {
+          form.closest('tr').remove();
+          actualizarEstadoCarrito();
+        } else {
+          Swal.fire('Error', data.mensaje || 'No se pudo quitar el material.', 'error');
+        }
       });
-    {% endif %}
+    });
   });
+});
 </script>
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.form-quitar-item').forEach(form => {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const btn = this.querySelector('button');
+      btn.disabled = true;
+
+      fetch(this.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new FormData(this)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.estado === 'quitado') {
+          this.closest('tr').remove();
+
+          // Si no hay más items, mostrar mensaje y deshabilitar botón crear solicitud
+          if (!document.querySelector('tbody tr')) {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Tu carrito está vacío.</td></tr>`;
+            document.getElementById('btn-crear-solicitud').disabled = true;
+          }
+
+        } else {
+          alert(data.mensaje || 'Error al quitar el item');
+        }
+      })
+      .catch(() => alert('Error en la petición'))
+      .finally(() => btn.disabled = false);
+    });
+  });
+});
+</script>
+
 {% endblock %}
