@@ -479,6 +479,12 @@ def crear_solicitud(request):
             fecha_retiro = form.cleaned_data['fecha_retiro']
             fecha_devolucion = form.cleaned_data['fecha_devolucion']
 
+            if not fecha_retiro or not fecha_devolucion:
+                messages.error(request, "Debes completar las fechas de retiro y devolución.")
+                return redirect('crear_solicitud')
+
+            
+            
             # Validar solapamientos para cada material del carrito
             materiales_solapados = []
             for item_carrito in carrito.items.all():

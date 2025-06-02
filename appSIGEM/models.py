@@ -111,7 +111,8 @@ class Solicitud(models.Model):
     comentario_respuesta = models.TextField(blank=True, null=True)
     fecha_retiro = models.DateField(null=True, blank=True)
     fecha_devolucion = models.DateField(null=True, blank=True)
-
+    razon_solicitud = models.CharField(max_length=255,verbose_name="Razón de la solicitud")
+    ubicacion_solicitud = models.CharField(max_length=255,verbose_name="Ubicación de uso")
 
     def __str__(self):
         return f'Solicitud #{self.id} - {self.get_estado_display()}'

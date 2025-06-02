@@ -115,15 +115,26 @@ class GestionarSolicitudForm(forms.ModelForm):
         }        
         
         
+from django import forms
+from .models import Solicitud
+
 class SolicitudForm(forms.ModelForm):
     class Meta:
         model = Solicitud
-        fields = ['fecha_retiro', 'fecha_devolucion']
+        fields = ['fecha_retiro', 'fecha_devolucion', 'razon_solicitud', 'ubicacion_solicitud']
         widgets = {
             'fecha_retiro': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'fecha_devolucion': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            
+            
+            'razon_solicitud': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Explica brevemente el motivo de esta solicitud',
+                'rows': 4, }),
+            'ubicacion_solicitud': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ubicación (ej. Laboratorio)'}),
         }
 
+        
         
     # Opcional: validación para que fecha_devolucion > fecha_retiro
     def clean(self):
