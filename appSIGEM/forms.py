@@ -111,9 +111,24 @@ class GestionarSolicitudForm(forms.ModelForm):
         fields = ['estado', 'comentario_respuesta']
         widgets = {
             'estado': forms.Select(attrs={'class': 'form-control'}),
-            'comentario_respuesta': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Comentario opcional'}),
-        }        
-        
+            'comentario_respuesta': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Comentario opcional'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Estados permitidos para el admin (excluye PEND, FIN, CANC)
+        ESTADOS_ADMIN = [
+            ('APR', 'Aprobada'),
+            ('PAR', 'Aprobada Parcialmente'),
+            ('RECH', 'Rechazada'),
+        ]
+        self.fields['estado'].choices = ESTADOS_ADMIN
+
         
 from django import forms
 from .models import Solicitud
