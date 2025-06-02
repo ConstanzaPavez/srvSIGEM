@@ -196,6 +196,12 @@ def listar_materiales(request):
     # Manejo de fechas con sesión
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
+    
+    
+    # Si no hay parámetros en GET, limpiar fechas de la sesión
+    if not request.GET:
+        request.session.pop('fecha_inicio_filtro', None)
+        request.session.pop('fecha_fin_filtro', None)
 
     # Si vienen por GET, actualizar sesión
     if fecha_inicio_str is not None:
