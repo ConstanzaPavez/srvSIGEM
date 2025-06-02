@@ -186,15 +186,27 @@ from django.shortcuts import render
 from .models import Material, CategoriaDj, Carrito, ItemSolicitud
 
 @login_required
-@login_required
 def listar_materiales(request):
     hoy = date.today()
     q = request.GET.get('q', '').strip()
     marca = request.GET.get('marca', '').strip()
     tipo = request.GET.get('tipo', '').strip()
     categoria = request.GET.get('categoria', '').strip()
+
+    # Manejo de fechas con sesión
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
+
+    # Si vienen por GET, actualizar sesión
+    if fecha_inicio_str is not None:
+        request.session['fecha_inicio_filtro'] = fecha_inicio_str
+    else:
+        fecha_inicio_str = request.session.get('fecha_inicio_filtro', '')
+
+    if fecha_fin_str is not None:
+        request.session['fecha_fin_filtro'] = fecha_fin_str
+    else:
+        fecha_fin_str = request.session.get('fecha_fin_filtro', '')
 
     materiales = Material.objects.all()
 
@@ -219,7 +231,7 @@ def listar_materiales(request):
     if categoria:
         materiales = materiales.filter(categoria__nombre_categoria=categoria)
 
-    # Filtro por rango de fechas personalizado
+    # Filtro por rango de fechas personalizado usando fecha_inicio_str y fecha_fin_str actualizados
     if fecha_inicio_str and fecha_fin_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
@@ -273,8 +285,14 @@ def listar_materiales(request):
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
+        # Pasar fechas para mostrar en el formulario
+        'fecha_inicio': fecha_inicio_str,
+        'fecha_fin': fecha_fin_str,
+        'q': q,
+        'marca': marca,
+        'tipo': tipo,
+        'categoria': categoria,
     })
-
 
 
 
@@ -443,6 +461,10 @@ def crear_solicitud(request):
     hoy = now().date()
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
 
+    # Obtener fechas desde sesión, si existen
+    fecha_inicio_sesion = request.session.get('fecha_inicio_filtro')
+    fecha_fin_sesion = request.session.get('fecha_fin_filtro')
+
     if request.method == 'POST':
         form = SolicitudForm(request.POST)
         if form.is_valid():
@@ -454,7 +476,7 @@ def crear_solicitud(request):
             for item_carrito in carrito.items.all():
                 existe_solapamiento = ItemSolicitud.objects.filter(
                     material=item_carrito.material,
-                    solicitud__estado='APR',
+                    solicitud__estado__in=['PEND', 'APR', 'PAR'],
                     fecha_devolucion_real__isnull=True
                 ).filter(
                     solicitud__fecha_retiro__lte=fecha_devolucion,
@@ -486,7 +508,14 @@ def crear_solicitud(request):
             return redirect('index')
 
     else:
-        form = SolicitudForm()
+        # Inicializar el formulario con fechas desde sesión si existen
+        initial_data = {}
+        if fecha_inicio_sesion:
+            initial_data['fecha_retiro'] = fecha_inicio_sesion
+        if fecha_fin_sesion:
+            initial_data['fecha_devolucion'] = fecha_fin_sesion
+
+        form = SolicitudForm(initial=initial_data)
 
     return render(request, 'paginas/solicitudes/crear_solicitud.html', {
         'form': form,
@@ -494,6 +523,7 @@ def crear_solicitud(request):
         'carrito': carrito,
         'items_carrito': carrito.items.all()
     })
+
 
     
 def listar_solicitudes(request):
