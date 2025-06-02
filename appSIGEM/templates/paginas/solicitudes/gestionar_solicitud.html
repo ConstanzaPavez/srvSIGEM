@@ -15,14 +15,16 @@
     <div class="card-body">
       <div class="row mb-3">
         <div class="col-md-6">
-          <p><i class="bi bi-person-fill me-2"></i><strong>Solicitante:</strong> {{ solicitud.usuario.username }}</p>
-          <p><i class="bi bi-calendar-check-fill me-2"></i><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+            <p><i class="bi bi-person-fill me-2"></i><strong>Solicitante:</strong> {{ solicitud.usuario.username }}</p>
+            <p><i class="bi bi-calendar-check-fill me-2"></i><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+            <p><i class="bi bi-chat-left-text-fill me-2"></i><strong>Razón:</strong> {{ solicitud.razon_solicitud|default:"No especificada" }}</p>
         </div>
         <div class="col-md-6">
-          <p><i class="bi bi-box-arrow-in-down me-2"></i><strong>Fecha de Retiro:</strong> {{ solicitud.fecha_retiro|date:"d/m/Y" }}</p>
-          <p><i class="bi bi-box-arrow-up me-2"></i><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion|date:"d/m/Y" }}</p>
+            <p><i class="bi bi-box-arrow-in-down me-2"></i><strong>Fecha de Retiro:</strong> {{ solicitud.fecha_retiro|date:"d/m/Y" }}</p>
+            <p><i class="bi bi-box-arrow-up me-2"></i><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion|date:"d/m/Y" }}</p>
+            <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud|default:"No especificada" }}</p>
         </div>
-      </div>
+
 
       <h6 class="mt-4 mb-3 text-secondary">Materiales Solicitados:</h6>
       <ul class="list-group">
