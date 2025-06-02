@@ -9,14 +9,21 @@
       {% for solicitud in solicitudes %}
         <div class="accordion-item mb-3">
           <h2 class="accordion-header" id="heading{{ solicitud.id }}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false" aria-controls="collapse{{ solicitud.id }}">
-              Solicitud - Fecha: {{ solicitud.fecha_solicitud|date:"d/m/Y H:i " }} - Estado: {{ solicitud.get_estado_display }}
-
+            <button class="accordion-button collapsed d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false" aria-controls="collapse{{ solicitud.id }}">
+              <span>Solicitud - {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</span>
+              <span class="ms-auto badge 
+                {% if solicitud.estado == 'PEND' %} bg-warning text-dark
+                {% elif solicitud.estado == 'APR' or solicitud.estado == 'PAR' %} bg-success
+                {% elif solicitud.estado == 'RECH' %} bg-danger
+                {% elif solicitud.estado == 'CANC' %} bg-secondary
+                {% else %} bg-light text-dark {% endif %}">
+                {{ solicitud.get_estado_display }}
+              </span>
             </button>
           </h2>
           <div id="collapse{{ solicitud.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ solicitud.id }}" data-bs-parent="#accordionSolicitudes">
             <div class="accordion-body">
-              <ul class="list-group">
+              <ul class="list-group mb-3">
                 {% for item in solicitud.items.all %}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                     {{ item.material.nom_material }}
@@ -24,14 +31,49 @@
                   </li>
                 {% endfor %}
               </ul>
-              <a href="{% url 'detalle_solicitud' solicitud.id %}">Ver detalle</a>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'detalle_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
+
+                {% if solicitud.estado == 'PEND' %}
+                  <form method="post" action="{% url 'cancelar_solicitud' solicitud.id %}" class="form-cancelar-solicitud d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancelar Solicitud</button>
+                  </form>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <p>No tienes solicitudes registradas.</p>
+    <p class="text-muted">No tienes solicitudes registradas.</p>
   {% endif %}
 </div>
+
+<!-- SweetAlert para confirmar cancelación -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.querySelectorAll('.form-cancelar-solicitud').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      Swal.fire({
+        title: '¿Cancelar solicitud?',
+        text: "Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'No, volver',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

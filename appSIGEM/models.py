@@ -101,7 +101,8 @@ class Solicitud(models.Model):
         ('APR', 'Aprobada'),
         ('PAR', 'Aprobada Parcialmente'),
         ('RECH', 'Rechazada'),
-        ('FIN', 'cerrado')
+        ('FIN', 'cerrado'),
+        ('CAN', 'Cancelada'),
     ]
 
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

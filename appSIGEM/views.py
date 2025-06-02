@@ -797,3 +797,19 @@ def editar_perfil(request):
     })
     
 
+
+
+
+
+@login_required
+def cancelar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(Solicitud, id=solicitud_id, usuario=request.user)
+
+    if solicitud.estado == 'PEND':
+        solicitud.estado = 'CAN'
+        solicitud.save()
+        messages.success(request, 'Solicitud cancelada exitosamente.')
+    else:
+        messages.error(request, 'Solo puedes cancelar solicitudes pendientes.')
+
+    return redirect('listar_solicitudes')  # o la vista que estés usando para listarlas

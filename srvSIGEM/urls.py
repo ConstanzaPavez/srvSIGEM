@@ -90,6 +90,9 @@ urlpatterns = [
     
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     
+    path('cancelar-solicitud/<int:solicitud_id>/', views.cancelar_solicitud, name='cancelar_solicitud'),
+
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
