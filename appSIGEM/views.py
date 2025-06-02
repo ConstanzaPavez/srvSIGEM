@@ -233,6 +233,7 @@ def listar_materiales(request):
             ).values_list('material__id_material', flat=True).distinct()
 
             materiales = materiales.exclude(id_material__in=materiales_reservados_ids)
+
         except ValueError:
             pass
 
@@ -337,21 +338,21 @@ def agregar_al_carrito(request, material_id):
     if request.method == 'POST':
         material = get_object_or_404(Material, pk=material_id)
 
-        hoy = date.today()
-
-        esta_solicitado = ItemSolicitud.objects.filter(
-            material=material,
-            solicitud__estado='APR',
-            solicitud__fecha_retiro__lte=hoy,
-            solicitud__fecha_devolucion__gte=hoy,
-            fecha_devolucion_real__isnull=True
-        ).exists()
-
-        if esta_solicitado:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.'})
-            messages.warning(request, "Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.")
-            return redirect('listar_materiales')
+#       hoy = date.today()
+#
+#        esta_solicitado = ItemSolicitud.objects.filter(
+#            material=material,
+#            solicitud__estado='APR',
+#            solicitud__fecha_retiro__lte=hoy,
+#            solicitud__fecha_devolucion__gte=hoy,
+#            fecha_devolucion_real__isnull=True
+#        ).exists()
+#
+#        if esta_solicitado:
+#            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#                return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.'})
+#           messages.warning(request, "Este material ya ha sido solicitado por otra persona y aún no ha sido devuelto.")
+#            return redirect('listar_materiales')
 
         carrito, creado = Carrito.objects.get_or_create(usuario=request.user)
         item, creado = ItemCarrito.objects.get_or_create(carrito=carrito, material=material)

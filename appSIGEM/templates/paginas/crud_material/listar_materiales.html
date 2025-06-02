@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load utils %}
+
 
 {% load static %}
 {% load filtros %}
@@ -135,12 +137,6 @@
                   </button>
                 </form>
 
-              {% elif material.id_material in reserva_info %}
-                <!-- Mostrar botón deshabilitado con mensaje de reserva -->
-                <button class="btn btn-secondary w-100" disabled title="{{ reserva_info|dict_key:material.id_material }}">
-                  <i class="bi bi-lock-fill"></i> {{ reserva_info|dict_key:material.id_material }}
-                </button>
-
               {% else %}
                 <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
                   {% csrf_token %}
@@ -149,7 +145,15 @@
                   </button>
                 </form>
               {% endif %}
+
+              {% if reserva_info|get_item:material.id_material %}
+                <small class="text-danger">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ reserva_info|get_item:material.id_material }}
+                </small>
+              {% endif %}
             </div>
+
           </div>
         </div>
       </div>
