@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load utils %}
+{% load dict_filters %}
 
 
 {% load static %}
@@ -129,31 +130,34 @@
             <p class="card-text"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
 
             <div class="btn-carrito-container mt-auto">
-              {% if material.id_material in materiales_en_carrito %}
-                <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-danger w-100">
-                    <i class="bi bi-cart-dash"></i> Quitar del carrito
-                  </button>
-                </form>
 
-              {% else %}
-                <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-cart-plus"></i> Agregar al carrito
-                  </button>
-                </form>
-              {% endif %}
+              <div class="reserva-info">
+                {% if reserva_info|get_item:material.id_material %}
+                  <small class="text-yellow-600 text-sm d-block mt-1" id="reserva-info-{{ material.id_material }}">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ reserva_info|get_item:material.id_material }}
+                  </small>
+                {% endif %}
+              </div>
 
-              {% if reserva_info|get_item:material.id_material %}
-                <small class="text-danger">
-                  <i class="bi bi-exclamation-circle"></i>
-                  {{ reserva_info|get_item:material.id_material }}
-                </small>
-              {% endif %}
+              <div class="boton-carrito" id="boton-carrito-{{ material.id_material }}">
+                {% if material.id_material in materiales_en_carrito %}
+                  <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100">
+                      <i class="bi bi-cart-dash"></i> Quitar del carrito
+                    </button>
+                  </form>
+                {% else %}
+                  <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary w-100">
+                      <i class="bi bi-cart-plus"></i> Agregar al carrito
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -181,9 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .then(response => response.json())
       .then(data => {
-        const contBoton = form.closest('.btn-carrito-container');
+        const botonContainer = form.closest('.btn-carrito-container').querySelector('.boton-carrito');
         if (data.estado === 'agregado') {
-          contBoton.innerHTML = `
+          botonContainer.innerHTML = `
             <form action="${data.url_quitar}" method="post" class="quitar-carrito">
               <input type="hidden" name="csrfmiddlewaretoken" value="${form.querySelector('[name=csrfmiddlewaretoken]').value}">
               <button type="submit" class="btn btn-danger w-100">
@@ -192,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </form>
           `;
         } else if (data.estado === 'quitado') {
-          contBoton.innerHTML = `
+          botonContainer.innerHTML = `
             <form action="${data.url_agregar}" method="post" class="agregar-carrito">
               <input type="hidden" name="csrfmiddlewaretoken" value="${form.querySelector('[name=csrfmiddlewaretoken]').value}">
               <button type="submit" class="btn btn-primary w-100">
@@ -204,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(data.mensaje);
         }
       })
+
       .catch(() => alert('Error en la petición.'))
       .finally(() => btn.disabled = false);
     }
