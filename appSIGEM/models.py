@@ -113,9 +113,9 @@ class Solicitud(models.Model):
     fecha_retiro = models.DateField(null=True, blank=True)
     fecha_devolucion = models.DateField(null=True, blank=True)
 
-    razon_solicitud = models.CharField(max_length=255,verbose_name="Razón de la solicitud",null=False,blank=False)
+    razon_solicitud = models.CharField(max_length=255,verbose_name="Razón de la solicitud",null=True,blank=True)
 
-    ubicacion_solicitud = models.CharField(max_length=255,verbose_name="Ubicación de uso",null=False,blank=False)
+    ubicacion_solicitud = models.CharField(max_length=255,verbose_name="Ubicación de uso",null=True,blank=True)
 
     def __str__(self):
         return f'Solicitud #{self.id} - {self.get_estado_display()}'
