@@ -28,6 +28,15 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from time import timezone
 from datetime import date
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
 
 
 
@@ -93,23 +102,73 @@ def logout_view(request):
 
 # Vista solo para superusuarios: crear nuevo usuario
 @login_required
-@user_passes_test(is_admin)
+@user_passes_test(lambda u: u.is_superuser)
 def crear_usuario(request):
     if request.method == 'POST':
-        form = CrearUsuarioForm(request.POST, request.FILES)  # Asegúrate de que el archivo se reciba también
+        form = CrearUsuarioForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_staff = True  # o lo que necesites
+            user.is_active = False  # 🔒 Usuario inactivo hasta confirmar correo
             user.save()
-            messages.success(request, "Usuario creado exitosamente.")
-            return redirect('crear_usuario')  # redirige para evitar reenvío doble
+            enviar_correo_verificacion(request, user)
+            messages.info(request, "Usuario creado. Esperando la verificación del usuario por correo.")
+            return redirect('crear_usuario')
         else:
-            messages.error(request, "Hubo un error al crear el usuario. Revisa los campos.")
+            messages.error(request, "Hubo un error al crear el usuario.")
     else:
         form = CrearUsuarioForm()
-
     return render(request, 'paginas/login/crear_usuario.html', {'form': form})
 
+
+def enviar_correo_confirmacion(user):
+    asunto = 'Bienvenido a SIGEM'
+    mensaje = f'''
+    Hola {user.first_name},
+
+    Tu cuenta en SIGEM ha sido creada correctamente.
+
+    Usuario: {user.username}
+    Correo: {user.email}
+
+    Puedes iniciar sesión aquí: http://127.0.0.1:8000/login/
+
+    Saludos,
+    Equipo SIGEM
+    '''
+    send_mail(asunto, mensaje, settings.DEFAULT_FROM_EMAIL, [user.email])
+    
+    
+def enviar_correo_verificacion(request, user):
+    current_site = get_current_site(request)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    activation_link = f"http://{current_site.domain}/activar-cuenta/{uid}/{token}/"
+
+    subject = "Activa tu cuenta en SIGEM"
+    message = render_to_string('emails/activar_cuenta.html', {
+        'user': user,
+        'activation_link': activation_link,
+    })
+
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    
+    
+def activar_cuenta(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Cuenta activada correctamente. Ya puedes iniciar sesión.")
+        return redirect('login')
+    else:
+        messages.error(request, "El enlace de activación no es válido o ha expirado.")
+        return redirect('login')
+    
 # Vista para administrador
 @login_required
 @user_passes_test(is_admin)

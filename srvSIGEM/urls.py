@@ -28,6 +28,9 @@ urlpatterns = [
     #Ruta del la pagina crear usuario 
     path('crear_usuario/', views.crear_usuario, name='crear_usuario'),
     
+    path('activar/<uidb64>/<token>/', views.activar_cuenta, name='activar_cuenta'),
+
+    
     #Ruta de la pagina perfil 
      path('perfil/', views.perfil_usuario, name='perfil'),
     
