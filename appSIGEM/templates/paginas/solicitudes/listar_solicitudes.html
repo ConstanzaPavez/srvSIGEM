@@ -12,16 +12,18 @@
               data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false"
               aria-controls="collapse{{ solicitud.id }}">
               <span class="fw-semibold">📝 Solicitud — {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
-              <span class="ms-auto badge px-3 py-2 rounded-pill
-                {% if solicitud.estado == 'PEND' %} bg-warning text-dark
-                {% elif solicitud.estado == 'APR' or solicitud.estado == 'PAR' %} bg-success
-                {% elif solicitud.estado == 'RECH' %} bg-danger
-                {% elif solicitud.estado == 'CANC' %} bg-secondary
-                {% else %} bg-light text-dark {% endif %}">
+              <span class="ms-auto btn btn-sm text-uppercase disabled badge px-3 py-2
+                {% if solicitud.estado == 'PEND' %} btn-outline-warning
+                {% elif solicitud.estado == 'APR' or solicitud.estado == 'PAR' %} btn-outline-success
+                {% elif solicitud.estado == 'RECH' %} btn-outline-danger
+                {% elif solicitud.estado == 'CANC' %} btn-outline-secondary
+                {% else %} btn-outline-dark {% endif %}">
                 {{ solicitud.get_estado_display }}
               </span>
             </button>
           </h2>
+
+
           <div id="collapse{{ solicitud.id }}" class="accordion-collapse collapse rounded-bottom-4"
             aria-labelledby="heading{{ solicitud.id }}" data-bs-parent="#accordionSolicitudes">
             <div class="accordion-body">
