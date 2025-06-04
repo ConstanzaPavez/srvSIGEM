@@ -5,7 +5,8 @@
                 {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}
             </div>
             <div class="card-body">
-                <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y" }}</p>
+                <p><strong>Id Solicitud:</strong> {{ solicitud.id }}</p>
+                <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</p>
                 <p><strong>Fecha Retiro:</strong> {{ solicitud.fecha_retiro }}</p>
                 <p><strong>Fecha Devolución Esperada:</strong> {{ solicitud.fecha_devolucion }}</p>
                 <table class="table table-sm table-bordered mt-2">
@@ -34,4 +35,3 @@
 {% else %}
     <p class="text-muted">No hay préstamos en el período indicado.</p>
 {% endif %}
-

@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5">
-  <h1 class="mb-5 text-center fw-bold text-dark">📄 Mis Solicitudes</h1>
-
+  <h1 class="mb-4 text-center text-dark">📄 Mis Solicitudes</h1>
   {% if solicitudes %}
+  <br>
     <div class="accordion" id="accordionSolicitudes">
       {% for solicitud in solicitudes %}
         <div class="accordion-item mb-4 border-0 shadow-sm overflow-hidden rounded-4">
-          <h2 class="accordion-header" id="heading{{ solicitud.id }}">
+          <h1 class="accordion-header" id="heading{{ solicitud.id }}">
             <button class="accordion-button collapsed d-flex justify-content-between border-0 rounded-top-4" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false"
               aria-controls="collapse{{ solicitud.id }}">
-              <span class="fw-semibold">📝 Solicitud — {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
+              <span class="fw-semibold">📝 Solicitud:{{ solicitud.id }} Fecha: {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
               <span class="ms-auto btn btn-sm text-uppercase disabled badge px-3 py-2
                 {% if solicitud.estado == 'PEND' %} btn-outline-warning
                 {% elif solicitud.estado == 'APR' or solicitud.estado == 'PAR' %} btn-outline-success
@@ -21,8 +21,7 @@
                 {{ solicitud.get_estado_display }}
               </span>
             </button>
-          </h2>
-
+          </h1>
 
           <div id="collapse{{ solicitud.id }}" class="accordion-collapse collapse rounded-bottom-4"
             aria-labelledby="heading{{ solicitud.id }}" data-bs-parent="#accordionSolicitudes">

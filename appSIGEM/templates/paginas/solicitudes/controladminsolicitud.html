@@ -12,12 +12,15 @@
     <a href="{% url 'control_solicitudes' %}?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=PAR')">Aprobadas Parcialmente</a>
     <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=RECH')">Rechazadas</a>
     <a href="{% url 'control_solicitudes' %}?estado=FIN" class="btn btn-outline-primary {% if estado_filtrado == 'FIN' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=FIN')">Finalizadas</a>
+    <a href="{% url 'control_solicitudes' %}?estado=CAN" class="btn btn-outline-primary {% if estado_filtrado == 'CAN' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=CAN')">Canceladas</a>
   </div>
-  
+
+
   {% if solicitudes %}
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>Id </th>
         <th>Usuario</th>
         <th>Fecha Solicitud</th>
         <th>Fecha Retiro</th>
@@ -30,15 +33,15 @@
     <tbody>
       {% for solicitud in solicitudes %}
       <tr>
+        <td>{{ solicitud.id }}</td>
         <td>{{ solicitud.usuario.username }}</td>
         <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
         <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
         <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
         <td>{{ solicitud.get_estado_display }}</td>
         <td>{{ solicitud.comentario_respuesta|default:" " }}</td>
-   
         <td>
-        {% if solicitud.estado == 'PEND' or solicitud.estado == 'APR' or solicitud.estado == 'PAR' or solicitud.estado == 'RECH' %}
+        {% if solicitud.estado == 'PEND' or solicitud.estado == 'APR' or solicitud.estado == 'PAR' or solicitud.estado == 'RECH' or solicitud.estado == 'CAN' %}
           <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
         {% else %}
           <span class="text-muted"> </span>
