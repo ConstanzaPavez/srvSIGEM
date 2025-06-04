@@ -4,74 +4,89 @@
 {% block content %}
 {% load widget_tweaks %}
 
-
-<div class="container my-4">
-  <h1 class="mb-4 text-center text-primary fw-bold">Gestionar Solicitud </h1>
-
-  <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
-      <h5 class="mb-0">Detalles de la Solicitud</h5>
-    </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-6">
-            <p><i class="bi bi-person-fill me-2"></i><strong>Solicitante:</strong> {{ solicitud.usuario.username }}</p>
-            <p><i class="bi bi-calendar-check-fill me-2"></i><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
-            <p><i class="bi bi-chat-left-text-fill me-2"></i><strong>Razón:</strong> {{ solicitud.razon_solicitud|default:"No especificada" }}</p>
-        </div>
-        <div class="col-md-6">
-            <p><i class="bi bi-box-arrow-in-down me-2"></i><strong>Fecha de Retiro:</strong> {{ solicitud.fecha_retiro|date:"d/m/Y" }}</p>
-            <p><i class="bi bi-box-arrow-up me-2"></i><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion|date:"d/m/Y" }}</p>
-            <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud|default:"No especificada" }}</p>
-        </div>
-
-
-      <h6 class="mt-4 mb-3 text-secondary">Materiales Solicitados:</h6>
-      <ul class="list-group">
-        {% for item in solicitud.items.all %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span><i class="bi bi-box-seam me-2"></i>{{ item.material.nom_material }}</span>
-            <span class="badge bg-primary rounded-pill">{{ item.cantidad }}</span>
-          </li>
-        {% empty %}
-          <li class="list-group-item text-muted fst-italic">No hay materiales asociados.</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h5 class="card-title mb-4">Actualizar Estado de la Solicitud</h5>
-    <form method="post" novalidate>
-      {% csrf_token %}
-      
-      <div class="mb-3">
-        <label for="{{ form.estado.id_for_label }}" class="form-label fw-semibold">Estado</label>
-        {{ form.estado|add_class:"form-select" }}
-        {% if form.estado.errors %}
-          <div class="text-danger small mt-1">{{ form.estado.errors }}</div>
-        {% endif %}
-      </div>
-
-      <div class="mb-3">
-        <label for="{{ form.comentario_respuesta.id_for_label }}" class="form-label fw-semibold">Comentario (opcional)</label>
-        {{ form.comentario_respuesta|add_class:"form-control" }}
-        {% if form.comentario_respuesta.errors %}
-          <div class="text-danger small mt-1">{{ form.comentario_respuesta.errors }}</div>
-        {% endif %}
-      </div>
-
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary">Cancelar</a>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- Bootstrap Icons CDN -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+<div class="container my-5">
+
+  <!-- Título y Resumen Superior -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary fw-bold">Gestionar Solicitud</h1>
+    <span class="btn btn-light fs-6">Estado actual: {{ solicitud.estado }}</span>
+  </div>
+
+  <!-- Card: Detalles de la Solicitud -->
+  <div class="card shadow-sm mb-4 border-0">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Detalles de la Solicitud</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p><i class="bi bi-person-fill me-2"></i><strong>Solicitante:</strong> {{ solicitud.usuario.username }}</p>
+          <p><i class="bi bi-calendar-check-fill me-2"></i><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+          <p><i class="bi bi-geo-alt-fill me-2"></i><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud|default:"No especificada" }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><i class="bi bi-box-arrow-in-down me-2"></i><strong>Fecha de Retiro:</strong> {{ solicitud.fecha_retiro|date:"d/m/Y" }}</p>
+          <p><i class="bi bi-box-arrow-up me-2"></i><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion|date:"d/m/Y" }}</p>
+          
+        </div>
+      </div>
+
+      <!-- Sección Razón en bloque claro -->
+      <div class="alert alert-secondary p-4 mb-4" style="font-size: 1.15rem;">
+        <h6 class="mb-2 fw-bold"><i class="bi bi-chat-left-text me-2"></i>Razón de la Solicitud:</h6>
+        {{ solicitud.razon_solicitud|default:"No especificada" }}
+      </div>
+
+      <!-- Materiales -->
+      <div>
+        <h6 class="mb-3 text-secondary fw-bold"><i class="bi bi-box-seam me-2"></i>Materiales Solicitados</h6>
+        <ul class="list-group">
+          {% for item in solicitud.items.all %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {{ item.material.nom_material }}
+              <span class="badge bg-primary rounded-pill">{{ item.cantidad }}</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted fst-italic">No hay materiales asociados.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Actualizar Estado -->
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Actualizar Estado</h5>
+    </div>
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="{{ form.estado.id_for_label }}" class="form-label fw-semibold">Estado</label>
+          {{ form.estado|add_class:"form-select" }}
+          {% if form.estado.errors %}
+            <div class="text-danger small mt-1">{{ form.estado.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.comentario_respuesta.id_for_label }}" class="form-label fw-semibold">Comentario (opcional)</label>
+          {{ form.comentario_respuesta|add_class:"form-control" }}
+          {% if form.comentario_respuesta.errors %}
+            <div class="text-danger small mt-1">{{ form.comentario_respuesta.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
