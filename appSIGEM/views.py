@@ -37,6 +37,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
+from django.core.mail import EmailMessage
+from django.http import HttpResponseRedirect
 
 
 
@@ -101,22 +103,35 @@ def logout_view(request):
     return redirect('login')
 
 # Vista solo para superusuarios: crear nuevo usuario
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
+
 def crear_usuario(request):
     if request.method == 'POST':
         form = CrearUsuarioForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False  # 🔒 Usuario inactivo hasta confirmar correo
+            user.is_active = False  # Usuario inactivo hasta verificar correo
             user.save()
-            enviar_correo_verificacion(request, user)
-            messages.info(request, "Usuario creado. Esperando la verificación del usuario por correo.")
-            return redirect('crear_usuario')
-        else:
-            messages.error(request, "Hubo un error al crear el usuario.")
+
+            current_site = get_current_site(request)
+            mail_subject = 'Activa tu cuenta en SIGEM'
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            activation_link = f"http://{current_site.domain}/activar/{uid}/{token}/"
+            
+            message = render_to_string('emails/activar_cuenta.html', {
+                'user': user,
+                'activation_link': activation_link,
+            })
+            email = EmailMessage(mail_subject, message, to=[user.email])
+            email.content_subtype = 'html'  # Enviar como HTML
+            email.send()
+
+            return render(request, 'paginas/registro_pendiente_verificacion.html', {
+                'email': user.email
+            })
     else:
         form = CrearUsuarioForm()
+
     return render(request, 'paginas/login/crear_usuario.html', {'form': form})
 
 
@@ -156,18 +171,17 @@ def enviar_correo_verificacion(request, user):
 def activar_cuenta(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-    except (User.DoesNotExist, ValueError, TypeError):
+        user = get_object_or_404(User, pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user is not None and default_token_generator.check_token(user, token):
+    if user and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        messages.success(request, "Cuenta activada correctamente. Ya puedes iniciar sesión.")
-        return redirect('login')
+        messages.success(request, 'Cuenta activada correctamente. Ya puedes iniciar sesión.')
+        return redirect('login')  # Asegúrate de que exista la URL 'login'
     else:
-        messages.error(request, "El enlace de activación no es válido o ha expirado.")
-        return redirect('login')
+        return render(request, 'paginas/registro/activacion_invalida.html')
     
 # Vista para administrador
 @login_required

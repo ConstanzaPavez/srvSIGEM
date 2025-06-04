@@ -12,6 +12,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.utils import timezone
 from django import forms
+import re  
 
 User = get_user_model()
 
@@ -32,6 +33,8 @@ class LoginForm(AuthenticationForm):
         })
     )
     
+
+
 class CrearUsuarioForm(UserCreationForm):
     imagen_perfil = forms.ImageField(required=False)
 
@@ -39,6 +42,11 @@ class CrearUsuarioForm(UserCreationForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'imagen_perfil', 'password1', 'password2']
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not re.match(r'^[\w\.-]+@(duocuc\.cl|profesor\.duocuc\.cl)$', email):
+            raise forms.ValidationError("Solo se permiten correos @duocuc.cl o @profesor.duocuc.cl")
+        return email
 
 class CustomLoginView(LoginView):
     authentication_form = LoginForm

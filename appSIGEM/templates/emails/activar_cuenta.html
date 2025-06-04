@@ -1,9 +1,74 @@
-<p>Hola {{ user.username }},</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Activación de Cuenta - SIGEM</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-<p>Gracias por registrarte en SIGEM.</p>
+    .email-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
 
-<p>Por favor, haz clic en el siguiente enlace para activar tu cuenta:</p>
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
 
-<p><a href="{{ activation_link }}">{{ activation_link }}</a></p>
+    h1 {
+      color:rgb(255, 255, 255);
+      margin-bottom: 10px;
+    }
 
-<p>Si no has solicitado esta cuenta, ignora este correo.</p>
+    p {
+      color: #333;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 24px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #0d6efd;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <img src="static 'paginas/img/logo.jpg" alt="SIGEM Logo" class="logo"> <!-- Puedes cambiar por tu logo -->
+    <h1>Bienvenido a SIGEM</h1>
+
+    <p>Gracias por registrarte. Para <strong>activar tu cuenta</strong>, haz clic en el botón de abajo.</p>
+
+    <p>Una vez ingreses al enlace, deberás iniciar sesión con tu <strong>nombre de usuario</strong> y <strong>contraseña</strong>. Al hacerlo, tu cuenta será activada automáticamente.</p>
+
+    <a href="{{ activation_link }}" class="btn">Activar Cuenta</a>
+
+    <div class="footer">
+      Si no solicitaste esta cuenta, puedes ignorar este mensaje.
+    </div>
+  </div>
+</body>
+</html>
