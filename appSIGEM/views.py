@@ -39,7 +39,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
-
+from django.core.paginator import Paginator
 
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -678,26 +678,28 @@ def listar_solicitudes(request):
     
  
 @login_required
+
 def control_admin_solicitud(request):
     if not request.user.is_staff:
         messages.error(request, "No tienes permiso para acceder a esta página.")
         return redirect('listar_solicitudes')
 
     estado = request.GET.get('estado', 'PEND').upper()
-    
     estados_validos = ['PEND', 'APR', 'PAR', 'RECH', 'FIN', 'CAN']
 
     if estado in estados_validos:
-        solicitudes = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
+        solicitudes_queryset = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
     else:
-        solicitudes = Solicitud.objects.all().order_by('-fecha_solicitud')
+        solicitudes_queryset = Solicitud.objects.all().order_by('-fecha_solicitud')
+
+    paginator = Paginator(solicitudes_queryset, 10)  # Mostrar 10 solicitudes por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'paginas/solicitudes/controladminsolicitud.html', {
-        'solicitudes': solicitudes,
+        'page_obj': page_obj,
         'estado_filtrado': estado
     })
-
-
 
 
 

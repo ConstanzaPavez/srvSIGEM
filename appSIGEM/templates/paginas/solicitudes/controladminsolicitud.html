@@ -6,21 +6,19 @@
 
   <!-- Filtros de estado -->
   <div class="btn-group mb-3" role="group" aria-label="Filtro de estado">
-
-    <a href="{% url 'control_solicitudes' %}?estado=Pend" class="btn btn-outline-primary {% if estado_filtrado == 'Pend' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=Pend')">Pendientes</a>
-    <a href="{% url 'control_solicitudes' %}?estado=APR" class="btn btn-outline-primary {% if estado_filtrado == 'APR' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=APR')">Aprobadas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=PAR')">Aprobadas Parcialmente</a>
-    <a href="{% url 'control_solicitudes' %}?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=RECH')">Rechazadas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=FIN" class="btn btn-outline-primary {% if estado_filtrado == 'FIN' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=FIN')">Finalizadas</a>
-    <a href="{% url 'control_solicitudes' %}?estado=CAN" class="btn btn-outline-primary {% if estado_filtrado == 'CAN' %}active{% endif %}" onclick="filtrarSinHistorial(event, '?estado=CAN')">Canceladas</a>
+    <a href="?estado=Pend" class="btn btn-outline-primary {% if estado_filtrado == 'Pend' %}active{% endif %}">Pendientes</a>
+    <a href="?estado=APR" class="btn btn-outline-primary {% if estado_filtrado == 'APR' %}active{% endif %}">Aprobadas</a>
+    <a href="?estado=PAR" class="btn btn-outline-primary {% if estado_filtrado == 'PAR' %}active{% endif %}">Aprobadas Parcialmente</a>
+    <a href="?estado=RECH" class="btn btn-outline-primary {% if estado_filtrado == 'RECH' %}active{% endif %}">Rechazadas</a>
+    <a href="?estado=FIN" class="btn btn-outline-primary {% if estado_filtrado == 'FIN' %}active{% endif %}">Finalizadas</a>
+    <a href="?estado=CAN" class="btn btn-outline-primary {% if estado_filtrado == 'CAN' %}active{% endif %}">Canceladas</a>
   </div>
 
-
-  {% if solicitudes %}
+  {% if page_obj %}
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Id </th>
+        <th>Id</th>
         <th>Usuario</th>
         <th>Fecha Solicitud</th>
         <th>Fecha Retiro</th>
@@ -31,7 +29,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for solicitud in solicitudes %}
+      {% for solicitud in page_obj %}
       <tr>
         <td>{{ solicitud.id }}</td>
         <td>{{ solicitud.usuario.username }}</td>
@@ -41,27 +39,50 @@
         <td>{{ solicitud.get_estado_display }}</td>
         <td>{{ solicitud.comentario_respuesta|default:" " }}</td>
         <td>
-        {% if solicitud.estado == 'PEND' or solicitud.estado == 'APR' or solicitud.estado == 'PAR' or solicitud.estado == 'RECH' or solicitud.estado == 'CAN' %}
-          <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
-        {% else %}
-          <span class="text-muted"> </span>
-        {% endif %}
+          {% if solicitud.estado in 'PEND APR PAR RECH CAN' %}
+            <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
+          {% else %}
+            <span class="text-muted"> </span>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  <!-- Paginación -->
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?estado={{ estado_filtrado }}&page=1">&laquo;</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
+
+      <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+
   {% else %}
     <p>No hay solicitudes para mostrar.</p>
   {% endif %}
 </div>
-
-<!-- Script para evitar que el cambio de filtro se agregue al historial -->
-<script>
-  function filtrarSinHistorial(event, query) {
-    event.preventDefault();
-    const base = window.location.origin + window.location.pathname;
-    location.replace(base + query);
-  }
-</script>
 {% endblock %}
