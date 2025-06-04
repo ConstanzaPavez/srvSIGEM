@@ -9,8 +9,9 @@
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0 text-center">Gestionar Devolución de material: {{ item.material.nom_material }}</h4>
             </div>
-
             <div class="card-body">
+
+
                 <form method="post" novalidate id="devolucionForm">
                     {% csrf_token %}
                 

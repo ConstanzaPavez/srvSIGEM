@@ -9,12 +9,12 @@
       <div><strong>Fecha :</strong> {{ hoy }}</div>
     </div>
 
-    <h2 class="text-center text-primary mb-4">Crear Solicitud</h2>
+    <h1 class="text-center text-black mb-4">Crear Solicitud</h1>
     <p class="text-center">Por favor, completa el siguiente formulario para crear tu solicitud.</p>
 
     <!-- 🧾 Mostrar materiales en el carrito en una tabla -->
     {% if items_carrito %}
-      <h5 class="mb-3 text-secondary">Materiales en tu carrito:</h5>
+      <h5 class="mb-3 text-secondary text-black">Materiales en tu carrito:</h5>
       <div class="table-responsive mb-4">
         <table class="table table-bordered table-striped align-middle">
           <thead class="table-light">
@@ -42,7 +42,7 @@
       {% csrf_token %}
       {{ form.non_field_errors }}
 
-      <div class="mb-3">
+      <div class="mb-4 text-black">
         <label for="id_fecha_retiro" class="form-label">Fecha de Retiro:</label>
         {{ form.fecha_retiro }}
         {{ form.fecha_retiro.errors }}
@@ -80,16 +80,44 @@
     const btnConfirmar = document.getElementById('btn-confirmar-envio');
     const form = document.querySelector('form');
 
-    btnConfirmar.addEventListener('click', function (e) {
+    function formatearFecha(fecha) {
+      if (!fecha) return '';
+      const [a, m, d] = fecha.split("-");
+      return `${d}-${m}-${a}`;
+    }
+
+    btnConfirmar.addEventListener('click', function () {
+      const fechaRetiro = document.getElementById('id_fecha_retiro')?.value || '';
+      const fechaDevolucion = document.getElementById('id_fecha_devolucion')?.value || '';
+
       Swal.fire({
         title: '¿Estás seguro?',
-        text: "¿Deseas enviar esta solicitud con los materiales seleccionados?",
+        html: `
+          <div class="text-start fs-6">
+            <p><strong>Productos seleccionados:</strong></p>
+            <ul class="mb-3" style="padding-left: 1.2rem;">
+              {% for item in items_carrito %}
+                <li><strong>{{ item.material.nom_material }}</strong> — {{ item.cantidad }} unidad{{ item.cantidad|pluralize }}</li>
+              {% endfor %}
+            </ul>
+            <p><strong>Fecha de Retiro:</strong> ${formatearFecha(fechaRetiro)}</p>
+            <p><strong>Fecha de Devolución:</strong> ${formatearFecha(fechaDevolucion)}</p>
+          </div>
+        `,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, enviar',
-        cancelButtonText: 'Cancelar'
+        focusConfirm: false,
+        confirmButtonText: '✅ Sí, enviar',
+        cancelButtonText: '❌ Cancelar',
+        customClass: {
+          popup: 'p-4 rounded-4',
+          title: 'fw-bold fs-4 text-dark',
+          htmlContainer: 'text-dark',
+          actions: 'd-flex justify-content-center gap-3 mt-4',
+          confirmButton: 'btn btn-success px-4 py-2',
+          cancelButton: 'btn btn-danger px-4 py-2'
+        },
+        buttonsStyling: false
       }).then((result) => {
         if (result.isConfirmed) {
           form.submit();

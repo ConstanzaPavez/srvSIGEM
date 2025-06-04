@@ -1,64 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-50">
-    <div class="card shadow-lg p-5 bg-white rounded-3" style="width: 100%; max-width: 700px;">
-        <h2 class="text-center text-primary mb-4">Detalle de la Solicitud</h2>
+<div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
+  <div class="card shadow-sm p-5 bg-white rounded-4 border-0" style="width: 100%; max-width: 900px;">
+    <h2 class="text-primary fw-bold mb-4">Detalle de Solicitud: {{ solicitud.id }}</h2>
+    <div class="row g-3">
+      <!-- Fila 1 -->
+      <div class="col-md-6">
+        <label class="form-label text-secondary fw-semibold">Fecha de Solicitud:</label>
+        <input type="text" class="form-control" value="{{ solicitud.fecha_solicitud|date:'d/m/Y H:i' }}" readonly>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label text-secondary fw-semibold">Estado:</label>
+        <input type="text" class="form-control" value="{{ solicitud.get_estado_display }}" readonly>
+      </div>
 
-        <!-- Fila con tres columnas -->
-        <div class="row mb-4 text-center">
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Fecha:</label>
-                <p>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</p>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Estado:</label>
-                <p>{{ solicitud.get_estado_display }}</p>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-semibold">Comentario:</label>
-                <p>{{ solicitud.comentario_respuesta|default:"-" }}</p>
-            </div>
+      <!-- Fila 2 -->
+      <div class="col-md-6">
+        <label class="form-label text-secondary fw-semibold">Fecha de Retiro:</label>
+        <input type="text" class="form-control" value="{{ solicitud.fecha_retiro|date:'d/m/Y' }}" readonly>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label text-secondary fw-semibold">Fecha de Devolución:</label>
+        <input type="text" class="form-control" value="{{ solicitud.fecha_devolucion|date:'d/m/Y' }}" readonly>
+      </div>
+
+      <!-- Fila 3 -->
+      <div class="col-md-12">
+        <label class="form-label text-secondary fw-semibold">Ubicación de Uso:</label>
+        <input type="text" class="form-control" value="{{ solicitud.ubicacion_solicitud|default:'-' }}" readonly>
+      </div>
+
+      <!-- Fila 4 -->
+      <div class="col-md-12">
+        <label class="form-label text-secondary fw-semibold">Razón de la Solicitud:</label>
+        <textarea class="form-control" rows="3" readonly>{{ solicitud.razon_solicitud|default:"-" }}</textarea>
+      </div>
+
+      <!-- Comentario del Administrador -->
+      {% if solicitud.comentario_respuesta %}
+      <div class="col-md-12">
+        <label class="form-label text-secondary fw-semibold">Comentario del Administrador:</label>
+        <textarea class="form-control bg-light" rows="3" readonly>{{ solicitud.comentario_respuesta }}</textarea>
+      </div>
+      {% endif %}
+
+      <!-- Materiales Solicitados -->
+      <div class="col-md-12 mt-3">
+        <h5 class="fw-semibold text-secondary">📦 Materiales Solicitados:</h5>
+        {% if solicitud.items.all %}
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle border-0">
+            <thead class="table-light">
+              <tr>
+                <th>Material</th>
+                <th class="text-center">Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in solicitud.items.all %}
+              <tr>
+                <td>{{ item.material.nom_material }}</td>
+                <td class="text-center fw-semibold">{{ item.cantidad }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+        {% else %}
+        <p class="text-muted">No hay ítems en esta solicitud.</p>
+        {% endif %}
+      </div>
 
-        <!-- Items Solicitados -->
-        <div class="mb-3">
-            <h5 class="fw-semibold mb-3">Items Solicitados:</h5>
-            {% if solicitud.items.all %}
-            <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Material</th>
-                            <th class="text-center">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in solicitud.items.all %}
-                        <tr>
-                            <td>{{ item.material.nom_material }}</td>
-                            <td class="text-center fw-semibold">{{ item.cantidad }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="text-muted">No hay items en esta solicitud.</p>
-            {% endif %}
-        </div>
-
-
-        <div class="text-end mt-4">
-            <a href="{% url 'listar_solicitudes' %}" class="btn btn-outline-primary">
-                <i class="bi bi-arrow-left-circle"></i> Volver a Solicitudes
-            </a>
-        </div>
+      <!-- Botón volver -->
+      <div class="col-md-12 text-end mt-4">
+        <a href="{% url 'listar_solicitudes' %}" class="btn btn-outline-primary">
+          <i class="bi bi-arrow-left-circle"></i> Volver a Solicitudes
+        </a>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
-
-
-
-
-
