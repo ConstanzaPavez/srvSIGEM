@@ -41,13 +41,14 @@ from django.utils.http import urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
-
+import requests
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
 # Función que verifica si el usuario es un superusuario
 def is_admin(user):
     return user.is_superuser
+
 
 class LoginView(View):
     def get(self, request):
@@ -94,8 +95,23 @@ class LoginView(View):
 # Vista del índice
 @login_required
 def index(request):
-    indices = range(9)  # para 9 slides (0 a 8)
-    return render(request, 'paginas/inicio/index.html', {'indices': indices})
+    api_key = '225fa5c537e44a81ab4637c95da069f3'
+    url = f'https://newsapi.org/v2/everything?q=tecnología&language=es&sortBy=publishedAt&pageSize=6&apiKey={api_key}'
+
+    response = requests.get(url)
+    noticias = []
+
+    if response.status_code == 200:
+        data = response.json()
+        noticias = data.get('articles', [])[:3]
+    else:
+        print("Error al obtener noticias:", response.status_code)
+        print(response.json())
+
+    return render(request, 'paginas/inicio/index.html', {
+        'noticias': noticias,
+        'indices': range(9)
+    })
 
 # Vista de logout
 @login_required

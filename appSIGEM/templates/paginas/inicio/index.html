@@ -167,6 +167,14 @@
       padding: 1rem;
     }
   }
+  .news-section .card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+.news-section .card:hover {
+  transform: scale(1.02);
+}
 </style>
 
 <div class="carousel-container">
@@ -290,13 +298,30 @@
 </div>
 
 <div class="news-section">
-  <h3 style="margin-bottom: 1.5rem; font-weight: 700;">Últimas Noticias</h3>
-  <ul>
-    <li><strong>20 May 2025:</strong> Nuevo curso online de impresión 3D abierto para inscripción.</li>
-    <li><strong>10 May 2025:</strong> Actualización en el sistema de solicitudes para mejor seguimiento.</li>
-    <li><strong>1 May 2025:</strong> Incorporamos nuevos equipos para laboratorio de robótica.</li>
-  </ul>
+  <h3 style="margin-bottom: 1.5rem; font-weight: 700;">Últimas Noticias de Tecnología</h3>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for noticia in noticias %}
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          {% if noticia.urlToImage %}
+            <img src="{{ noticia.urlToImage }}" class="card-img-top" alt="Imagen noticia" style="max-height: 180px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem;">{{ noticia.title }}</h5>
+            <p class="card-text" style="font-size: 0.85rem;">{{ noticia.description|default:"Sin descripción disponible." }}</p>
+          </div>
+          <div class="card-footer bg-transparent">
+            <small class="text-muted">{{ noticia.publishedAt|date:"d M Y H:i" }}</small><br>
+            <a href="{{ noticia.url }}" target="_blank" class="btn btn-sm btn-primary mt-2">Leer más</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No se encontraron noticias recientes.</p>
+    {% endfor %}
+  </div>
 </div>
+
 
 <div class="faq-section">
   <h3 style="margin-bottom: 1.5rem; font-weight: 700;">Preguntas Frecuentes</h3>
