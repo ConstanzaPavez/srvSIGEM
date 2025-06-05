@@ -888,3 +888,153 @@ def cancelar_solicitud(request, solicitud_id):
         messages.error(request, 'Solo puedes cancelar solicitudes pendientes.')
 
     return redirect('listar_solicitudes')  # o la vista que estés usando para listarlas
+
+
+
+
+import datetime
+from collections import Counter, defaultdict
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.chart import BarChart, Reference, PieChart
+from openpyxl.utils import get_column_letter
+from .models import Solicitud, ItemSolicitud
+
+def generar_reporte_excel(request):
+    wb = Workbook()
+    ws_detalle = wb.active
+    ws_detalle.title = "Detalle de Solicitudes"
+
+    # Encabezados hoja 1
+    headers = [
+        "Nº Solicitud", "Usuario", "Fecha Solicitud", "Fecha Retiro", "Fecha Devolución Esperada",
+        "Material", "Categoría", "Tipo", "Marca", "Cantidad",
+        "Fecha Devolución Real", "Estado Ingreso"
+    ]
+    ws_detalle.append(headers)
+
+    resumen_materiales = Counter()
+    resumen_usuarios = Counter()
+    resumen_por_mes = Counter()
+    resumen_estados = Counter()
+
+    for solicitud in Solicitud.objects.prefetch_related("items__material__categoria", "items__material__tipo_material", "items__material__marca").all():
+        for item in solicitud.items.all():
+            material = item.material
+            fila = [
+                solicitud.numero_solicitud,
+                solicitud.usuario.get_full_name() or solicitud.usuario.username,
+                solicitud.fecha_solicitud.date(),
+                solicitud.fecha_retiro,
+                solicitud.fecha_devolucion,
+                material.nom_material,
+                material.categoria.nombre_categoria,
+                material.tipo_material.nombre_tipo_material,
+                material.marca.nom_marca,
+                item.cantidad,
+                item.fecha_devolucion_real,
+                item.get_estado_ingreso_display() or "Pendiente"
+            ]
+            ws_detalle.append(fila)
+
+            # Actualizar datos de resumen
+            resumen_materiales[material.nom_material] += item.cantidad
+            resumen_usuarios[solicitud.usuario.get_full_name() or solicitud.usuario.username] += 1
+            resumen_por_mes[solicitud.fecha_solicitud.strftime("%Y-%m")] += 1
+            resumen_estados[item.get_estado_ingreso_display() or "Pendiente"] += 1
+
+    # Ajustar ancho de columnas
+    for col in ws_detalle.columns:
+        max_length = max(len(str(cell.value or '')) for cell in col)
+        ws_detalle.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+
+    # ---------------------------------------
+    # Hoja 2: Resumen
+    # ---------------------------------------
+    ws_resumen = wb.create_sheet("Resumen General")
+
+    ws_resumen.append(["Materiales más solicitados", "Cantidad"])
+    for mat, cant in resumen_materiales.most_common(10):
+        ws_resumen.append([mat, cant])
+
+    ws_resumen.append([])
+    ws_resumen.append(["Solicitudes por Usuario", "Cantidad"])
+    for user, count in resumen_usuarios.most_common(10):
+        ws_resumen.append([user, count])
+
+    ws_resumen.append([])
+    ws_resumen.append(["Solicitudes por Mes", "Cantidad"])
+    for mes, count in sorted(resumen_por_mes.items()):
+        ws_resumen.append([mes, count])
+
+    ws_resumen.append([])
+    ws_resumen.append(["Estados de Ingreso", "Cantidad"])
+    for estado, count in resumen_estados.items():
+        ws_resumen.append([estado, count])
+
+    # ---------------------------------------
+    # Hoja 3: Gráficos
+    # ---------------------------------------
+    ws_graficos = wb.create_sheet("Gráficos")
+
+    # Gráfico 1: Materiales más solicitados
+    chart1 = BarChart()
+    chart1.title = "Materiales más solicitados"
+    chart1.x_axis.title = "Material"
+    chart1.y_axis.title = "Cantidad"
+    data = Reference(ws_resumen, min_col=2, min_row=2, max_row=11)
+    cats = Reference(ws_resumen, min_col=1, min_row=2, max_row=11)
+    chart1.add_data(data, titles_from_data=False)
+    chart1.set_categories(cats)
+    chart1.height = 10
+    chart1.width = 20
+    ws_graficos.add_chart(chart1, "A1")
+
+    # Gráfico 2: Solicitudes por usuario
+    chart2 = BarChart()
+    chart2.title = "Solicitudes por usuario"
+    chart2.x_axis.title = "Usuario"
+    chart2.y_axis.title = "Cantidad"
+    offset = 13
+    data = Reference(ws_resumen, min_col=2, min_row=offset+1, max_row=offset+10)
+    cats = Reference(ws_resumen, min_col=1, min_row=offset+1, max_row=offset+10)
+    chart2.add_data(data, titles_from_data=False)
+    chart2.set_categories(cats)
+    chart2.height = 10
+    chart2.width = 20
+    ws_graficos.add_chart(chart2, "A20")
+
+    # Gráfico 3: Solicitudes por mes
+    chart3 = BarChart()
+    chart3.title = "Solicitudes por mes"
+    chart3.x_axis.title = "Mes"
+    chart3.y_axis.title = "Cantidad"
+    offset = 25
+    data = Reference(ws_resumen, min_col=2, min_row=offset+1, max_row=offset+len(resumen_por_mes))
+    cats = Reference(ws_resumen, min_col=1, min_row=offset+1, max_row=offset+len(resumen_por_mes))
+    chart3.add_data(data, titles_from_data=False)
+    chart3.set_categories(cats)
+    chart3.height = 10
+    chart3.width = 20
+    ws_graficos.add_chart(chart3, "A40")
+
+    # Gráfico 4: Pie de estados de ingreso
+    chart4 = PieChart()
+    chart4.title = "Estados de ingreso (al devolver)"
+    offset = 25 + len(resumen_por_mes) + 3
+    data = Reference(ws_resumen, min_col=2, min_row=offset+1, max_row=offset+len(resumen_estados))
+    cats = Reference(ws_resumen, min_col=1, min_row=offset+1, max_row=offset+len(resumen_estados))
+    chart4.add_data(data, titles_from_data=False)
+    chart4.set_categories(cats)
+    chart4.height = 10
+    chart4.width = 20
+    ws_graficos.add_chart(chart4, "A60")
+
+    # ---------------------------------------
+    # Respuesta HTTP
+    # ---------------------------------------
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    nombre_archivo = f"reporte_solicitudes_{datetime.date.today().isoformat()}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+    wb.save(response)
+    return response

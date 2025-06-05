@@ -64,6 +64,8 @@ urlpatterns = [
     
         
     path('solicitudes/<str:numero_solicitud>/', views.detalle_solicitud, name='detalle_solicitud'),
+    
+    path("reporte_excel/", views.generar_reporte_excel, name="reporte_excel"),
 
 
 

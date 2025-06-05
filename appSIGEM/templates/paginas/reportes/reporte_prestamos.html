@@ -6,6 +6,8 @@
         <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-danger">
             Descargar PDF
         </a>
+        <a href="{% url 'reporte_excel' %}" class="btn btn-success">Descargar Excel</a>
+
     </div>
 
     <form id="filtro-form" class="row g-3 mb-4">
