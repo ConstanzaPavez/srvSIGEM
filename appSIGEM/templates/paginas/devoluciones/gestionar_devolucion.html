@@ -4,28 +4,27 @@
 
 {% block content %}
 <div class="d-flex justify-content-center min-vh-100 text-black">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0 text-center">Gestionar Devolución de material: {{ item.material.nom_material }}</h4>
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-light">
+                <h2 class="mb-4 text-center">Gestionar Devolución de material: {{ item.material.nom_material }}</h2>
             </div>
             <div class="card-body">
 
-
                 <form method="post" novalidate id="devolucionForm">
                     {% csrf_token %}
-                
+
                     <!-- Mostrar fecha actual como referencia -->
                     <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary">Fecha de devolucion</label>
-                        <input type="text" class="form-control form-control-lg rounded-3 shadow-sm bg-light" value="{% now 'd/m/Y' %}" readonly>
+                        <label class="form-label fw-semibold text-muted">Fecha de devolución</label>
+                        <input type="text" class="form-control form-control-lg rounded-3 bg-light border-0" value="{% now 'd/m/Y' %}" readonly>
                     </div>
 
                     {% for field in form %}
                         {% if field.name != 'fecha_devolucion_real' %}
                         <div class="mb-4">
-                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-secondary">{{ field.label }}</label>
-                            {{ field|add_class:"form-control form-control-lg rounded-3 shadow-sm" }}
+                            <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-muted">{{ field.label }}</label>
+                            {{ field|add_class:"form-control form-control-lg rounded-3 border shadow-sm" }}
                             {% if field.help_text %}
                                 <div class="form-text">{{ field.help_text }}</div>
                             {% endif %}
@@ -35,13 +34,14 @@
                         </div>
                         {% endif %}
                     {% endfor %}
-
+                    
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-outline-primary">
+                        <button type="submit" class="btn btn-outline-primary px-4">
                             <i class="bi bi-arrow-left-circle"></i> Guardar
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
