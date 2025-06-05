@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<h1 class="mb-4 text-center ">👤 Editar Perfil</h1>
+<h1 class="mb-4 text-center "> Editar Perfil</h1>
 <div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
     <div class="card shadow-sm p-5 bg-white rounded-4 border-0" style="width: 100%; max-width: 900px;">
         
@@ -11,7 +11,7 @@
 
             <!-- Datos personales -->
             <div class="row g-3">
-                <h5 class="fw-semibold text-secondary mb-3">👤 Datos Personales</h5>
+                <h5 class="fw-semibold text-secondary mb-3">Datos Personales</h5>
                 {% for field in perfil_form %}
                     <div class="col-md-6">
                         <label for="{{ field.id_for_label }}" class="form-label text-secondary fw-semibold">{{ field.label }}</label>
@@ -30,7 +30,7 @@
 
             <!-- Cambiar contraseña -->
             <div class="row g-3">
-                <h5 class="fw-semibold text-secondary mb-3">🔒 Cambiar Contraseña</h5>
+                <h5 class="fw-semibold text-secondary mb-3">Cambiar Contraseña</h5>
                 {% for field in password_form %}
                     <div class="col-md-6">
                         <label for="{{ field.id_for_label }}" class="form-label text-secondary fw-semibold">{{ field.label }}</label>
