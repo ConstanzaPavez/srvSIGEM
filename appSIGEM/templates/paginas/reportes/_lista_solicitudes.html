@@ -1,41 +1,44 @@
 {% if solicitudes %}
-    {% for solicitud in solicitudes %}
-        <div class="card mb-3">
-            <div class="card-header bg-light d-flex justify-content-between">
-                <div>ID {{ solicitud.numero_solicitud }}</div>
-                <div>Fecha Solicitud {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</div>
-            </div>
-
-            <div class="card-body">
-                <p><strong>Estado: </strong>{{ solicitud.get_estado_display }}</p>
-
-                <p><strong>Usuario: </strong> {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}</p>
-                <p><strong>Fecha Retiro: </strong> {{ solicitud.fecha_retiro }}</p>
-                <p><strong>Fecha Devolución Esperada: </strong> {{ solicitud.fecha_devolucion }}</p>
-                <p><strong>Ubicación de uso: </strong> {{ solicitud.ubicacion_solicitud }}</p>  <!-- Aquí -->
-                <table class="table table-sm table-bordered mt-2">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Material</th>
-                            <th>Cantidad</th>
-                            <th>Fecha Devolución Real</th>
-                            <th>Estado Ingreso</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in solicitud.items.all %}
-                            <tr>
-                                <td>{{ item.material.nom_material }}</td>
-                                <td>{{ item.cantidad }}</td>
-                                <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
-                                <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% endfor %}
+<div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle shadow-sm rounded">
+        <thead class="table-light">
+            <tr class="text-center">
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Fecha Solicitud</th>
+                <th>Fecha Retiro</th>
+                <th>Fecha Devolución</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for solicitud in solicitudes %}
+            <tr>
+                <td class="text-center">{{ solicitud.numero_solicitud }}</td>
+                <td>{{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}</td>
+                <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
+                <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
+                <td class="text-center">
+                    <span class="badge bg-secondary">
+                        {{ solicitud.get_estado_display }}
+                    </span>
+                </td>
+                <td class="text-center">
+                    {% if solicitud.estado in 'PEND APR PAR RECH' %}
+                        <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm">
+                            Gestionar
+                        </a>
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
-    <p class="text-muted">No hay préstamos en el período indicado.</p>
+    <p class="text-muted text-center mt-4">No hay solicitudes disponibles para este filtro.</p>
 {% endif %}

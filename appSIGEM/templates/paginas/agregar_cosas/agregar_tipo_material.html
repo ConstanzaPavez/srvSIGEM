@@ -3,38 +3,39 @@
 {% block title %}Agregar Tipo de Material{% endblock %}
 
 {% block content %}
-<h1 class="mb-4 text-center text-primary-emphasis fw-bold">Agregar Tipo de Material</h1>
-<div class="container py-2">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card border-0 shadow-lg">
-                <div class="card-body px-4 py-4">
-                    <form method="POST" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
+<h1 class="mb-4 text-center fw-bold text-primary-emphasis">Agregar Tipo de Material</h1>
 
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.help_text %}
-                                    <div class="form-text text-muted">{{ field.help_text }}</div>
-                                {% endif %}
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+          <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
 
-                        <div class="d-flex justify-content-end pt-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Guardar
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            {% for field in form %}
+              <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field.as_widget|safe }}
+                {% if field.help_text %}
+                  <div class="form-text text-muted">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between pt-3">
+              <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <i class="bi bi-save"></i> Guardar
+              </button>
             </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- SweetAlert2 CDN -->
@@ -42,16 +43,16 @@
 
 {% if messages %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        {% for message in messages %}
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: '{{ message }}',
-                confirmButtonText: 'Aceptar'
-            });
-        {% endfor %}
-    });
+  document.addEventListener('DOMContentLoaded', function () {
+    {% for message in messages %}
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: '{{ message }}',
+        confirmButtonText: 'Aceptar'
+      });
+    {% endfor %}
+  });
 </script>
 {% endif %}
 {% endblock %}
