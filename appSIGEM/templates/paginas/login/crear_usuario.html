@@ -1,18 +1,18 @@
 {% extends "base_admin.html" %}
 {% load static %}
 {% load widget_tweaks %}
+
 {% block title %}Crear Nuevo Usuario{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-75 py-5">
-  <div class="card shadow-lg p-4 p-md-5" style="width: 100%; max-width: 600px;">
-    <h2 class="text-center text-primary mb-4">Crear Nuevo Usuario</h2>
+<div class="container d-flex justify-content-center align-items-center py-5">
+  <div class="card shadow rounded-4 w-100 p-4" style="max-width: 600px;">
+    <h2 class="text-center mb-3">Crear Nuevo Usuario</h2>
 
-    <div class="alert alert-info text-center" role="alert">
+    <div class="alert alert-info text-center mb-4">
       El nuevo usuario será asignado automáticamente con el rol de <strong>Profesor</strong>.
     </div>
 
-    {# Mostrar errores no ligados a un campo #}
     {% if form.non_field_errors %}
       <div class="alert alert-danger">
         {% for error in form.non_field_errors %}
@@ -29,9 +29,7 @@
         {{ form.username|add_class:"form-control" }}
         {% if form.username.errors %}
           <div class="text-danger small mt-1">
-            {% for error in form.username.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
+            {% for error in form.username.errors %}{{ error }}{% endfor %}
           </div>
         {% endif %}
       </div>
@@ -42,9 +40,7 @@
           {{ form.first_name|add_class:"form-control" }}
           {% if form.first_name.errors %}
             <div class="text-danger small mt-1">
-              {% for error in form.first_name.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
+              {% for error in form.first_name.errors %}{{ error }}{% endfor %}
             </div>
           {% endif %}
         </div>
@@ -53,9 +49,7 @@
           {{ form.last_name|add_class:"form-control" }}
           {% if form.last_name.errors %}
             <div class="text-danger small mt-1">
-              {% for error in form.last_name.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
+              {% for error in form.last_name.errors %}{{ error }}{% endfor %}
             </div>
           {% endif %}
         </div>
@@ -66,9 +60,7 @@
         {{ form.email|add_class:"form-control" }}
         {% if form.email.errors %}
           <div class="text-danger small mt-1">
-            {% for error in form.email.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
+            {% for error in form.email.errors %}{{ error }}{% endfor %}
           </div>
         {% endif %}
       </div>
@@ -79,9 +71,7 @@
           {{ form.password1|add_class:"form-control" }}
           {% if form.password1.errors %}
             <div class="text-danger small mt-1">
-              {% for error in form.password1.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
+              {% for error in form.password1.errors %}{{ error }}{% endfor %}
             </div>
           {% endif %}
         </div>
@@ -90,9 +80,7 @@
           {{ form.password2|add_class:"form-control" }}
           {% if form.password2.errors %}
             <div class="text-danger small mt-1">
-              {% for error in form.password2.errors %}
-                <p>{{ error }}</p>
-              {% endfor %}
+              {% for error in form.password2.errors %}{{ error }}{% endfor %}
             </div>
           {% endif %}
         </div>
@@ -103,14 +91,12 @@
         {{ form.imagen_perfil|add_class:"form-control" }}
         {% if form.imagen_perfil.errors %}
           <div class="text-danger small mt-1">
-            {% for error in form.imagen_perfil.errors %}
-              <p>{{ error }}</p>
-            {% endfor %}
+            {% for error in form.imagen_perfil.errors %}{{ error }}{% endfor %}
           </div>
         {% endif %}
       </div>
 
-      <div class="d-flex justify-content-between">
+      <div class="d-flex justify-content-between align-items-center">
         <button type="submit" class="btn btn-primary px-4">Crear Usuario</button>
         <a href="{% url 'admin_panel' %}" class="btn btn-outline-primary px-4">Volver al Panel</a>
       </div>
@@ -122,18 +108,18 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% if messages %}
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      {% for message in messages %}
-        Swal.fire({
-          icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
-          title: '{% if message.tags == "success" %}¡Éxito!{% elif message.tags == "error" %}Error{% else %}Mensaje{% endif %}',
-          text: '{{ message }}',
-          confirmButtonText: 'Aceptar'
-        });
-      {% endfor %}
-    });
-  </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    {% for message in messages %}
+      Swal.fire({
+        icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+        title: '{% if message.tags == "success" %}¡Éxito!{% elif message.tags == "error" %}Error{% else %}Mensaje{% endif %}',
+        text: '{{ message }}',
+        confirmButtonText: 'Aceptar'
+      });
+    {% endfor %}
+  });
+</script>
 {% endif %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
