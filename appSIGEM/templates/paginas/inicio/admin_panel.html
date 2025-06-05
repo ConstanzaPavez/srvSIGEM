@@ -4,91 +4,122 @@
 {% block title %}Panel de Administrador{% endblock %}
 
 {% block content %}
+
+
+
+<style>
+  @keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in {
+    animation: slideInFromLeft 0.6s ease-out;
+  }
+</style>
+
 <h1 class="mb-4 text-center text-dark">Panel de Administrador</h1>
 
 <div class="container py-5">
-  <div class="card border rounded-4 shadow-sm p-4 bg-light">
+  <div class="card border rounded-4 shadow-sm p-4 bg-light slide-in">
+
 
     <p class="text-center mb-4">Bienvenido/a: <strong>{{ request.user.username }}</strong></p>
 
-    <!-- Sección: Usuarios -->
-    <h5 class="border-bottom pb-2 mb-3 text-secondary">Gestión de Usuarios</h5>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <a href="{% url 'crear_usuario' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-person-plus me-2"></i> Crear Usuario
-        </a>
-      </div>
-      <div class="col-md-6">
-        <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-people me-2"></i> Ver Usuarios y Solicitudes
-        </a>
-      </div>
-    </div>
+    <div class="accordion" id="adminAccordion">
 
-    <!-- Sección: Materiales -->
-    <h5 class="border-bottom pb-2 mb-3 text-secondary">Gestión de Materiales</h5>
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <a href="{% url 'agregar_material' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-plus-square me-2"></i> Agregar Material
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a href="#" onclick="alert('Seleccione un material desde la lista para editar.')" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-pencil-square me-2"></i> Editar Material
-        </a>
+      <!-- Gestión de Usuarios -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingUsuarios">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsuarios" aria-expanded="false" aria-controls="collapseUsuarios">
+            Gestión de Usuarios
+          </button>
+        </h2>
+        <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingUsuarios" data-bs-parent="#adminAccordion">
+          <div class="accordion-body">
+            <a href="{% url 'crear_usuario' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-person-plus me-2"></i> Crear Usuario
+            </a>
+            <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-people me-2"></i> Ver Usuarios y Solicitudes
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div class="col-md-4">
-        <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-tools me-2"></i> Materiales Dañados
-        </a>
+      <!-- Gestión de Materiales -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingMateriales">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMateriales" aria-expanded="false" aria-controls="collapseMateriales">
+            Gestión de Materiales
+          </button>
+        </h2>
+        <div id="collapseMateriales" class="accordion-collapse collapse" aria-labelledby="headingMateriales" data-bs-parent="#adminAccordion">
+          <div class="accordion-body">
+            <a href="{% url 'agregar_material' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-plus-square me-2"></i> Agregar Material
+            </a>
+            <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-tools me-2"></i> Materiales Dañados
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Sección: Catálogos -->
-    <h5 class="border-bottom pb-2 mb-3 text-secondary">Catálogos</h5>
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-box me-2"></i> Tipo de Material
-        </a>
+      <!-- Catálogos -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingCatalogos">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCatalogos" aria-expanded="false" aria-controls="collapseCatalogos">
+            Catálogos
+          </button>
+        </h2>
+        <div id="collapseCatalogos" class="accordion-collapse collapse" aria-labelledby="headingCatalogos" data-bs-parent="#adminAccordion">
+          <div class="accordion-body">
+            <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-box me-2"></i> Tipo de Material
+            </a>
+            <a href="{% url 'agregar_marca' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-award me-2"></i> Marca
+            </a>
+            <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-tags me-2"></i> Categoría
+            </a>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <a href="{% url 'agregar_marca' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-award me-2"></i> Marca
-        </a>
+
+      <!-- Solicitudes y Reportes -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSolicitudes">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolicitudes" aria-expanded="false" aria-controls="collapseSolicitudes">
+            Solicitudes y Reportes
+          </button>
+        </h2>
+        <div id="collapseSolicitudes" class="accordion-collapse collapse" aria-labelledby="headingSolicitudes" data-bs-parent="#adminAccordion">
+          <div class="accordion-body">
+            <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-list-check me-2"></i> Control de Solicitudes
+            </a>
+            <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-secondary w-100 mb-2">
+              <i class="bi bi-arrow-repeat me-2"></i> Gestionar Devoluciones
+            </a>
+            <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-file-earmark-text me-2"></i> Reporte de Préstamos
+            </a>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-tags me-2"></i> Categoría
-        </a>
-      </div>
-    </div>
-    
-    <!-- Sección: Solicitudes y Reportes -->
-    <h5 class="border-bottom pb-2 mb-3 text-secondary">Solicitudes y Reportes</h5>
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-list-check me-2"></i> Control de Solicitudes
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-arrow-repeat me-2"></i> Gestionar Devoluciones
-        </a>
-      </div>
-      <div class="col-md-4">
-        <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-file-earmark-text me-2"></i> Reporte de Préstamos
-        </a>
-      </div>
+
     </div>
 
     <!-- Cierre de sesión -->
-    <div class="text-center mt-4">
+    <div class="text-center mt-5">
       <a href="{% url 'logout' %}" class="btn btn-dark px-5">
         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
       </a>
@@ -96,4 +127,6 @@
 
   </div>
 </div>
+
 {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
