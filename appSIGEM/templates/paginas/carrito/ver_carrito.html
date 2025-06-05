@@ -2,11 +2,10 @@
 {% block title %}Mi Carrito{% endblock %}
 
 {% block content %}
+
+<h1 class="mb-4 text-center">Mi Carrito</h1>
 <div class="container py-5 d-flex justify-content-center">
   <div class="card shadow-lg" style="width: 100%; max-width: 700px;">
-    <div class="card-header bg-primary text-white text-center">
-      <h2 class="mb-0">Mi Carrito</h2>
-    </div>
 
     <div class="card-body">
       {% if carrito.items.all %}
