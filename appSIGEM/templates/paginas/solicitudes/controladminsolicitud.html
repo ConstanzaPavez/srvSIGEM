@@ -1,117 +1,114 @@
 {% extends 'base_admin.html' %}
 
 {% block content %}
-<div class="container mt-4">
-  <h1 class="mb-4 text-center">Control de Solicitudes</h1>
 
+<h1 class="mb-4 text-center">Control de Solicitudes</h1>
 
+<div class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <form method="get" class="row g-3 mb-4 align-items-end">
+        <input type="hidden" name="estado" value="{{ estado_filtrado }}">
 
+        <div class="col-md-3">
+          <label class="form-label">Usuario</label>
+          <input type="text" name="usuario" class="form-control" placeholder="Buscar por usuario" value="{{ usuario_filtro }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">ID Solicitud</label>
+          <input type="text" name="numero_solicitud" class="form-control" placeholder="ID de Solicitud" value="{{ numero_filtro }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Fecha Solicitud</label>
+          <input type="date" name="fecha_solicitud" class="form-control" value="{{ fecha_filtro }}">
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-dark w-50">Filtrar</button>
+          <a href="?estado={{ estado_filtrado }}" class="btn btn-outline-secondary w-50">Limpiar</a>
+        </div>
+      </form>
 
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        {% for codigo, nombre in estados %}
+          <a href="?estado={{ codigo }}{% if usuario_filtro %}&usuario={{ usuario_filtro }}{% endif %}{% if fecha_filtro %}&fecha_solicitud={{ fecha_filtro }}{% endif %}{% if numero_filtro %}&numero_solicitud={{ numero_filtro }}{% endif %}"
+            class="btn {% if estado_filtrado == codigo %}btn-dark{% else %}btn-outline-dark{% endif %} btn-sm">
+            {{ nombre }}
+          </a>
+        {% endfor %}
+      </div>
 
+      {% if page_obj %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Fecha Solicitud</th>
+              <th>Fecha Retiro</th>
+              <th>Fecha Devolución</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for solicitud in page_obj %}
+              <tr>
+                <td>{{ solicitud.numero_solicitud }}</td>
+                <td>{{ solicitud.usuario.username }}</td>
+                <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
+                <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
+                <td>{{ solicitud.get_estado_display }}</td>
+                <td>
+                  {% if solicitud.estado in 'PEND APR PAR RECH' %}
+                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-dark btn-sm">Gestionar</a>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-  <form method="get" class="mb-3 row g-2">
-    <input type="hidden" name="estado" value="{{ estado_filtrado }}">
-
-    <div class="col-md-3">
-      <input type="text" name="usuario" class="form-control" placeholder="Buscar por usuario"
-            value="{{ usuario_filtro }}">
-    </div>
-
-    <div class="col-md-3">
-      <input type="text" name="numero_solicitud" class="form-control" placeholder="ID de Solicitud"
-            value="{{ numero_filtro }}">
-    </div>
-
-    <div class="col-md-3">
-      <input type="date" name="fecha_solicitud" class="form-control" value="{{ fecha_filtro }}">
-    </div>
-
-    <div class="col-md-3 d-flex">
-      <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-      <a href="?estado={{ estado_filtrado }}" class="btn btn-secondary">Limpiar</a>
-    </div>
-  
-
-
-    <!-- Filtros de estado -->
-    <div class="btn-group mb-3" role="group" aria-label="Filtro de estado">
-      {% for codigo, nombre in estados %}
-        <a href="?estado={{ codigo }}{% if usuario_filtro %}&usuario={{ usuario_filtro }}{% endif %}{% if fecha_filtro %}&fecha_solicitud={{ fecha_filtro }}{% endif %}{% if numero_filtro %}&numero_solicitud={{ numero_filtro }}{% endif %}"
-          class="btn btn-outline-primary {% if estado_filtrado == codigo %}active{% endif %}">
-          {{ nombre }}
-        </a>
-      {% endfor %}
-    </div>
-
-
-  </form>  
-  {% if page_obj %}
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Id Solicitud</th>
-        <th>Usuario</th>
-        <th>Fecha Solicitud</th>
-        <th>Fecha Retiro</th>
-        <th>Fecha Devolución</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for solicitud in page_obj %}
-      <tr>
-        <td>{{ solicitud.numero_solicitud }}</td>
-        <td>{{ solicitud.usuario.username }}</td>
-        <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
-        <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
-        <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
-        <td>{{ solicitud.get_estado_display }}</td>
-        <td>
-          {% if solicitud.estado in 'PEND APR PAR RECH' %}
-            <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
+      <!-- Paginación -->
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?estado={{ estado_filtrado }}&page=1">&laquo;</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
           {% else %}
-            <span class="text-muted"> </span>
+            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
           {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
 
-  <!-- Paginación -->
-  <nav>
-    <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?estado={{ estado_filtrado }}&page=1">&laquo;</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.previous_page_number }}">Anterior</a>
-        </li>
+          <li class="page-item disabled">
+            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+          </li>
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+          {% endif %}
+        </ul>
+      </nav>
       {% else %}
-        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
-        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        <p class="text-muted text-center mt-4">No hay solicitudes para mostrar.</p>
       {% endif %}
-
-      <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.next_page_number }}">Siguiente</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.paginator.num_pages }}">&raquo;</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-      {% endif %}
-    </ul>
-  </nav>
-
-  {% else %}
-    <p>No hay solicitudes para mostrar.</p>
-  {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
