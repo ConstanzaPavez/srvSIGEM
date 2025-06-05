@@ -95,7 +95,7 @@ class LoginView(View):
 # Vista del índice
 @login_required
 def index(request):
-    api_key = '225fa5c537e44a81ab4637c95da069f3'
+    api_key = '251ce61d7fd44f4395658df3e3606ff5'
     url = f'https://newsapi.org/v2/everything?q=tecnología&language=es&sortBy=publishedAt&pageSize=6&apiKey={api_key}'
 
     response = requests.get(url)
