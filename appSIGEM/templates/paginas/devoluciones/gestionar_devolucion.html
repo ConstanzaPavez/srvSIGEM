@@ -3,18 +3,24 @@
 {% load tz %}
 
 {% block content %}
+
+<!-- AOS Animación -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
+
 <div class="d-flex justify-content-center min-vh-100 text-black">
-    <div class="col-md-10">
+    <div class="col-md-10" data-aos="fade-up" data-aos-duration="700">
         <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-light">
+            <div class="card-header bg-light border-bottom-0">
                 <h2 class="mb-4 text-center">Gestionar Devolución de material: {{ item.material.nom_material }}</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body bg-white">
 
                 <form method="post" novalidate id="devolucionForm">
                     {% csrf_token %}
 
-                    <!-- Mostrar fecha actual como referencia -->
+                    <!-- Fecha actual -->
                     <div class="mb-4">
                         <label class="form-label fw-semibold text-muted">Fecha de devolución</label>
                         <input type="text" class="form-control form-control-lg rounded-3 bg-light border-0" value="{% now 'd/m/Y' %}" readonly>
@@ -36,8 +42,8 @@
                     {% endfor %}
                     
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-outline-primary px-4">
-                            <i class="bi bi-arrow-left-circle"></i> Guardar
+                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
+                            Guardar devolución
                         </button>
                     </div>
                 </form>
@@ -47,6 +53,7 @@
     </div>
 </div>
 
+<!-- Validación JS -->
 <script>
 (() => {
   const form = document.getElementById('devolucionForm');
@@ -75,4 +82,5 @@
   checkObservacionRequired();
 })();
 </script>
+
 {% endblock %}

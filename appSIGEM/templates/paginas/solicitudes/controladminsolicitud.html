@@ -2,67 +2,79 @@
 
 {% block content %}
 
-<h1 class="mb-4 text-center">Control de Solicitudes</h1>
+<!-- Animaciones -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
+
+<h1 class="mb-4 text-center text-primary-emphasis fw-bold">Control de Solicitudes</h1>
 
 <div class="container mt-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-body">
-      <form method="get" class="row g-3 mb-4 align-items-end">
+  <div class="card shadow-sm border-0 rounded-4" data-aos="fade-up" data-aos-duration="600">
+    <div class="card-body p-4">
+
+      <!-- Filtros -->
+      <form method="get" class="row g-4 mb-4 align-items-end">
         <input type="hidden" name="estado" value="{{ estado_filtrado }}">
 
         <div class="col-md-3">
-          <label class="form-label">Usuario</label>
-          <input type="text" name="usuario" class="form-control" placeholder="Buscar por usuario" value="{{ usuario_filtro }}">
+          <label class="form-label fw-semibold text-muted">Usuario</label>
+          <input type="text" name="usuario" class="form-control rounded-3 shadow-sm" placeholder="Buscar por usuario" value="{{ usuario_filtro }}">
         </div>
+
         <div class="col-md-3">
-          <label class="form-label">ID Solicitud</label>
-          <input type="text" name="numero_solicitud" class="form-control" placeholder="ID de Solicitud" value="{{ numero_filtro }}">
+          <label class="form-label fw-semibold text-muted">ID Solicitud</label>
+          <input type="text" name="numero_solicitud" class="form-control rounded-3 shadow-sm" placeholder="ID de Solicitud" value="{{ numero_filtro }}">
         </div>
+
         <div class="col-md-3">
-          <label class="form-label">Fecha Solicitud</label>
-          <input type="date" name="fecha_solicitud" class="form-control" value="{{ fecha_filtro }}">
+          <label class="form-label fw-semibold text-muted">Fecha Solicitud</label>
+          <input type="date" name="fecha_solicitud" class="form-control rounded-3 shadow-sm" value="{{ fecha_filtro }}">
         </div>
+
         <div class="col-md-3 d-flex gap-2">
-          <button type="submit" class="btn btn-primary w-50">Filtrar</button>
-          <a href="?estado={{ estado_filtrado }}" class="btn btn-secondary w-50">Limpiar</a>
+          <button type="submit" class="btn btn-primary w-50 rounded-pill shadow-sm">Filtrar</button>
+          <a href="?estado={{ estado_filtrado }}" class="btn btn-outline-secondary w-50 rounded-pill shadow-sm">Limpiar</a>
         </div>
       </form>
 
+      <!-- Estados -->
       <div class="d-flex flex-wrap gap-2 mb-4">
         {% for codigo, nombre in estados %}
           <a href="?estado={{ codigo }}{% if usuario_filtro %}&usuario={{ usuario_filtro }}{% endif %}{% if fecha_filtro %}&fecha_solicitud={{ fecha_filtro }}{% endif %}{% if numero_filtro %}&numero_solicitud={{ numero_filtro }}{% endif %}"
-            class="btn {% if estado_filtrado == codigo %}btn-dark{% else %}btn-outline-dark{% endif %} btn-sm">
+            class="btn {% if estado_filtrado == codigo %}btn-dark{% else %}btn-outline-dark{% endif %} btn-sm rounded-pill">
             {{ nombre }}
           </a>
         {% endfor %}
       </div>
 
+      <!-- Tabla de Solicitudes -->
       {% if page_obj %}
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
+      <div class="table-responsive" data-aos="fade-in" data-aos-delay="100">
+        <table class="table align-middle table-hover border rounded-4 overflow-hidden">
+          <thead class="table-light border-bottom">
             <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Fecha Solicitud</th>
-              <th>Fecha Retiro</th>
-              <th>Fecha Devolución</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+              <th class="text-muted">ID</th>
+              <th class="text-muted">Usuario</th>
+              <th class="text-muted">Fecha Solicitud</th>
+              <th class="text-muted">Fecha Retiro</th>
+              <th class="text-muted">Fecha Devolución</th>
+              <th class="text-muted">Estado</th>
+              <th class="text-muted text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {% for solicitud in page_obj %}
-              <tr>
+              <tr class="align-middle">
                 <td>{{ solicitud.numero_solicitud }}</td>
                 <td>{{ solicitud.usuario.username }}</td>
                 <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
                 <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
                 <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
                 <td>{{ solicitud.get_estado_display }}</td>
-                <td>
+                <td class="text-center">
                   {% if solicitud.estado in 'PEND APR PAR RECH' %}
-                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm">Gestionar</a>
+                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Gestionar</a>
                   {% else %}
                     <span class="text-muted">—</span>
                   {% endif %}
@@ -77,38 +89,30 @@
       <nav class="mt-4">
         <ul class="pagination justify-content-center">
           {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a class="page-link" href="?estado={{ estado_filtrado }}&page=1">&laquo;</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
+            <li class="page-item"><a class="page-link" href="?estado={{ estado_filtrado }}&page=1">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.previous_page_number }}">Anterior</a></li>
           {% else %}
             <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
             <li class="page-item disabled"><span class="page-link">Anterior</span></li>
           {% endif %}
 
-          <li class="page-item disabled">
-            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-          </li>
+          <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
 
           {% if page_obj.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.next_page_number }}">Siguiente</a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.paginator.num_pages }}">&raquo;</a>
-            </li>
+            <li class="page-item"><a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.next_page_number }}">Siguiente</a></li>
+            <li class="page-item"><a class="page-link" href="?estado={{ estado_filtrado }}&page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
           {% else %}
             <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
             <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
           {% endif %}
         </ul>
       </nav>
+
       {% else %}
-        <p class="text-muted text-center mt-4">No hay solicitudes para mostrar.</p>
+        <p class="text-muted text-center mt-5">No hay solicitudes para mostrar.</p>
       {% endif %}
     </div>
   </div>
 </div>
+
 {% endblock %}
