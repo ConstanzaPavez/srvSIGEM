@@ -27,7 +27,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from time import timezone
-from datetime import date
+from datetime import datetime, date, timedelta
+
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -247,12 +248,12 @@ def agregar_material(request):
     return render(request, 'paginas/agregar_cosas/agregar_material.html', {'form': form})
 
 #listar materiales
-from datetime import date, timedelta
+
 from django.contrib.auth.decorators import login_required
 from .models import Material, CategoriaDj
 
 
-from datetime import date, timedelta, datetime
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import render
@@ -891,7 +892,7 @@ def cancelar_solicitud(request, solicitud_id):
 
 
 
-import datetime
+
 from collections import defaultdict
 from django.db.models import Q
 from django.http import HttpResponse

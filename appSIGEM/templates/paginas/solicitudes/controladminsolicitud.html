@@ -24,7 +24,6 @@
         <th>Fecha Retiro</th>
         <th>Fecha Devolución</th>
         <th>Estado</th>
-        <th>Comentario</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -37,9 +36,8 @@
         <td>{{ solicitud.fecha_retiro|date:"d/m/Y" }}</td>
         <td>{{ solicitud.fecha_devolucion|date:"d/m/Y" }}</td>
         <td>{{ solicitud.get_estado_display }}</td>
-        <td>{{ solicitud.comentario_respuesta|default:" " }}</td>
         <td>
-          {% if solicitud.estado in 'PEND APR PAR RECH CAN' %}
+          {% if solicitud.estado in 'PEND APR PAR RECH' %}
             <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-sm btn-primary">Gestionar</a>
           {% else %}
             <span class="text-muted"> </span>
