@@ -1,8 +1,11 @@
 {% extends 'base_admin.html' %}
 {% block content %}
+<h1 class="mb-4 text-center">Reporte de Préstamos</h1>
 <div class="container mt-4">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Reporte de Préstamos</h1>
+        
+
         <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-danger">
             Descargar PDF
         </a>
