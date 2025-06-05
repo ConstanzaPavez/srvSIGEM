@@ -4,9 +4,10 @@
 {% block title %}Perfil de Usuario{% endblock %}
 
 {% block content %}
+<h1 class="text-center mb-4">👤 Tu Perfil</h1>
 <div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
     <div class="card shadow-sm p-4 bg-white rounded-4 border-0" style="max-width: 700px; width: 100%;">
-        <h2 class="text-center text-dark mb-4">👤 Tu Perfil</h2>
+        
         <div class="row g-4">
             <div class="col-md-4 text-center">
                 {% with user.perfilusuario_set.first as perfil %}
