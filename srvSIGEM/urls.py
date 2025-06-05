@@ -61,7 +61,8 @@ urlpatterns = [
 
     path('solicitudes/<int:solicitud_id>/gestionar/', gestionar_solicitud, name='gestionar_solicitud'),
     
-    
+    path('materiales/<int:pk>/editar/', views.editar_materiales, name='editar_material'),
+path('materiales/<int:pk>/eliminar/', views.eliminar_materiales, name='eliminar_material'),
         
     path('solicitudes/<str:numero_solicitud>/', views.detalle_solicitud, name='detalle_solicitud'),
     
@@ -94,7 +95,7 @@ urlpatterns = [
     path('perfil/editar/', views.editar_perfil, name='editar_perfil'),
 
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-     
+    
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

@@ -5,64 +5,93 @@
 
 {% block content %}
 <h1 class="mb-4 text-center text-dark">Panel de Administrador</h1>
+
 <div class="container py-5">
   <div class="card shadow-sm p-4 bg-white rounded-4 border-0">
+    <h6 class="text-center mb-4">Bienvenido: <strong>{{ request.user.username }}</strong></h6>
 
-    <h6 class="text-center d-block mb-2">Bienvenido: <strong>{{ request.user.username }}</strong></h6>
-
-    <div class="row g-4 mt-3">
-      <div class="col-12 col-md-6">
-        <a href="{% url 'crear_usuario' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-person-plus-fill me-2 fs-4"></i> Crear Nuevo Usuario
+    <!-- Gestión de usuarios -->
+    <h5 class="text-primary border-bottom pb-2 mb-3">Gestión de Usuarios</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <a href="{% url 'crear_usuario' %}" class="btn btn-outline-primary w-100">
+          <i class="bi bi-person-plus-fill me-2"></i> Crear Nuevo Usuario
         </a>
       </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-card-checklist me-2 fs-4"></i> Control de Solicitudes
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-people-fill me-2 fs-4"></i> Ver Usuarios y Solicitudes
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-file-earmark-text-fill me-2 fs-4"></i> Reportes de Préstamos
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-arrow-counterclockwise me-2 fs-4"></i> Gestionar Devoluciones
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'agregar_material' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-plus-square-fill me-2 fs-4"></i> Agregar Material
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-box-seam me-2 fs-4"></i> Agregar Tipo de Material
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'agregar_marca' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-award-fill me-2 fs-4"></i> Agregar Marca
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-tags-fill me-2 fs-4"></i> Agregar Categoría
-        </a>
-      </div>
-      <div class="col-12 col-md-6">
-        <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center py-3">
-          <i class="bi bi-tools me-2 fs-4"></i> Materiales Dañados
+      <div class="col-md-6">
+        <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-primary w-100">
+          <i class="bi bi-people-fill me-2"></i> Ver Usuarios y Solicitudes
         </a>
       </div>
     </div>
 
+    <!-- Gestión de materiales -->
+    <h5 class="text-success border-bottom pb-2 mb-3">Gestión de Materiales</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <a href="{% url 'agregar_material' %}" class="btn btn-outline-success w-100">
+          <i class="bi bi-plus-square-fill me-2"></i> Agregar Material
+        </a>
+      </div>
+
+      <div class="col-md-6">
+        <a href="#" onclick="alert('Seleccione un material desde la lista para editar.')" class="btn btn-outline-warning w-100">
+          <i class="bi bi-pencil-square me-2"></i> Editar Material
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="#" onclick="alert('Seleccione un material desde la lista para eliminar.')" class="btn btn-outline-danger w-100">
+          <i class="bi bi-trash-fill me-2"></i> Eliminar Material
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-tools me-2"></i> Materiales Dañados
+        </a>
+      </div>
+    </div>
+
+    <!-- Configuración de catálogos -->
+    <h5 class="text-info border-bottom pb-2 mb-3">Configuraciones</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-info w-100">
+          <i class="bi bi-box-seam me-2"></i> Agregar Tipo de Material
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'agregar_marca' %}" class="btn btn-outline-info w-100">
+          <i class="bi bi-award-fill me-2"></i> Agregar Marca
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-info w-100">
+          <i class="bi bi-tags-fill me-2"></i> Agregar Categoría
+        </a>
+      </div>
+    </div>
+
+    <!-- Solicitudes y reportes -->
+    <h5 class="text-dark border-bottom pb-2 mb-3">Solicitudes y Reportes</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-dark w-100">
+          <i class="bi bi-card-checklist me-2"></i> Control de Solicitudes
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-dark w-100">
+          <i class="bi bi-arrow-counterclockwise me-2"></i> Gestionar Devoluciones
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-dark w-100">
+          <i class="bi bi-file-earmark-text-fill me-2"></i> Reportes de Préstamos
+        </a>
+      </div>
+    </div>
+
+    <!-- Cierre de sesión -->
     <div class="text-center mt-4">
       <a href="{% url 'logout' %}" class="btn btn-danger px-5">
         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
