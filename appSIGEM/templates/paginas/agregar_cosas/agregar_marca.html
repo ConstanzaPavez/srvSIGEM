@@ -3,13 +3,12 @@
 {% block title %}Agregar Marca{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+
+<h1 class="mb-4 text-center">Agregar Marca</h1>
+<div class="container py-2">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
             <div class="card border-0 shadow-lg">
-                <div class="card-header bg-primary text-white text-center rounded-top">
-                    <h4 class="mb-0">Agregar Marca</h4>
-                </div>
                 <div class="card-body px-4 py-4">
                     <form method="POST" novalidate>
                         {% csrf_token %}
