@@ -1,14 +1,18 @@
 {% if solicitudes %}
     {% for solicitud in solicitudes %}
         <div class="card mb-3">
-            <div class="card-header bg-light">
-                {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}
+            <div class="card-header bg-light d-flex justify-content-between">
+                <div>ID {{ solicitud.numero_solicitud }}</div>
+                <div>Fecha Solicitud {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</div>
             </div>
+
             <div class="card-body">
-                <p><strong>Id Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
-                <p><strong>Fecha Solicitud:</strong> {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</p>
-                <p><strong>Fecha Retiro:</strong> {{ solicitud.fecha_retiro }}</p>
-                <p><strong>Fecha Devolución Esperada:</strong> {{ solicitud.fecha_devolucion }}</p>
+                <p><strong>Estado: </strong>{{ solicitud.get_estado_display }}</p>
+
+                <p><strong>Usuario: </strong> {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}</p>
+                <p><strong>Fecha Retiro: </strong> {{ solicitud.fecha_retiro }}</p>
+                <p><strong>Fecha Devolución Esperada: </strong> {{ solicitud.fecha_devolucion }}</p>
+                <p><strong>Ubicación de uso: </strong> {{ solicitud.ubicacion_solicitud }}</p>  <!-- Aquí -->
                 <table class="table table-sm table-bordered mt-2">
                     <thead class="table-light">
                         <tr>
