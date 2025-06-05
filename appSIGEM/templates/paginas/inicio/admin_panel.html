@@ -6,124 +6,94 @@
 {% block content %}
 <h1 class="mb-4 text-center text-dark">Panel de Administrador</h1>
 
-<div class="container pb-5">
-  <div class="row g-4">
+<div class="container py-5">
+  <div class="card border rounded-4 shadow-sm p-4 bg-light">
 
-    <!-- Usuarios -->
-    <div class="col-12">
-      <div class="card border-0 shadow-sm bg-light">
-        <div class="card-body">
-          <h5 class="card-title border-bottom pb-2 text-muted">Gestión de Usuarios</h5>
-          <div class="row g-2">
-            <div class="col-md-6">
-              <a href="{% url 'crear_usuario' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-person-plus me-2"></i> Crear Usuario
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-people me-2"></i> Ver Usuarios y Solicitudes
-              </a>
-            </div>
-          </div>
-        </div>
+    <p class="text-center mb-4">Bienvenido/a: <strong>{{ request.user.username }}</strong></p>
+
+    <!-- Sección: Usuarios -->
+    <h5 class="border-bottom pb-2 mb-3 text-secondary">Gestión de Usuarios</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <a href="{% url 'crear_usuario' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-person-plus me-2"></i> Crear Usuario
+        </a>
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'listar_usuarios' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-people me-2"></i> Ver Usuarios y Solicitudes
+        </a>
       </div>
     </div>
 
-    <!-- Materiales -->
-    <div class="col-12">
-      <div class="card border-0 shadow-sm bg-light">
-        <div class="card-body">
-          <h5 class="card-title border-bottom pb-2 text-muted">Gestión de Materiales</h5>
-          <div class="row g-2">
-            <div class="col-md-6">
-              <a href="{% url 'agregar_material' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-plus-square me-2"></i> Agregar Material
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="{% url 'listar_materiales' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-box-seam me-2"></i> Listar Materiales
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="#" onclick="alert('Seleccione un material desde la lista para editar.')" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-pencil-square me-2"></i> Editar Material
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="#" onclick="alert('Seleccione un material desde la lista para eliminar.')" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-trash me-2"></i> Eliminar Material
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-tools me-2"></i> Materiales Dañados
-              </a>
-            </div>
-          </div>
-        </div>
+    <!-- Sección: Materiales -->
+    <h5 class="border-bottom pb-2 mb-3 text-secondary">Gestión de Materiales</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <a href="{% url 'agregar_material' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-plus-square me-2"></i> Agregar Material
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="#" onclick="alert('Seleccione un material desde la lista para editar.')" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-pencil-square me-2"></i> Editar Material
+        </a>
+      </div>
+
+      <div class="col-md-4">
+        <a href="{% url 'listar_materiales_danados' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-tools me-2"></i> Materiales Dañados
+        </a>
       </div>
     </div>
 
-    <!-- Catálogos -->
-    <div class="col-12">
-      <div class="card border-0 shadow-sm bg-light">
-        <div class="card-body">
-          <h5 class="card-title border-bottom pb-2 text-muted">Catálogos</h5>
-          <div class="row g-2">
-            <div class="col-md-4">
-              <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-box me-2"></i> Tipo de Material
-              </a>
-            </div>
-            <div class="col-md-4">
-              <a href="{% url 'agregar_marca' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-award me-2"></i> Marca
-              </a>
-            </div>
-            <div class="col-md-4">
-              <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-tags me-2"></i> Categoría
-              </a>
-            </div>
-          </div>
-        </div>
+    <!-- Sección: Catálogos -->
+    <h5 class="border-bottom pb-2 mb-3 text-secondary">Catálogos</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <a href="{% url 'agregar_tipo_material' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-box me-2"></i> Tipo de Material
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'agregar_marca' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-award me-2"></i> Marca
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'agregar_categoria' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-tags me-2"></i> Categoría
+        </a>
       </div>
     </div>
-
-    <!-- Solicitudes y reportes -->
-    <div class="col-12">
-      <div class="card border-0 shadow-sm bg-light">
-        <div class="card-body">
-          <h5 class="card-title border-bottom pb-2 text-muted">Solicitudes y Reportes</h5>
-          <div class="row g-2">
-            <div class="col-md-6">
-              <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-list-check me-2"></i> Control de Solicitudes
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-arrow-repeat me-2"></i> Gestionar Devoluciones
-              </a>
-            </div>
-            <div class="col-md-6">
-              <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-secondary w-100">
-                <i class="bi bi-file-earmark-text me-2"></i> Reporte de Préstamos
-              </a>
-            </div>
-          </div>
-        </div>
+    
+    <!-- Sección: Solicitudes y Reportes -->
+    <h5 class="border-bottom pb-2 mb-3 text-secondary">Solicitudes y Reportes</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-list-check me-2"></i> Control de Solicitudes
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'gestionar_devoluciones' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-arrow-repeat me-2"></i> Gestionar Devoluciones
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'reporte_prestamos' %}" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-file-earmark-text me-2"></i> Reporte de Préstamos
+        </a>
       </div>
     </div>
 
     <!-- Cierre de sesión -->
-    <div class="col-12 text-center">
-      <a href="{% url 'logout' %}" class="btn btn-dark mt-4 px-5">
+    <div class="text-center mt-4">
+      <a href="{% url 'logout' %}" class="btn btn-dark px-5">
         <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
       </a>
     </div>
+
   </div>
 </div>
 {% endblock %}
