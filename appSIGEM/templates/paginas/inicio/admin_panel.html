@@ -4,10 +4,11 @@
 {% block title %}Panel de Administrador{% endblock %}
 
 {% block content %}
+<h1 class="mb-4 text-center text-dark">Panel de Administrador</h1>
 <div class="container py-5">
   <div class="card shadow-sm p-4 bg-white rounded-4 border-0">
-    <h1 class="mb-3 text-center text-dark">Panel de Administrador</h1>
-    <small class="text-muted text-center d-block mb-4">Bienvenido, <strong>{{ request.user.username }}</strong></small>
+
+    <h6 class="text-center d-block mb-2">Bienvenido: <strong>{{ request.user.username }}</strong></h6>
 
     {% if messages %}
       {% for message in messages %}

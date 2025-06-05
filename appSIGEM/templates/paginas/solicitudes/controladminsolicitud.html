@@ -4,7 +4,7 @@
 
 <h1 class="mb-4 text-center">Control de Solicitudes</h1>
 
-<div class="container mt-5">
+<div class="container mt-4">
   <div class="card shadow-sm border-0">
     <div class="card-body">
       <form method="get" class="row g-3 mb-4 align-items-end">
@@ -23,8 +23,8 @@
           <input type="date" name="fecha_solicitud" class="form-control" value="{{ fecha_filtro }}">
         </div>
         <div class="col-md-3 d-flex gap-2">
-          <button type="submit" class="btn btn-dark w-50">Filtrar</button>
-          <a href="?estado={{ estado_filtrado }}" class="btn btn-outline-secondary w-50">Limpiar</a>
+          <button type="submit" class="btn btn-primary w-50">Filtrar</button>
+          <a href="?estado={{ estado_filtrado }}" class="btn btn-secondary w-50">Limpiar</a>
         </div>
       </form>
 
@@ -62,7 +62,7 @@
                 <td>{{ solicitud.get_estado_display }}</td>
                 <td>
                   {% if solicitud.estado in 'PEND APR PAR RECH' %}
-                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-dark btn-sm">Gestionar</a>
+                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm">Gestionar</a>
                   {% else %}
                     <span class="text-muted">—</span>
                   {% endif %}
