@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import Group, Permission
+from django.utils.timezone import now
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
@@ -100,6 +101,7 @@ class ItemCarrito(models.Model):
 
 
 class Solicitud(models.Model):
+    
     ESTADOS = [
         ('PEND', 'Pendiente'),
         ('APR', 'Aprobada'),
@@ -120,10 +122,24 @@ class Solicitud(models.Model):
     razon_solicitud = models.CharField(max_length=255,verbose_name="Razón de la solicitud",null=False,blank=False)
 
     ubicacion_solicitud = models.CharField(max_length=255,verbose_name="Ubicación de uso",null=False,blank=False)
+    
+    numero_solicitud = models.CharField(max_length=20,unique=True,editable=False,verbose_name="ID de Solicitud",null=True,  blank=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.numero_solicitud:
+            anio_actual = now().year
+            cantidad_este_anio = Solicitud.objects.filter(
+                numero_solicitud__endswith=f"-{anio_actual}"
+            ).count() + 1
+            self.numero_solicitud = f"{cantidad_este_anio:03d}-{anio_actual}"
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Solicitud #{self.id} - {self.get_estado_display()}'
+        return f"Solicitud {self.numero_solicitud} - {self.get_estado_display()}"
 
+    
+    
 class ItemSolicitud(models.Model):
     solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.CASCADE)
     material = models.ForeignKey('Material', on_delete=models.CASCADE)

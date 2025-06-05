@@ -661,8 +661,8 @@ def gestionar_solicitud(request, solicitud_id):
     })
 
 
-def detalle_solicitud(request, id):
-    solicitud = get_object_or_404(Solicitud, id=id)
+def detalle_solicitud(request, numero_solicitud):
+    solicitud = get_object_or_404(Solicitud, numero_solicitud=numero_solicitud)
     return render(request, 'paginas/solicitudes/detalle_solicitud.html', {'solicitud': solicitud})
 
 @login_required

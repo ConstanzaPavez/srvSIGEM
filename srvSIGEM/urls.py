@@ -61,7 +61,13 @@ urlpatterns = [
 
     path('solicitudes/<int:solicitud_id>/gestionar/', gestionar_solicitud, name='gestionar_solicitud'),
     
-    path('solicitudes/<int:id>/', views.detalle_solicitud, name='detalle_solicitud'),
+    
+        
+    path('solicitudes/<str:numero_solicitud>/', views.detalle_solicitud, name='detalle_solicitud'),
+
+
+
+
 
     path('control_solicitudes/', views.control_admin_solicitud, name='control_solicitudes'),
 

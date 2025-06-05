@@ -7,7 +7,7 @@
         {% for solicitud in solicitudes %}
             <div class="card mb-4">
                 <div class="card-header bg-light">
-                    <strong>Solicitud #{{ solicitud.id }}</strong> 
+                    <strong>Solicitud #{{ solicitud.numero_solicitud }}</strong> 
                     <span class="badge bg-secondary float-end">{{ solicitud.get_estado_display }}</span>
                 </div>
                 <div class="card-body">

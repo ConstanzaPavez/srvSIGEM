@@ -6,7 +6,7 @@
     {% for solicitud in solicitudes %}
         <div class="card mb-4">
             <div class="card-header">
-                Usuario: {{ solicitud.usuario.username }}<br>
+                Usuario: {{ solicitud.usuario.username }} - numero: {{solicitud.numero_solicitud }}<br>
                 Retiro: {{ solicitud.fecha_retiro }} | Devolución: {{ solicitud.fecha_devolucion }}
             </div>
             <div class="card-body">

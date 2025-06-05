@@ -15,11 +15,11 @@
 
     {% for solicitud in solicitudes %}
         <div class="solicitud">
-            
+            Id Solicitud: {{solicitud.numero_solicitud}}<br>
             Usuario: {{ solicitud.usuario.get_full_name|default:solicitud.usuario.username }}<br>
             Fecha Solicitud: {{ solicitud.fecha_solicitud|date:"d/m/Y" }}<br>
-            Fecha Retiro: {{ solicitud.fecha_retiro|default:"-" }}<br>
-            Fecha Devolución Esperada: {{ solicitud.fecha_devolucion|default:"-" }}<br>
+            Fecha Retiro: {{ solicitud.fecha_retiro|default:"" }}<br>
+            Fecha Devolución Esperada: {{ solicitud.fecha_devolucion|default:"" }}<br>
 
             <table>
                 <thead>

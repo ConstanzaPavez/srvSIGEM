@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5">
-  <h1 class="mb-4 text-center text-dark">📄 Mis Solicitudes</h1>
+  <h1 class="mb-4 text-center text-dark"> Mis Solicitudes</h1>
   {% if solicitudes %}
   <br>
     <div class="accordion" id="accordionSolicitudes">
@@ -11,7 +11,7 @@
             <button class="accordion-button collapsed d-flex justify-content-between border-0 rounded-top-4" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false"
               aria-controls="collapse{{ solicitud.id }}">
-              <span class="fw-semibold">📝 Solicitud:{{ solicitud.id }} Fecha: {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
+              <span class="fw-semibold"> Solicitud  {{ solicitud.numero_solicitud }} Fecha: {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
               <span class="ms-auto btn btn-sm text-uppercase disabled badge px-3 py-2
                 {% if solicitud.estado == 'PEND' %} btn-outline-warning
                 {% elif solicitud.estado == 'APR' or solicitud.estado == 'PAR' %} btn-outline-success
@@ -36,7 +36,8 @@
               </ul>
 
               <div class="d-flex justify-content-between align-items-center">
-                <a href="{% url 'detalle_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
+                <a href="{% url 'detalle_solicitud' numero_solicitud=solicitud.numero_solicitud %}">Ver solicitud</a>
+
 
                 {% if solicitud.estado == 'PEND' %}
                   <form method="post" action="{% url 'cancelar_solicitud' solicitud.id %}" class="form-cancelar-solicitud d-inline">
