@@ -262,32 +262,56 @@ from .models import Material, CategoriaDj, Carrito, ItemSolicitud
 @login_required
 def listar_materiales(request):
     hoy = date.today()
-    q = request.GET.get('q', '').strip()
-    marca = request.GET.get('marca', '').strip()
-    tipo = request.GET.get('tipo', '').strip()
-    categoria = request.GET.get('categoria', '').strip()
 
-    # Manejo de fechas con sesión
-    fecha_inicio_str = request.GET.get('fecha_inicio')
-    fecha_fin_str = request.GET.get('fecha_fin')
-    
-    
-    # Si no hay parámetros en GET, limpiar fechas de la sesión
+    # Si no hay parámetros GET, limpiar filtros de sesión
     if not request.GET:
-        request.session.pop('fecha_inicio_filtro', None)
-        request.session.pop('fecha_fin_filtro', None)
+        for key in ['q_filtro', 'marca_filtro', 'tipo_filtro', 'categoria_filtro', 'fecha_inicio_filtro', 'fecha_fin_filtro']:
+            request.session.pop(key, None)
 
-    # Si vienen por GET, actualizar sesión
+    # Manejo de filtros con sesión
+    q = request.GET.get('q')
+    if q is not None:
+        q = q.strip()
+        request.session['q_filtro'] = q
+    else:
+        q = request.session.get('q_filtro', '')
+
+    marca = request.GET.get('marca')
+    if marca is not None:
+        marca = marca.strip()
+        request.session['marca_filtro'] = marca
+    else:
+        marca = request.session.get('marca_filtro', '')
+
+    tipo = request.GET.get('tipo')
+    if tipo is not None:
+        tipo = tipo.strip()
+        request.session['tipo_filtro'] = tipo
+    else:
+        tipo = request.session.get('tipo_filtro', '')
+
+    categoria = request.GET.get('categoria')
+    if categoria is not None:
+        categoria = categoria.strip()
+        request.session['categoria_filtro'] = categoria
+    else:
+        categoria = request.session.get('categoria_filtro', '')
+
+    fecha_inicio_str = request.GET.get('fecha_inicio')
     if fecha_inicio_str is not None:
+        fecha_inicio_str = fecha_inicio_str.strip()
         request.session['fecha_inicio_filtro'] = fecha_inicio_str
     else:
         fecha_inicio_str = request.session.get('fecha_inicio_filtro', '')
 
+    fecha_fin_str = request.GET.get('fecha_fin')
     if fecha_fin_str is not None:
+        fecha_fin_str = fecha_fin_str.strip()
         request.session['fecha_fin_filtro'] = fecha_fin_str
     else:
         fecha_fin_str = request.session.get('fecha_fin_filtro', '')
 
+    # Query inicial
     materiales = Material.objects.all()
 
     # Excluir materiales dañados
@@ -296,7 +320,7 @@ def listar_materiales(request):
         itemsolicitud__fecha_devolucion_real__isnull=False
     )
 
-    # Filtros de búsqueda
+    # Aplicar filtros
     if q:
         materiales = materiales.filter(
             Q(nom_material__icontains=q) |
@@ -311,7 +335,7 @@ def listar_materiales(request):
     if categoria:
         materiales = materiales.filter(categoria__nombre_categoria=categoria)
 
-    # Filtro por rango de fechas personalizado usando fecha_inicio_str y fecha_fin_str actualizados
+    # Filtrar por rango fechas
     if fecha_inicio_str and fecha_fin_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
@@ -329,7 +353,7 @@ def listar_materiales(request):
         except ValueError:
             pass
 
-    # Info general
+    # El resto igual
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
     tipos = Material.objects.values_list('tipo_material__nombre_tipo_material', flat=True).distinct()
     categorias_stock = CategoriaDj.objects.all().order_by('nombre_categoria')
@@ -337,7 +361,6 @@ def listar_materiales(request):
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
 
-    # Diccionario para mostrar estado visual de reserva actual
     reserva_info = {}
     reservas_activas = ItemSolicitud.objects.filter(
         solicitud__fecha_retiro__lte=hoy,
@@ -345,7 +368,6 @@ def listar_materiales(request):
         solicitud__fecha_devolucion__gte=hoy,
         solicitud__estado__in=['PEND', 'APR', 'PAR']
     )
-
     for item in reservas_activas:
         mat_id = item.material.id_material
         estado_solicitud = item.solicitud.estado
@@ -365,7 +387,6 @@ def listar_materiales(request):
         'marcas': marcas,
         'tipos': tipos,
         'categorias_stock': categorias_stock,
-        # Pasar fechas para mostrar en el formulario
         'fecha_inicio': fecha_inicio_str,
         'fecha_fin': fecha_fin_str,
         'q': q,

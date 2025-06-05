@@ -1,117 +1,123 @@
 {% extends 'base.html' %}
-{% load utils %}
-{% load dict_filters %}
-
-
-{% load static %}
-{% load filtros %}
-{% load custom_tags %}
-
+{% load utils dict_filters static filtros custom_tags %}
 
 {% block content %}
 <div class="container-fluid py-4">
-  <div class="container bg-light rounded p-3 mb-3 shadow-sm">
-    <div class="row g-2 align-items-center justify-content-between">
+  <div class="container bg-light rounded p-4 mb-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
       
-      <!-- Botón de filtros -->
-      
+    </div>
 
-      <div class="container bg-light rounded p-2 mb-3 shadow-sm">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <form method="get" action="{% url 'listar_materiales' %}">
+      <div class="row g-3">
+        <!-- Búsqueda texto -->
+        <div class="col-md-6">
+          <label for="q" class="form-label fw-semibold">Buscar</label>
+          <input 
+            type="text" 
+            id="q" 
+            name="q" 
+            value="{{ request.GET.q|default_if_none:'' }}" 
+            class="form-control" 
+            placeholder="Nombre, marca, categoría o tipo..."
+          >
+        </div>
 
-          <!-- Botón de filtros avanzados -->
-          <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
-            <i class="bi bi-sliders"></i> Filtros avanzados
-          </button>
+        <!-- Fecha inicio -->
+        <div class="col-md-3">
+          <label for="fecha_inicio" class="form-label fw-semibold">Fecha inicio</label>
+          <input 
+            type="date" 
+            id="fecha_inicio" 
+            name="fecha_inicio" 
+            value="{{ request.GET.fecha_inicio }}" 
+            class="form-control"
+          >
+        </div>
 
-          <!-- Formulario de fechas en línea -->
-          <form method="get" action="{% url 'listar_materiales' %}" class="d-flex align-items-center gap-2 flex-wrap m-0">
-            <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="form-control form-control-sm" style="width: 150px;">
-            <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="form-control form-control-sm" style="width: 150px;">
-            <button type="submit" class="btn btn-sm btn-primary">
-              <i class="bi bi-funnel"></i> Filtrar
-            </button>
-           
-              <a href="{% url 'listar_materiales' %}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
-           
-          </form>
-
-          <!-- Botón carrito -->
-          <a href="{% url 'ver_carrito' %}" class="btn btn-sm btn-success">
-            <i class="bi bi-cart"></i> Ir al carrito
-          </a>
-
+        <!-- Fecha fin -->
+        <div class="col-md-3">
+          <label for="fecha_fin" class="form-label fw-semibold">Fecha fin</label>
+          <input 
+            type="date" 
+            id="fecha_fin" 
+            name="fecha_fin" 
+            value="{{ request.GET.fecha_fin }}" 
+            class="form-control"
+          >
         </div>
       </div>
 
+      <!-- Botón para mostrar filtros avanzados -->
+      <div class="mt-3">
+        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
+          <i class="bi bi-sliders"></i> Filtros avanzados
+        </button>
+      </div>
 
+      <!-- Filtros avanzados colapsables -->
+      <div class="collapse mt-3" id="filtrosAvanzados">
+        <div class="card card-body bg-light shadow-sm">
+          <div class="row g-3">
+            <!-- Marca -->
+            <div class="col-md-4">
+              <label for="marca" class="form-label fw-semibold">Marca</label>
+              <select name="marca" id="marca" class="form-select">
+                <option value="">Todas</option>
+                {% for m in marcas %}
+                  <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
+            <!-- Tipo -->
+            <div class="col-md-4">
+              <label for="tipo" class="form-label fw-semibold">Tipo</label>
+              <select name="tipo" id="tipo" class="form-select">
+                <option value="">Todos</option>
+                {% for t in tipos %}
+                  <option value="{{ t }}" {% if request.GET.tipo == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
 
-
-  <!-- Filtros colapsables -->
-  <div class="collapse mb-4" id="filtrosCollapse">
-    <div class="card card-body bg-light shadow-sm">
-      <h5 class="fw-bold">Filtrar por</h5>
-      <form method="GET">
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label for="marca" class="form-label fw-semibold">Marca</label>
-            <select name="marca" id="marca" class="form-select">
-              <option value="">Todas</option>
-              {% for m in marcas %}
-                <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label for="tipo" class="form-label fw-semibold">Tipo</label>
-            <select name="tipo" id="tipo" class="form-select">
-              <option value="">Todos</option>
-              {% for t in tipos %}
-                <option value="{{ t }}" {% if request.GET.tipo == t %}selected{% endif %}>{{ t }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="col-md-4 mb-3">
-            <label for="categoria" class="form-label fw-semibold">Categoría</label>
-            <select name="categoria" id="categoria" class="form-select">
-              <option value="">Todas</option>
-              {% for cat in categorias_stock %}
-                <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
-                  {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
-                </option>
-              {% endfor %}
-            </select>
+            <!-- Categoría -->
+            <div class="col-md-4">
+              <label for="categoria" class="form-label fw-semibold">Categoría</label>
+              <select name="categoria" id="categoria" class="form-select">
+                <option value="">Todas</option>
+                {% for cat in categorias_stock %}
+                  <option value="{{ cat.nombre_categoria }}" {% if request.GET.categoria == cat.nombre_categoria %}selected{% endif %}>
+                    {{ cat.nombre_categoria }} (Stock: {{ cat.stock }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
         </div>
-        <div class="d-grid d-md-flex justify-content-between">
-          <a href="{% url 'listar_materiales' %}" class="btn btn-secondary">
-            <i class="bi bi-x-circle"></i> Limpiar filtros
-          </a>
+      </div>
+
+      <!-- Botones -->
+      <div class="mt-4 d-flex gap-2 align-items-center">
+        <!-- Botones a la izquierda -->
+        <div class="d-flex gap-2">
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-filter-circle"></i> Aplicar filtros
+            <i class="bi bi-funnel"></i> Filtrar
           </button>
+          <a href="{% url 'listar_materiales' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle"></i> Limpiar
+          </a>
         </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- Búsqueda -->
-  <form method="GET" class="mb-4 d-flex">
-    <input 
-      type="text" 
-      name="q" 
-      value="{{ request.GET.q|default_if_none:'' }}" 
-      class="form-control me-2" 
-      placeholder="Buscar por nombre, marca, categoría o tipo..."
-      autocomplete="off"
-    >
-    <button type="submit" class="btn btn-primary">
-      <i class="bi bi-search"></i> Buscar
-    </button>
-  </form>
+        <!-- Botón carrito a la derecha -->
+        <div class="ms-auto">
+          <a href="{% url 'ver_carrito' %}" class="btn btn-success">
+            <i class="bi bi-cart"></i> Ir al carrito
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
 
   <!-- Listado de materiales -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="listado-materiales">
@@ -119,21 +125,21 @@
       <div class="col" id="material-{{ material.id_material }}">
         <div class="card h-100 shadow-sm">
           {% if material.img_material %}
-            <img src="{{ material.img_material.url }}" class="card-img-top object-fit-cover" style="height: 200px;">
+            <img src="{{ material.img_material.url }}" class="card-img-top object-fit-cover" style="height: 200px; border-bottom: 1px solid #dee2e6;">
           {% else %}
-            <img src="{% static 'img/default_material.png' %}" class="card-img-top object-fit-cover" style="height: 200px;">
+            <img src="{% static 'img/default_material.png' %}" class="card-img-top object-fit-cover" style="height: 200px; border-bottom: 1px solid #dee2e6;">
           {% endif %}
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ material.nom_material }}</h5>
+            <h5 class="card-title mb-2">{{ material.nom_material }}</h5>
             <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
             <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
-            <p class="card-text"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
+            <p class="card-text mb-3"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
 
             <div class="btn-carrito-container mt-auto">
 
-              <div class="reserva-info">
+              <div class="reserva-info mb-2">
                 {% if reserva_info|get_item:material.id_material %}
-                  <small class="text-yellow-600 text-sm d-block mt-1" id="reserva-info-{{ material.id_material }}">
+                  <small class="text-warning d-block" id="reserva-info-{{ material.id_material }}">
                     <i class="bi bi-exclamation-circle"></i>
                     {{ reserva_info|get_item:material.id_material }}
                   </small>
@@ -208,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
           alert(data.mensaje);
         }
       })
-
       .catch(() => alert('Error en la petición.'))
       .finally(() => btn.disabled = false);
     }
