@@ -1,44 +1,59 @@
 {% extends 'base_admin.html' %}
 
-{% block title %}agregar-marca{% endblock %}
+{% block title %}Agregar Marca{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center min-vh-100 text-white">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0 text-center"> Agregar Marca</h4>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-outline-primary">
-                            <i class="bi bi-arrow-left-circle"></i> Guardar
-                        </button>
-                    </div>
-                </form>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h4 class="mb-0">Agregar Marca</h4>
+                </div>
+                <div class="card-body px-4 py-4">
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <div class="form-text text-muted">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-end pt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <!-- SweetAlert2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% if messages %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            {% for message in messages %}
-                Swal.fire({
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% for message in messages %}
+            Swal.fire({
                 icon: 'success',
                 title: 'Éxito',
                 text: '{{ message }}',
                 confirmButtonText: 'Aceptar'
-                });
-            {% endfor %}
-        });
-    </script>
+            });
+        {% endfor %}
+    });
+</script>
 {% endif %}
 {% endblock %}
-
