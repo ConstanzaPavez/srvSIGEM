@@ -701,6 +701,7 @@ def listar_solicitudes(request):
  
 @login_required
 
+@login_required
 def control_admin_solicitud(request):
     if not request.user.is_staff:
         messages.error(request, "No tienes permiso para acceder a esta página.")
@@ -709,20 +710,46 @@ def control_admin_solicitud(request):
     estado = request.GET.get('estado', 'PEND').upper()
     estados_validos = ['PEND', 'APR', 'PAR', 'RECH', 'FIN', 'CAN']
 
-    if estado in estados_validos:
-        solicitudes_queryset = Solicitud.objects.filter(estado=estado).order_by('-fecha_solicitud')
-    else:
-        solicitudes_queryset = Solicitud.objects.all().order_by('-fecha_solicitud')
+    solicitudes_queryset = Solicitud.objects.all()
 
-    paginator = Paginator(solicitudes_queryset, 10)  # Mostrar 10 solicitudes por página
+    # Filtros adicionales
+    usuario_filtro = request.GET.get('usuario', '')
+    numero_filtro = request.GET.get('numero_solicitud', '')
+    fecha_filtro = request.GET.get('fecha_solicitud', '')
+
+    if estado in estados_validos:
+        solicitudes_queryset = solicitudes_queryset.filter(estado=estado)
+
+    if usuario_filtro:
+        solicitudes_queryset = solicitudes_queryset.filter(usuario__username__icontains=usuario_filtro)
+    if numero_filtro:
+        solicitudes_queryset = solicitudes_queryset.filter(numero_solicitud__icontains=numero_filtro)
+    if fecha_filtro:
+        solicitudes_queryset = solicitudes_queryset.filter(fecha_solicitud__date=fecha_filtro)
+
+    solicitudes_queryset = solicitudes_queryset.order_by('-fecha_solicitud')
+    paginator = Paginator(solicitudes_queryset, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Lista de estados para usar en el template
+    estados = [
+        ('PEND', 'Pendientes'),
+        ('APR', 'Aprobadas'),
+        ('PAR', 'Aprobadas Parcialmente'),
+        ('RECH', 'Rechazadas'),
+        ('FIN', 'Finalizadas'),
+        ('CAN', 'Canceladas'),
+    ]
+
     return render(request, 'paginas/solicitudes/controladminsolicitud.html', {
         'page_obj': page_obj,
-        'estado_filtrado': estado
+        'estado_filtrado': estado,
+        'usuario_filtro': usuario_filtro,
+        'numero_filtro': numero_filtro,
+        'fecha_filtro': fecha_filtro,
+        'estados': estados
     })
-
 
 
 @login_required
