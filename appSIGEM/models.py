@@ -10,6 +10,8 @@ from django.utils.timezone import now
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
     
+    email = models.EmailField(unique=True, verbose_name='Correo electrónico')
+
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',

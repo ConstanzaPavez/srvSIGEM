@@ -43,13 +43,18 @@ class CrearUsuarioForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'imagen_perfil', 'password1', 'password2']
 
     def clean_email(self):
-        email = self.cleaned_data.get('email', '').lower()  # convertir a minúsculas para evitar errores
-        patron = r'^[\w\.-]+@(alumnos\.duoc\.cl|duocuc\.cl|profesor\.duoc\.cl)$'
+        email = self.cleaned_data.get('email', '').lower()
+        patron = r'^[\w\.-]+@(alumno\.duoc\.cl|duocuc\.cl|profesor\.duoc\.cl)$'
 
         if not re.match(patron, email):
             raise forms.ValidationError(
-                "Debe usar un correo institucional válido: @alumnos.duoc.cl, @duocuc.cl o @profesor.duoc.cl"
+                "Debe usar un correo institucional válido: @alumno.duoc.cl, @duocuc.cl o @profesor.duoc.cl"
             )
+
+        # Verificar si ya existe un usuario con ese correo
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Ya existe un usuario registrado con este correo electrónico.")
+
         return email
 
 class CustomLoginView(LoginView):
