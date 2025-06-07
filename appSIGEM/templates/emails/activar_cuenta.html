@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,7 +45,7 @@
       padding: 12px 24px;
       font-size: 16px;
       color: #fff;
-      background-color: #0d6efd;
+      background-color:rgb(28, 119, 255);
       text-decoration: none;
       border-radius: 5px;
     }
@@ -57,7 +59,7 @@
 </head>
 <body>
   <div class="email-container">
-    <img src="static 'paginas/img/logo.jpg" alt="SIGEM Logo" class="logo"> <!-- Puedes cambiar por tu logo -->
+     <img src="{% static 'paginas/img/logo.jpg' %}" alt="SIGEM" class="logo">
     <h1>Bienvenido a SIGEM</h1>
 
     <p>Gracias por registrarte. Para <strong>activar tu cuenta</strong>, haz clic en el botón de abajo.</p>
