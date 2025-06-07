@@ -1,9 +1,62 @@
-{% extends 'base.html' %}
+{% load static %}
 
-{% block content %}
-<div class="alert alert-danger">
-    <h4>Enlace inválido o expirado</h4>
-    <p>El enlace de activación no es válido. Puede que ya hayas activado tu cuenta o el enlace ha expirado.</p>
-    <p>Si necesitas ayuda, contacta al administrador.</p>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Activación Inválida - SIGEM</title>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background-color: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .card h1 {
+      color: #dc3545;
+      margin-bottom: 20px;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 10px 20px;
+      background-color: #0d6efd;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+      <img src="{% static 'paginas/img/logo.jpg' %}" alt="SIGEM" class="logo">
+    <h1>Enlace no válido</h1>
+    <p>Esta cuenta ya ha sido activada o el enlace de activación no es válido.</p>
+    <a href="{% url 'login' %}" class="btn">Ir a Iniciar Sesión</a>
+  </div>
+</body>
+</html>

@@ -198,7 +198,7 @@ def activar_cuenta(request, uidb64, token):
         messages.success(request, 'Cuenta activada correctamente. Ya puedes iniciar sesión.')
         return redirect('login')  # Asegúrate de que exista la URL 'login'
     else:
-        return render(request, 'paginas/registro/activacion_invalida.html')
+        return render(request, 'registro/activacion_invalida.html')
     
 # Vista para administrador
 @login_required
