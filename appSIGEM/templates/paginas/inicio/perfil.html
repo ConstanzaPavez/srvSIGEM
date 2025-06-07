@@ -7,16 +7,14 @@
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Tu Perfil</h1>
 <div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
     <div class="card shadow-sm p-4 bg-white rounded-4 border-0" style="max-width: 700px; width: 100%;">
-        
+
         <div class="row g-4">
             <div class="col-md-4 text-center">
-                {% with user.perfilusuario_set.first as perfil %}
-                    {% if perfil and perfil.imagen_perfil %}
-                        <img src="{{ perfil.imagen_perfil.url }}" alt="Imagen de perfil" class="img-fluid rounded-circle border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% else %}
-                        <img src="{% static 'paginas/img/logo.png' %}" alt="Imagen por defecto" class="img-fluid rounded-circle border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% endif %}
-                {% endwith %}
+                {% if user.imagen_perfil %}
+                    <img src="{{ user.imagen_perfil.url }}" alt="Imagen de perfil" class="img-fluid rounded-circle border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'paginas/img/logo.png' %}" alt="Imagen por defecto" class="img-fluid rounded-circle border shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
+                {% endif %}
             </div>
 
             <div class="col-md-8">

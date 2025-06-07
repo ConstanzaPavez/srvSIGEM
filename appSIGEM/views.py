@@ -917,25 +917,28 @@ def marcar_solicitud_finalizada(solicitud):
 
 @login_required
 def editar_perfil(request):
-    user = request.user
-    perfil_form = EditarPerfilForm(request.POST or None, request.FILES or None, instance=user)
-    password_form = PasswordChangeForm(user=user, data=request.POST or None)
-
     if request.method == 'POST':
-        cambio_password = any(request.POST.get(f) for f in ['old_password', 'new_password1', 'new_password2'])
+        perfil_form = EditarPerfilForm(request.POST, request.FILES, instance=request.user)
+        password_form = PasswordChangeForm(user=request.user, data=request.POST)
 
         if perfil_form.is_valid():
             perfil_form.save()
-            if not cambio_password:
-                update_session_auth_hash(request, user)
-                messages.success(request, '¡Perfil actualizado correctamente!')
-                return redirect('editar_perfil')
+            # Si el usuario ingresó datos en el formulario de contraseña:
+            if password_form.is_valid() and password_form.cleaned_data.get('new_password1'):
+                password_form.save()
+                messages.success(request, '¡Contraseña actualizada! Por favor, inicia sesión de nuevo.')
+                return redirect('login')  # Redirigir al login si cambió la contraseña
 
-        if cambio_password and password_form.is_valid():
-            password_form.save()
-            logout(request)
-            messages.success(request, 'Contraseña cambiada correctamente. Inicia sesión nuevamente.')
-            return redirect('login')
+            update_session_auth_hash(request, request.user)  # Mantiene la sesión activa
+            messages.success(request, '¡Perfil actualizado correctamente!')
+            return redirect('perfil')  # Aquí rediriges a la página de perfil
+
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+
+    else:
+        perfil_form = EditarPerfilForm(instance=request.user)
+        password_form = PasswordChangeForm(user=request.user)
 
     return render(request, 'paginas/inicio/editar_perfil.html', {
         'perfil_form': perfil_form,
