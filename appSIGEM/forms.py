@@ -43,9 +43,13 @@ class CrearUsuarioForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'imagen_perfil', 'password1', 'password2']
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not re.match(r'^[\w\.-]+@(duocuc\.cl|profesor\.duocuc\.cl)$', email):
-            raise forms.ValidationError("Solo se permiten correos @duocuc.cl o @profesor.duocuc.cl")
+        email = self.cleaned_data.get('email', '').lower()  # convertir a minúsculas para evitar errores
+        patron = r'^[\w\.-]+@(alumnos\.duoc\.cl|duocuc\.cl|profesor\.duoc\.cl)$'
+
+        if not re.match(patron, email):
+            raise forms.ValidationError(
+                "Debe usar un correo institucional válido: @alumnos.duoc.cl, @duocuc.cl o @profesor.duoc.cl"
+            )
         return email
 
 class CustomLoginView(LoginView):
