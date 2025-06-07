@@ -917,19 +917,25 @@ def marcar_solicitud_finalizada(solicitud):
 
 @login_required
 def editar_perfil(request):
-    if request.method == 'POST':
-        perfil_form = EditarPerfilForm(request.POST, instance=request.user)
-        password_form = PasswordChangeForm(user=request.user, data=request.POST)
+    user = request.user
+    perfil_form = EditarPerfilForm(request.POST or None, request.FILES or None, instance=user)
+    password_form = PasswordChangeForm(user=user, data=request.POST or None)
 
-        if perfil_form.is_valid() and password_form.is_valid():
+    if request.method == 'POST':
+        cambio_password = any(request.POST.get(f) for f in ['old_password', 'new_password1', 'new_password2'])
+
+        if perfil_form.is_valid():
             perfil_form.save()
+            if not cambio_password:
+                update_session_auth_hash(request, user)
+                messages.success(request, '¡Perfil actualizado correctamente!')
+                return redirect('editar_perfil')
+
+        if cambio_password and password_form.is_valid():
             password_form.save()
-            update_session_auth_hash(request, password_form.user)  # Mantiene la sesión activa
-            messages.success(request, '¡Tu perfil y contraseña se han actualizado correctamente!')
-            return redirect('index')  # CORREGIDO: antes decía 'inicio'
-    else:
-        perfil_form = EditarPerfilForm(instance=request.user)
-        password_form = PasswordChangeForm(user=request.user)
+            logout(request)
+            messages.success(request, 'Contraseña cambiada correctamente. Inicia sesión nuevamente.')
+            return redirect('login')
 
     return render(request, 'paginas/inicio/editar_perfil.html', {
         'perfil_form': perfil_form,

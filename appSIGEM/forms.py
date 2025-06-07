@@ -217,11 +217,22 @@ class DevolverItemForm(forms.ModelForm):
 
 
 class EditarPerfilForm(forms.ModelForm):
+    imagen_perfil = forms.ImageField(required=False)
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'imagen_perfil']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo electrónico'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo institucional'}),
         }
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not re.match(r'^[\w\.-]+@(duocuc\.cl|profesor\.duoc\.cl|alumno\.duoc\.cl)$', email, re.IGNORECASE):
+            raise forms.ValidationError("Solo se permiten correos institucionales: @duocuc.cl, @profesor.duoc.cl, @alumno.duoc.cl.")
+        
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este correo ya está registrado con otra cuenta.")
+        return email

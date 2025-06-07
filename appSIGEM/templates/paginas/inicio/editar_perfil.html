@@ -6,7 +6,8 @@
 <div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
     <div class="card shadow-sm p-5 bg-white rounded-4 border-0" style="width: 100%; max-width: 900px;">
         
-        <form method="post" novalidate>
+        <!-- IMPORTANTE: enctype agregado para soporte de imagen -->
+        <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
 
             <!-- Datos personales -->
@@ -24,6 +25,16 @@
                         {% endfor %}
                     </div>
                 {% endfor %}
+
+                <!-- Vista previa de la imagen actual (opcional) -->
+                {% if request.user.imagen_perfil %}
+                    <div class="col-md-6 mt-2">
+                        <label class="form-label text-secondary fw-semibold">Imagen actual</label>
+                        <div>
+                            <img src="{{ request.user.imagen_perfil.url }}" alt="Imagen de perfil" class="img-thumbnail" width="150">
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             <hr class="my-4">

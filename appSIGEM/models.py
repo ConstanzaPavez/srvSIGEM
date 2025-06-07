@@ -9,8 +9,15 @@ from django.utils.timezone import now
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
-    
+
     email = models.EmailField(unique=True, verbose_name='Correo electrónico')
+
+    imagen_perfil = models.ImageField(
+        upload_to='imagenes_perfil/',
+        null=True,
+        blank=True,
+        verbose_name='Imagen de perfil'
+    )
 
     groups = models.ManyToManyField(
         'auth.Group',
