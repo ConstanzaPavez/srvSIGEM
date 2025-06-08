@@ -28,6 +28,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from time import timezone
 from datetime import datetime, date, timedelta
+from .emails import enviar_email_html
+
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -41,6 +43,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+
 import requests
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -200,6 +203,35 @@ def activar_cuenta(request, uidb64, token):
     else:
         return render(request, 'registro/activacion_invalida.html')
     
+def solicitud_reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            current_site = get_current_site(request)
+            domain = current_site.domain
+            protocol = 'https' if request.is_secure() else 'http'
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
+
+            context = {
+                'user': user,
+                'reset_link': reset_link,
+                'domain': f"{protocol}://{domain}"
+            }
+
+            enviar_email_html(email, context)
+            messages.success(request, 'Correo de restablecimiento enviado. Revisa tu bandeja de entrada.')
+            return redirect('login')
+
+        except User.DoesNotExist:
+            messages.error(request, 'No hay una cuenta registrada con ese correo.')
+    
+    return render(request, 'paginas/auth/password_reset_form.html')
+
 # Vista para administrador
 @login_required
 @user_passes_test(is_admin)
