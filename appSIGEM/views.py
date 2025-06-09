@@ -28,8 +28,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from time import timezone
 from datetime import datetime, date, timedelta
-from .emails import enviar_email_html
-
+from django.core.mail import EmailMultiAlternatives
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -202,6 +201,23 @@ def activar_cuenta(request, uidb64, token):
         return redirect('login')  # Asegúrate de que exista la URL 'login'
     else:
         return render(request, 'registro/activacion_invalida.html')
+    
+def enviar_email_html(destinatario, context):
+    subject = 'Restablecer Contraseña - SIGEM'
+    from_email = 'noreply@sigem.com'
+    to = [destinatario]
+
+    html_content = render_to_string('paginas/auth/password_reset_email.html', context)
+    text_content = f"""
+    Hola {context['user'].get_full_name() or context['user'].username},
+    Has solicitado restablecer tu contraseña en SIGEM.
+    Puedes hacerlo ingresando al siguiente enlace:
+    {context['reset_link']}
+    """
+
+    msg = EmailMultiAlternatives(subject, text_content.strip(), from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
     
 def solicitud_reset_password(request):
     if request.method == 'POST':
