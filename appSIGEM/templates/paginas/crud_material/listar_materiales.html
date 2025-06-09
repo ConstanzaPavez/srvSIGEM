@@ -3,9 +3,31 @@
 
 {% block content %}
 
+
+<style>
+  @keyframes slideInCard {
+    0% {
+      transform: translateX(-40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in-card {
+    opacity: 0;
+    animation: slideInCard 0.6s ease-out forwards;
+  }
+
+
+
+</style>
+
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Lista de Materiales</h1>
 <div class="container-fluid py-4">
-  <div class="container bg-light rounded p-4 mb-4 shadow-sm">
+  <div class="container bg-light rounded p-4 mb-4 shadow-sm slide-in-card">
 
    <form method="get" action="{% url 'listar_materiales' %}">
   <!-- Fila principal -->
@@ -125,7 +147,7 @@
      </div>
 
   <!-- Listado de materiales -->
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="listado-materiales">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 slide-in-card" id="listado-materiales">
     {% for material in materiales %}
       <div class="col" id="material-{{ material.id_material }}">
         <div class="card h-100 shadow-sm">

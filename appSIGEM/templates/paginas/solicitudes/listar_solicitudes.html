@@ -1,8 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+  @keyframes slideInCard {
+    0% {
+      transform: translateX(-40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in-card {
+    opacity: 0;
+    animation: slideInCard 0.6s ease-out forwards;
+  }
+</style>
+
+
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold"> Mis Solicitudes</h1>
-<div class="container py-4">
+<div class="container py-4 slide-in-card">
   
   {% if solicitudes %}
   <br>
