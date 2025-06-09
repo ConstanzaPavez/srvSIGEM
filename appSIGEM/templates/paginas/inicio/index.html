@@ -6,6 +6,24 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+
+<style>
+  @keyframes slideInFromLeft {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in {
+    animation: slideInFromLeft 0.6s ease-out;
+  }
+</style>
+
 <style>
   :root {
     --color-primario: #0d6efd;
@@ -177,7 +195,7 @@
 }
 </style>
 
-<div class="carousel-container">
+<div class="carousel-container slide-in">
   <div id="cittCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-indicators">
       {% for i in indices %}
@@ -270,10 +288,10 @@
   </div>
 </div>
 
-<div class="buttons-container">
+<div class="buttons-container slide-in">
   <div class="btn-block">
     <a href="{% url 'ver_carrito' %}">
-      <i class="bi bi-cart-fill"></i>Carrito
+      <i class="bi bi-cart-fill"></i> Carrito
     </a>
     <p>Visualiza los productos que has seleccionado para adquirir o reservar.</p>
   </div>

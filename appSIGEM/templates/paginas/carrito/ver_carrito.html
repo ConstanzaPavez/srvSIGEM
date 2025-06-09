@@ -3,11 +3,34 @@
 
 {% block content %}
 
+
+<style>
+  @keyframes slideInCard {
+    0% {
+      transform: translateX(-40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in-card {
+    opacity: 0;
+    animation: slideInCard 0.6s ease-out forwards;
+  }
+
+
+
+</style>
+
+
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Mi Carrito</h1>
-<div class="container py-5 d-flex justify-content-center">
+<div class="container py-5 d-flex justify-content-center slide-in-card">
   <div class="card shadow-lg" style="width: 100%; max-width: 700px;">
 
-    <div class="card-body">
+    <div class="card-body ">
       {% if carrito.items.all %}
         <div class="table-responsive">
           <table class="table table-striped align-middle">
