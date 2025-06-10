@@ -47,26 +47,52 @@
             <div class="info-solicitud"><strong>Fecha Devolución Esperada:</strong> {{ solicitud.fecha_devolucion|default:"" }}</div>
             <div class="info-solicitud"><strong>Ubicación: {{solicitud.ubicacion_solicitud}}</strong></div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Material</th>
-                        <th>Cantidad</th>
-                        <th>Fecha Devolución Real</th>
-                        <th>Estado Ingreso</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in solicitud.items_filtrados %}
+                <table class="table table-sm table-bordered mt-2">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Material</th>
+                            <th>Cantidad</th>
+                            <th>Estado Solicitud</th>
+                            <th>Fecha Devolución Real</th>
+                            <th>Estado Ingreso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in solicitud.items.all %}
                         <tr>
                             <td>{{ item.material.nom_material }}</td>
                             <td>{{ item.cantidad }}</td>
-                            <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
-                            <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
+                            
+                            <td>
+                                {% if item.rechazado %}
+                                    <span class="badge bg-danger">Rechazado</span>
+                                {% elif item.aprobado %}
+                                    <span class="badge bg-success">Aprobado</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td>
+                                {% if item.rechazado %}
+                                    No Aplica
+                                {% else %}
+                                    {{ item.fecha_devolucion_real|date:"d-m-Y"|default:"Pendiente" }}
+                                {% endif %}
+                            </td>
+
+
+                            <td>
+                                {% if item.rechazado %}
+                                    No Aplica
+                                {% else %}
+                                    {{ item.get_estado_ingreso_display|default:"Pendiente" }}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
         </div>
     {% endfor %}
 </body>
