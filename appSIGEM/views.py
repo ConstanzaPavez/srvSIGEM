@@ -965,12 +965,12 @@ def exportar_reporte_pdf(request):
     if usuario_id and usuario_id.isdigit():
         solicitudes = solicitudes.filter(usuario__id=int(usuario_id))
 
-    # Filtro de ítems
+
     for solicitud in solicitudes:
-        if solicitud.estado == 'PAR':
+        if solicitud.estado in ['PAR', 'APR', 'FIN']:
             solicitud.items_filtrados = solicitud.items.filter(aprobado=True)
         else:
-            solicitud.items_filtrados = solicitud.items.all()
+            solicitud.items_filtrados = solicitud.items.none()
 
     template = get_template('paginas/reportes/reporte_prestamos_pdf.html')
     html = template.render({'solicitudes': solicitudes})
