@@ -40,54 +40,49 @@
         {{ solicitud.razon_solicitud|default:"No especificada" }}
       </div>
 
-      <!-- Materiales -->
-      <div>
-        <h6 class="mb-3 text-secondary fw-bold"><i class="bi bi-box-seam me-2"></i>Materiales Solicitados</h6>
-        <ul class="list-group">
-          {% for item in solicitud.items.all %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              {{ item.material.nom_material }}
-              <span class="badge bg-primary rounded-pill">{{ item.cantidad }}</span>
-            </li>
-          {% empty %}
-            <li class="list-group-item text-muted fst-italic">No hay materiales asociados.</li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card: Actualizar Estado -->
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-secondary text-white">
-      <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Actualizar Estado</h5>
-    </div>
-    <div class="card-body">
       <form method="post" novalidate>
         {% csrf_token %}
 
-        <div class="mb-3">
-          <label for="{{ form.estado.id_for_label }}" class="form-label fw-semibold">Estado</label>
-          {{ form.estado|add_class:"form-select" }}
-          {% if form.estado.errors %}
-            <div class="text-danger small mt-1">{{ form.estado.errors }}</div>
-          {% endif %}
+        <!-- FORMULARIO DE APROBACIÓN DE ÍTEMS -->
+        <div>
+          <h6 class="mb-3 text-secondary fw-bold"><i class="bi bi-box-seam me-2"></i>Materiales Solicitados</h6>
+          <ul class="list-group">
+            {% for item in solicitud.items.all %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="aprobados" value="{{ item.id }}"
+                    id="item{{ item.id }}" {% if item.aprobado %}checked{% endif %}>
+                  <label class="form-check-label" for="item{{ item.id }}">
+                    {{ item.material.nom_material }} — Cantidad: {{ item.cantidad }}
+                  </label>
+                </div>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted fst-italic">No hay materiales asociados.</li>
+            {% endfor %}
+          </ul>
         </div>
 
-        <div class="mb-3">
-          <label for="{{ form.comentario_respuesta.id_for_label }}" class="form-label fw-semibold">Comentario (opcional)</label>
-          {{ form.comentario_respuesta|add_class:"form-control" }}
-          {% if form.comentario_respuesta.errors %}
-            <div class="text-danger small mt-1">{{ form.comentario_respuesta.errors }}</div>
-          {% endif %}
+
+        <!-- Campo estado oculto -->
+        <div style="display: none;">
+          {{ form.estado }}
         </div>
 
+
+          <div class="mb-3">
+            <label for="{{ form.comentario_respuesta.id_for_label }}" class="form-label fw-semibold">Comentario (opcional)</label>
+            {{ form.comentario_respuesta|add_class:"form-control" }}
+            {% if form.comentario_respuesta.errors %}
+              <div class="text-danger small mt-1">{{ form.comentario_respuesta.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Botones -->
         <div class="d-flex justify-content-end gap-2">
           <a href="{% url 'control_solicitudes' %}" class="btn btn-outline-secondary">Cancelar</a>
           <button type="submit" class="btn btn-primary">Actualizar</button>
         </div>
       </form>
-    </div>
-  </div>
-</div>
 {% endblock %}

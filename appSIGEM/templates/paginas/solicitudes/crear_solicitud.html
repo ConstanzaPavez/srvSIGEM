@@ -127,14 +127,5 @@
   });
 </script>
 
-<!-- Script para bloquear días anteriores -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    const retiro = document.getElementById('id_fecha_retiro');
-    const devolucion = document.getElementById('id_fecha_devolucion');
-    if (retiro) retiro.setAttribute('min', today);
-    if (devolucion) devolucion.setAttribute('min', today);
-  });
-</script>
+
 {% endblock %}

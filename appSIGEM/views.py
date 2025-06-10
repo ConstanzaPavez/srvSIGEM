@@ -719,22 +719,37 @@ def gestionar_solicitud(request, solicitud_id):
 
     if request.method == 'POST':
         form = GestionarSolicitudForm(request.POST, instance=solicitud)
+        items_aprobados = request.POST.getlist('aprobados')  # <- IDs de ítems aprobados
+
         if form.is_valid():
-            # Guardar cambios en la solicitud temporalmente
             solicitud_actualizada = form.save(commit=False)
 
-            # Validar stock solo si la solicitud se aprueba
-            if solicitud_actualizada.estado == 'APR':
-                # Recorremos cada item y comprobamos stock
-                for item in solicitud_actualizada.items.all():
+            total_items = solicitud.items.count()
+            aprobados = 0
+
+            for item in solicitud.items.all():
+                if str(item.id) in items_aprobados:
+                    item.aprobado = True
+                    aprobados += 1
+
                     categoria = item.material.categoria
                     if categoria.stock < item.cantidad:
                         messages.error(request, f"No hay stock suficiente para {item.material.nom_material}. Stock disponible: {categoria.stock}, requerido: {item.cantidad}")
                         return redirect('gestionar_solicitud', solicitud_id=solicitud.id)
+                else:
+                    item.aprobado = False
 
-            # Guardar la solicitud después de modificar el stock
+                item.save()
+
+            # Lógica de estado según cantidad aprobada
+            if aprobados == total_items:
+                solicitud_actualizada.estado = 'APR'
+            elif aprobados == 0:
+                solicitud_actualizada.estado = 'RECH'
+            else:
+                solicitud_actualizada.estado = 'PAR'
+
             solicitud_actualizada.save()
-
             messages.success(request, 'La solicitud fue actualizada correctamente.')
             return redirect('control_solicitudes')
 
@@ -744,7 +759,9 @@ def gestionar_solicitud(request, solicitud_id):
     return render(request, 'paginas/solicitudes/gestionar_solicitud.html', {
         'form': form,
         'solicitud': solicitud,
+        'items': solicitud.items.all(),
     })
+
 
 
 def detalle_solicitud(request, numero_solicitud):
