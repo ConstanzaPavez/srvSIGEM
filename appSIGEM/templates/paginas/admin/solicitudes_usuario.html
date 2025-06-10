@@ -24,6 +24,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Material</th>
+                                        <th>Estado Solicitud</th>
                                         <th>Cantidad</th>
                                         <th>Estado Ingreso</th>
                                         <th>Fecha Devolución Real</th>
@@ -33,16 +34,29 @@
                                     {% for item in solicitud.items.all %}
                                         <tr>
                                             <td>{{ item.material.nom_material }}</td>
+                                            <td>
+                                            {% if item.rechazado %}
+                                                Rechazado
+                                            {% elif item.aprobado %}
+                                                Aprobado
+                                            {% else %}
+                                                Pendiente
+                                            {% endif %}
+                                            </td>
+
                                             <td>{{ item.cantidad }}</td>
                                             <td>
-                                                {% if item.estado_ingreso %}
-                                                    {{ item.get_estado_ingreso_display }}
-                                                {% else %}
-                                                    <span class="text-muted">Pendiente</span>
-                                                {% endif %}
+                                            {% if item.rechazado %}
+                                                No Aplica
+                                            {% elif item.estado_ingreso %}
+                                                {{ item.get_estado_ingreso_display }}
+                                            {% else %}
+                                                Pendiente
+                                            {% endif %}
                                             </td>
+
                                             <td>
-                                                {{ item.fecha_devolucion_real|default:"—" }}
+                                                {{ item.fecha_devolucion_real|default:"Sin Fecha" }}
                                             </td>
                                         </tr>
                                     {% endfor %}

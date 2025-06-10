@@ -18,21 +18,48 @@
                         <tr>
                             <th>Material</th>
                             <th>Cantidad</th>
+                            <th>Estado Solicitud</th>
                             <th>Fecha Devolución Real</th>
                             <th>Estado Ingreso</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for item in solicitud.items_filtrados %}
+                    {% for item in solicitud.items.all %}
                         <tr>
                             <td>{{ item.material.nom_material }}</td>
                             <td>{{ item.cantidad }}</td>
-                            <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
-                            <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
+                            
+                            <td>
+                                {% if item.rechazado %}
+                                    <span class="badge bg-danger">Rechazado</span>
+                                {% elif item.aprobado %}
+                                    <span class="badge bg-success">Aprobado</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td>
+                                {% if item.rechazado %}
+                                    No Aplica
+                                {% else %}
+                                    {{ item.fecha_devolucion_real|date:"d-m-Y"|default:"Pendiente" }}
+                                {% endif %}
+                            </td>
+
+
+                            <td>
+                                {% if item.rechazado %}
+                                    No Aplica
+                                {% else %}
+                                    {{ item.get_estado_ingreso_display|default:"Pendiente" }}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
+
             </div>
         </div>
     {% endfor %}
