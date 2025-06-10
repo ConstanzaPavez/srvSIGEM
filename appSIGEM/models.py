@@ -141,12 +141,22 @@ class Solicitud(models.Model):
                 numero_solicitud__endswith=f"-{anio_actual}"
             ).count() + 1
             self.numero_solicitud = f"{cantidad_este_anio:03d}-{anio_actual}"
-
         super().save(*args, **kwargs)
+
+    def actualizar_estado(self):
+        total_items = self.items.count()
+        aprobados = self.items.filter(aprobado=True).count()
+
+        if aprobados == 0:
+            self.estado = 'RECH'
+        elif aprobados == total_items:
+            self.estado = 'APR'
+        else:
+            self.estado = 'PAR'
+        self.save(update_fields=['estado'])
 
     def __str__(self):
         return f"Solicitud {self.numero_solicitud} - {self.get_estado_display()}"
-
     
     
 class ItemSolicitud(models.Model):

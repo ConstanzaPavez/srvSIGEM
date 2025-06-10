@@ -23,14 +23,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in solicitud.items.all %}
-                            <tr>
-                                <td>{{ item.material.nom_material }}</td>
-                                <td>{{ item.cantidad }}</td>
-                                <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
-                                <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
-                            </tr>
-                        {% endfor %}
+                    {% for item in solicitud.items_filtrados %}
+                        <tr>
+                            <td>{{ item.material.nom_material }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>{{ item.fecha_devolucion_real|default:"Pendiente" }}</td>
+                            <td>{{ item.get_estado_ingreso_display|default:"Pendiente" }}</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

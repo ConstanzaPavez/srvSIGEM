@@ -719,37 +719,30 @@ def gestionar_solicitud(request, solicitud_id):
 
     if request.method == 'POST':
         form = GestionarSolicitudForm(request.POST, instance=solicitud)
-        items_aprobados = request.POST.getlist('aprobados')  # <- IDs de ítems aprobados
+        items_aprobados = request.POST.getlist('aprobados')  # IDs de ítems aprobados
 
         if form.is_valid():
             solicitud_actualizada = form.save(commit=False)
 
-            total_items = solicitud.items.count()
-            aprobados = 0
-
             for item in solicitud.items.all():
                 if str(item.id) in items_aprobados:
-                    item.aprobado = True
-                    aprobados += 1
-
+                    # Verificar stock antes de aprobar
                     categoria = item.material.categoria
                     if categoria.stock < item.cantidad:
-                        messages.error(request, f"No hay stock suficiente para {item.material.nom_material}. Stock disponible: {categoria.stock}, requerido: {item.cantidad}")
+                        messages.error(
+                            request,
+                            f"No hay stock suficiente para {item.material.nom_material}. "
+                            f"Stock disponible: {categoria.stock}, requerido: {item.cantidad}"
+                        )
                         return redirect('gestionar_solicitud', solicitud_id=solicitud.id)
+                    item.aprobado = True
                 else:
                     item.aprobado = False
-
                 item.save()
 
-            # Lógica de estado según cantidad aprobada
-            if aprobados == total_items:
-                solicitud_actualizada.estado = 'APR'
-            elif aprobados == 0:
-                solicitud_actualizada.estado = 'RECH'
-            else:
-                solicitud_actualizada.estado = 'PAR'
+            # Actualizamos el estado de la solicitud usando el método del modelo
+            solicitud.actualizar_estado()
 
-            solicitud_actualizada.save()
             messages.success(request, 'La solicitud fue actualizada correctamente.')
             return redirect('control_solicitudes')
 
@@ -901,12 +894,11 @@ def ver_solicitudes_usuario(request, user_id):
         'usuario': usuario,
         'solicitudes': solicitudes
     })
-    
+
 @login_required
 @user_passes_test(is_admin)
 def reporte_prestamos(request):
-    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN']).select_related('usuario').prefetch_related('items').order_by('-fecha_solicitud')
-
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN', 'PAR']).select_related('usuario').prefetch_related('items__material').order_by('-fecha_solicitud')
 
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
@@ -919,6 +911,13 @@ def reporte_prestamos(request):
     if usuario_id:
         solicitudes = solicitudes.filter(usuario__id=usuario_id)
 
+    # Filtramos los ítems para mostrar en el reporte
+    for solicitud in solicitudes:
+        if solicitud.estado == 'PAR':
+            solicitud.items_filtrados = solicitud.items.filter(aprobado=True)
+        else:
+            solicitud.items_filtrados = solicitud.items.all()
+
     usuarios = get_user_model().objects.all()
 
     context = {
@@ -930,19 +929,17 @@ def reporte_prestamos(request):
     }
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # Si es AJAX devolvemos solo el fragmento HTML con los resultados
         return render(request, 'paginas/reportes/_lista_solicitudes.html', context)
     else:
-        # Vista normal completa
         return render(request, 'paginas/reportes/reporte_prestamos.html', context)
+
     
 from django.utils.dateparse import parse_date
 
 @login_required
 @user_passes_test(is_admin)
 def exportar_reporte_pdf(request):
-    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN']).select_related('usuario').prefetch_related('items').order_by('-fecha_solicitud')
-
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN', 'PAR']).select_related('usuario').prefetch_related('items__material').order_by('-fecha_solicitud')
 
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
@@ -961,8 +958,12 @@ def exportar_reporte_pdf(request):
     if usuario_id and usuario_id.isdigit():
         solicitudes = solicitudes.filter(usuario__id=int(usuario_id))
 
-    # Debug temporal (puedes quitarlo luego)
-    print("Total solicitudes encontradas:", solicitudes.count())
+    # Filtro de ítems
+    for solicitud in solicitudes:
+        if solicitud.estado == 'PAR':
+            solicitud.items_filtrados = solicitud.items.filter(aprobado=True)
+        else:
+            solicitud.items_filtrados = solicitud.items.all()
 
     template = get_template('paginas/reportes/reporte_prestamos_pdf.html')
     html = template.render({'solicitudes': solicitudes})
@@ -972,6 +973,7 @@ def exportar_reporte_pdf(request):
 
     pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
     return response
+
 
 def marcar_solicitud_finalizada(solicitud):
     if solicitud.estado != 'FIN':
