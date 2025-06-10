@@ -166,6 +166,7 @@ class ItemSolicitud(models.Model):
     observacion = models.TextField(blank=True, null=True)
     fecha_devolucion_real = models.DateField(blank=True, null=True)
     aprobado = models.BooleanField(default=False)
+    rechazado = models.BooleanField(default=False)
 
     ESTADOS_INGRESO = [
         ('SIN', 'Sin daño'),

@@ -738,9 +738,10 @@ def gestionar_solicitud(request, solicitud_id):
                     item.aprobado = True
                 else:
                     item.aprobado = False
+
+                item.rechazado = not item.aprobado  # ✅ Aquí marcas los no aprobados como rechazados
                 item.save()
 
-            # Actualizamos el estado de la solicitud usando el método del modelo
             solicitud.actualizar_estado()
 
             messages.success(request, 'La solicitud fue actualizada correctamente.')
@@ -841,7 +842,9 @@ def gestionar_devolucion(request, item_id):
 
             # Verificar si todos los ítems están devueltos
             solicitud = item_devuelto.solicitud
-            hay_no_devuelto = solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
+            hay_no_devuelto = solicitud.items.filter(aprobado=True, fecha_devolucion_real__isnull=True).exists()
+
+
 
             if not hay_no_devuelto:
                 marcar_solicitud_finalizada(solicitud)
@@ -860,24 +863,27 @@ def gestionar_devolucion(request, item_id):
 @login_required
 @user_passes_test(is_admin)
 def gestionar_devoluciones(request):
-    # Cargar todas las solicitudes aprobadas con sus ítems
-    solicitudes_aprobadas = Solicitud.objects.filter(estado='APR').prefetch_related('items')
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'PAR']).prefetch_related('items__material')
 
-    # Filtrar solo las que tienen al menos un ítem no devuelto
-    solicitudes_con_pendientes = [
-        solicitud for solicitud in solicitudes_aprobadas
-        if solicitud.items.filter(fecha_devolucion_real__isnull=True).exists()
-    ]
+    solicitudes_con_pendientes = []
+    for solicitud in solicitudes:
+        # Filtrar ítems aprobados y no devueltos
+        items_pendientes = solicitud.items.filter(aprobado=True, fecha_devolucion_real__isnull=True)
+        if items_pendientes.exists():
+            solicitud.items_pendientes = items_pendientes
+            solicitudes_con_pendientes.append(solicitud)
 
-    # Ordenar por la fecha de devolución planeada (más próxima primero)
     solicitudes_ordenadas = sorted(
         solicitudes_con_pendientes,
-        key=lambda s: s.fecha_devolucion or s.fecha_retiro  # fallback si no tiene fecha_devolucion
+        key=lambda s: s.fecha_devolucion or s.fecha_retiro
     )
 
     return render(request, 'paginas/devoluciones/gestionar_devoluciones.html', {
         'solicitudes': solicitudes_ordenadas
     })
+
+
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -913,10 +919,11 @@ def reporte_prestamos(request):
 
     # Filtramos los ítems para mostrar en el reporte
     for solicitud in solicitudes:
-        if solicitud.estado == 'PAR':
+        if solicitud.estado in ['PAR', 'APR', 'FIN']:
             solicitud.items_filtrados = solicitud.items.filter(aprobado=True)
         else:
-            solicitud.items_filtrados = solicitud.items.all()
+            solicitud.items_filtrados = solicitud.items.all()  # o .all() si quieres mostrar todo en otros estados
+
 
     usuarios = get_user_model().objects.all()
 
