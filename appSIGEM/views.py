@@ -426,23 +426,52 @@ def listar_materiales(request):
     materiales_en_carrito = set(item.material.id_material for item in carrito.items.all())
 
     reserva_info = {}
+
     reservas_activas = ItemSolicitud.objects.filter(
         solicitud__fecha_retiro__lte=hoy,
         fecha_devolucion_real__isnull=True,
         solicitud__fecha_devolucion__gte=hoy,
         solicitud__estado__in=['PEND', 'APR', 'PAR']
     )
+
     for item in reservas_activas:
         mat_id = item.material.id_material
         estado_solicitud = item.solicitud.estado
         fecha_dev = item.solicitud.fecha_devolucion
         disponible_desde = fecha_dev + timedelta(days=1)
 
-        if hoy <= fecha_dev:
-            if estado_solicitud == 'APR':
+        if estado_solicitud == 'PAR':
+            # Solo ítems aprobados agregan reserva
+            if getattr(item, 'aprobado', False):
+                fecha_existente = None
+                if mat_id in reserva_info:
+                    try:
+                        fecha_str = reserva_info[mat_id].split()[-1]
+                        fecha_existente = datetime.strptime(fecha_str, '%d-%m-%Y').date()
+                    except:
+                        fecha_existente = None
+
+                if not fecha_existente or disponible_desde > fecha_existente:
+                    reserva_info[mat_id] = f"Disponible desde {disponible_desde.strftime('%d-%m-%Y')}"
+            # Si no está aprobado, NO se agrega nada (ni mensaje "Reserva activa", ni fecha, nada)
+            # Por lo tanto, no se marca como reservado ni aparece info.
+
+        elif estado_solicitud == 'APR':
+            fecha_existente = None
+            if mat_id in reserva_info:
+                try:
+                    fecha_str = reserva_info[mat_id].split()[-1]
+                    fecha_existente = datetime.strptime(fecha_str, '%d-%m-%Y').date()
+                except:
+                    fecha_existente = None
+
+            if not fecha_existente or disponible_desde > fecha_existente:
                 reserva_info[mat_id] = f"Disponible desde {disponible_desde.strftime('%d-%m-%Y')}"
-            elif estado_solicitud == 'PEND':
-                reserva_info[mat_id] = f"Reserva activa"
+
+        elif estado_solicitud == 'PEND':
+            if mat_id not in reserva_info:
+                reserva_info[mat_id] = "Reserva activa"
+
 
     return render(request, 'paginas/crud_material/listar_materiales.html', {
         'materiales': materiales,
