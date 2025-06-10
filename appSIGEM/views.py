@@ -755,7 +755,6 @@ def gestionar_solicitud(request, solicitud_id):
 
             for item in solicitud.items.all():
                 if str(item.id) in items_aprobados:
-                    # Verificar stock antes de aprobar
                     categoria = item.material.categoria
                     if categoria.stock < item.cantidad:
                         messages.error(
@@ -768,13 +767,18 @@ def gestionar_solicitud(request, solicitud_id):
                 else:
                     item.aprobado = False
 
-                item.rechazado = not item.aprobado  # ✅ Aquí marcas los no aprobados como rechazados
+                item.rechazado = not item.aprobado
                 item.save()
+
+            # ✅ Guardar comentario
+            solicitud_actualizada.comentario_respuesta = form.cleaned_data.get('comentario_respuesta')
+            solicitud_actualizada.save()
 
             solicitud.actualizar_estado()
 
             messages.success(request, 'La solicitud fue actualizada correctamente.')
             return redirect('control_solicitudes')
+
 
     else:
         form = GestionarSolicitudForm(instance=solicitud)
