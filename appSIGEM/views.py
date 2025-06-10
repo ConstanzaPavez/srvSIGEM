@@ -1031,12 +1031,15 @@ def cancelar_solicitud(request, solicitud_id):
     if solicitud.estado == 'PEND':
         solicitud.estado = 'CAN'
         solicitud.save()
+
+        # Actualiza los ítems a rechazado
+        solicitud.items.all().update(aprobado=False, rechazado=True)
+
         messages.success(request, 'Solicitud cancelada exitosamente.')
     else:
         messages.error(request, 'Solo puedes cancelar solicitudes pendientes.')
 
     return redirect('listar_solicitudes')  # o la vista que estés usando para listarlas
-
 
 
 

@@ -49,11 +49,27 @@
             <div class="accordion-body">
               <ul class="list-group mb-3">
                 {% for item in solicitud.items.all %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center border-0">
-                    {{ item.material.nom_material }}
-                    <span class="badge bg-primary rounded-pill">{{ item.cantidad }}</span>
-                  </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center border-0">
+                  <div>
+                    <strong>{{ item.material.nom_material }}</strong>
+                    <br>
+                    <small>
+                      {% if solicitud.estado == 'CAN' %}
+                        <span class="text-secondary">Cancelado</span>
+                      {% elif item.rechazado %}
+                        <span class="text-danger">Rechazado</span>
+                      {% elif item.aprobado %}
+                        <span class="text-success">Aprobado</span>
+                      {% else %}
+                        <span class="text-warning">Pendiente</span>
+                      {% endif %}
+                    </small>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">{{ item.cantidad }}</span>
+                </li>
+
                 {% endfor %}
+
               </ul>
 
               <div class="d-flex justify-content-between align-items-center">
