@@ -406,11 +406,21 @@ def listar_materiales(request):
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
 
             materiales_reservados_ids = ItemSolicitud.objects.filter(
-                solicitud__estado__in=['PEND', 'APR', 'PAR'],
-                solicitud__fecha_retiro__lte=fecha_fin,
-                solicitud__fecha_devolucion__gte=fecha_inicio,
-                fecha_devolucion_real__isnull=True
+                Q(
+                    solicitud__estado__in=['PEND', 'APR'],
+                    solicitud__fecha_retiro__lte=fecha_fin,
+                    solicitud__fecha_devolucion__gte=fecha_inicio,
+                    fecha_devolucion_real__isnull=True
+                ) |
+                Q(
+                    solicitud__estado='PAR',
+                    aprobado=True,  # Solo excluir los aprobados
+                    solicitud__fecha_retiro__lte=fecha_fin,
+                    solicitud__fecha_devolucion__gte=fecha_inicio,
+                    fecha_devolucion_real__isnull=True
+                )
             ).values_list('material__id_material', flat=True).distinct()
+
 
             materiales = materiales.exclude(id_material__in=materiales_reservados_ids)
 
