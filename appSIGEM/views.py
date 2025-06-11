@@ -835,16 +835,22 @@ def gestionar_solicitud(request, solicitud_id):
                 item.rechazado = not item.aprobado
                 item.save()
 
-            # ✅ Guardar comentario
             solicitud_actualizada.comentario_respuesta = form.cleaned_data.get('comentario_respuesta')
             solicitud_actualizada.save()
-
             solicitud.actualizar_estado()
 
-            messages.success(request, 'La solicitud fue actualizada correctamente.')
+            # ✅ Mostrar mensaje según resultado
+            total_items = solicitud.items.count()
+            total_aprobados = sum(1 for item in solicitud.items.all() if item.aprobado)
+
+            if total_aprobados == total_items:
+                messages.success(request, '✅ La solicitud fue aprobada completamente.')
+            elif total_aprobados == 0:
+                messages.error(request, '❌ La solicitud fue rechazada.')
+            else:
+                messages.warning(request, '⚠️ La solicitud fue aprobada parcialmente.')
+
             return redirect('control_solicitudes')
-
-
     else:
         form = GestionarSolicitudForm(instance=solicitud)
 
@@ -853,7 +859,6 @@ def gestionar_solicitud(request, solicitud_id):
         'solicitud': solicitud,
         'items': solicitud.items.all(),
     })
-
 
 
 def detalle_solicitud(request, numero_solicitud):
