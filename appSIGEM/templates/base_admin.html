@@ -5,41 +5,38 @@
   <meta charset="UTF-8">
   <title>{% block title %}SIGEM{% endblock %}</title>
 
-  <!-- Bootstrap y estilos -->
+  <!-- Estilos -->
+  <link rel="stylesheet" href="{% static 'paginas/css/base_c/base.css' %}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     body {
       background: linear-gradient(to right, #74ebd5, #9face6);
     }
 
-    .navbar {
-      background-color: #ffffff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 1000;
-    }
-
     .logo-img {
-      height: 40px;
+      height: 45px;
       width: auto;
     }
 
     .sidebar {
       position: fixed;
       top: 0;
-      left: -250px;
+      right: -250px;
       width: 250px;
       height: 100%;
       background-color: #ffffff;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-      transition: left 0.3s ease-in-out;
-      z-index: 1050;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      transition: right 0.3s ease-in-out;
+      z-index: 1051;
       padding-top: 60px;
     }
 
     .sidebar.show {
-      left: 0;
+      right: 0;
     }
 
     .sidebar a {
@@ -53,8 +50,27 @@
       background-color: #f1f1f1;
     }
 
-    .navbar-toggler-icon {
-      font-size: 1.5rem;
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    /* Fondo oscuro al abrir menú */
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.4);
+      z-index: 1050;
+    }
+
+    #overlay.active {
+      display: block;
     }
 
     @media (min-width: 992px) {
@@ -64,51 +80,94 @@
     }
   </style>
 </head>
+
 <body>
 
-  <nav class="navbar navbar-expand-lg px-3">
-    <div class="d-flex align-items-center w-100 justify-content-between">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg px-3">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
 
+    <!-- Logo -->
+    <a href="{% url 'admin_panel' %}">
+      <img src="{% static 'paginas/img/logo.png' %}" alt="Logo SIGEM" class="logo-img">
+    </a>
+    <!-- Menú escritorio -->
+    
+    <div class="d-none d-lg-flex gap-4 align-items-center ms-auto">
+      <div class="dropdown position-relative">
+        <a class="dropdown-toggle text-decoration-none text-dark d-flex align-items-center gap-1" href="#">
+          <i class="bi bi-plus-circle"></i> Agregar
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'agregar_marca' %}"><i class="bi bi-award me-2"></i>Marca</a></li>
+          <li><a class="dropdown-item" href="{% url 'agregar_categoria' %}"><i class="bi bi-tags me-2"></i>Categoría</a></li>
+          <li><a class="dropdown-item" href="{% url 'agregar_tipo_material' %}"><i class="bi bi-box me-2"></i>Tipo de Material</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'agregar_material' %}"><i class="bi bi-plus-square me-2"></i>Material</a></li>
+        </ul>
+      </div>
+
+      <a href="{% url 'reporte_prestamos' %}" class="text-decoration-none text-dark"><i class="bi bi-bar-chart-line"></i> Reportes</a>
+      <a href="{% url 'control_solicitudes' %}" class="text-decoration-none text-dark"><i class="bi bi-card-checklist"></i> Solicitudes</a>
+      <a href="{% url 'gestionar_devoluciones' %}" class="text-decoration-none text-dark"><i class="bi bi-arrow-counterclockwise"></i> Devoluciones</a>
+      <a href="{% url 'logout' %}" class="text-decoration-none text-dark"><i class="bi bi-box-arrow-right"></i> Salir</a>
+    </div>
+
+    <!-- Botón hamburguesa -->
+    <div id="menu-area" class="position-relative">
       <button class="btn d-lg-none" id="menu-toggle">
         <i class="bi bi-list fs-3"></i>
       </button>
 
-      <a href="{% url 'admin_panel' %}">
-        <img src="{% static 'paginas/img/logo.png' %}" alt="Logo" class="logo-img">
-      </a>
-
-      <!-- Opciones en pantallas grandes -->
-      <div class="d-none d-lg-flex gap-4">
-        <a href="{% url 'agregar_material' %}" class="text-decoration-none text-dark"><i class="bi bi-plus-circle me-1"></i>Agregar</a>
-        <a href="{% url 'reporte_prestamos' %}" class="text-decoration-none text-dark"><i class="bi bi-bar-chart me-1"></i>Reportes</a>
-        <a href="{% url 'control_solicitudes' %}" class="text-decoration-none text-dark"><i class="bi bi-card-checklist me-1"></i>Solicitudes</a>
-        <a href="{% url 'gestionar_devoluciones' %}" class="text-decoration-none text-dark"><i class="bi bi-arrow-counterclockwise me-1"></i>Devoluciones</a>
-        <a href="{% url 'logout' %}" class="text-decoration-none text-dark"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
+      <!-- Sidebar (móvil y escritorio si se quiere) -->
+      <div class="sidebar" id="sidebar">
+        <a href="{% url 'agregar_marca' %}"><i class="bi bi-award me-2"></i>Agregar Marca</a>
+        <a href="{% url 'agregar_categoria' %}"><i class="bi bi-tags me-2"></i>Agregar Categoría</a>
+        <a href="{% url 'agregar_tipo_material' %}"><i class="bi bi-box me-2"></i>Agregar Tipo</a>
+        <a href="{% url 'agregar_material' %}"><i class="bi bi-plus-square me-2"></i>Agregar Material</a>
+        <hr>
+        <a href="{% url 'reporte_prestamos' %}"><i class="bi bi-bar-chart-line me-2"></i>Reportes</a>
+        <a href="{% url 'control_solicitudes' %}"><i class="bi bi-card-checklist me-2"></i>Solicitudes</a>
+        <a href="{% url 'gestionar_devoluciones' %}"><i class="bi bi-arrow-counterclockwise me-2"></i>Devoluciones</a>
+        <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
       </div>
     </div>
-  </nav>
-
-  <!-- Sidebar para móvil -->
-  <div class="sidebar" id="sidebar">
-    <a href="{% url 'agregar_material' %}"><i class="bi bi-plus-circle me-2"></i>Agregar</a>
-    <a href="{% url 'reporte_prestamos' %}"><i class="bi bi-bar-chart me-2"></i>Reportes</a>
-    <a href="{% url 'control_solicitudes' %}"><i class="bi bi-card-checklist me-2"></i>Solicitudes</a>
-    <a href="{% url 'gestionar_devoluciones' %}"><i class="bi bi-arrow-counterclockwise me-2"></i>Devoluciones</a>
-    <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
   </div>
+</nav>
 
-  <!-- Contenido -->
-  <div class="container my-5">
-    {% block content %}
-    {% endblock %}
-  </div>
+<!-- Contenido principal -->
+<div class="container my-5">
+  {% block content %}
+  {% endblock %}
+</div>
 
-  <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('show');
-    });
-  </script>
+<!-- Recargar imágenes en modo debug -->
+{% if debug %}
+<script>
+  window.onload = () => document.querySelectorAll('img').forEach(img => img.src += '');
+</script>
+{% endif %}
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const toggleButton = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const menuArea = document.getElementById('menu-area');
+
+  toggleButton.addEventListener('click', () => {
+    sidebar.classList.toggle('show');
+    overlay.classList.toggle('active');
+  });
+
+  // Cierra si se hace clic fuera
+  document.addEventListener('click', function (e) {
+    if (!menuArea.contains(e.target) && sidebar.classList.contains('show')) {
+      sidebar.classList.remove('show');
+      overlay.classList.remove('active');
+    }
+  });
+</script>
 </body>
 </html>
