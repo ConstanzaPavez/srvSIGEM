@@ -756,7 +756,7 @@ def crear_solicitud(request):
             if materiales_solapados:
                 nombres = ", ".join(materiales_solapados)
                 messages.error(request, f"No se puede crear la solicitud porque estos materiales están reservados en las fechas indicadas: {nombres}")
-                return redirect('crear_solicitud')
+                return redirect('index')
 
             # Si no hay solapamientos, crear la solicitud
             solicitud = form.save(commit=False)
