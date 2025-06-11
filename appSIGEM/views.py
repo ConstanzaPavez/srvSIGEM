@@ -398,34 +398,38 @@ def listar_materiales(request):
         materiales = materiales.filter(tipo_material__nombre_tipo_material=tipo)
     if categoria:
         materiales = materiales.filter(categoria__nombre_categoria=categoria)
-
-    # Filtrar por rango fechas
+        
     if fecha_inicio_str and fecha_fin_str:
         try:
             fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
             fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
 
+            margen_dias = timedelta(days=2)
+            fecha_disponible_limite = fecha_inicio + margen_dias
+
             materiales_reservados_ids = ItemSolicitud.objects.filter(
+                Q(solicitud__estado__in=['PEND', 'APR']) |
+                Q(solicitud__estado='PAR', aprobado=True)
+            ).filter(
+                solicitud__fecha_retiro__lte=fecha_fin,
+                solicitud__fecha_devolucion__gte=fecha_inicio
+            ).filter(
                 Q(
-                    solicitud__estado__in=['PEND', 'APR'],
-                    solicitud__fecha_retiro__lte=fecha_fin,
-                    solicitud__fecha_devolucion__gte=fecha_inicio,
-                    fecha_devolucion_real__isnull=True
+                    # No ha sido devuelto y se espera que esté ocupado después del margen
+                    fecha_devolucion_real__isnull=True,
+                    solicitud__fecha_devolucion__gt=fecha_disponible_limite
                 ) |
                 Q(
-                    solicitud__estado='PAR',
-                    aprobado=True,  # Solo excluir los aprobados
-                    solicitud__fecha_retiro__lte=fecha_fin,
-                    solicitud__fecha_devolucion__gte=fecha_inicio,
-                    fecha_devolucion_real__isnull=True
+                    # Ya fue devuelto pero después del margen
+                    fecha_devolucion_real__gt=fecha_disponible_limite
                 )
             ).values_list('material__id_material', flat=True).distinct()
-
 
             materiales = materiales.exclude(id_material__in=materiales_reservados_ids)
 
         except ValueError:
             pass
+
 
     # El resto igual
     marcas = Material.objects.values_list('marca__nom_marca', flat=True).distinct()
