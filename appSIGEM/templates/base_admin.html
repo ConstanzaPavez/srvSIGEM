@@ -2,81 +2,113 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}SIGEM{% endblock %}</title>
+  <meta charset="UTF-8">
+  <title>{% block title %}SIGEM{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'paginas/css/base_c/base.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Estilo adicional para inputs -->
-<style>
-  input, select, textarea {
-    border-radius: 0.5rem !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  }
+  <!-- Bootstrap y estilos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-  input:focus, select:focus, textarea:focus {
-    border-color: #0d6efd !important;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2) !important;
-  }
-</style>
+  <style>
+    body {
+      background: linear-gradient(to right, #74ebd5, #9face6);
+    }
 
+    .navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
 
+    .logo-img {
+      height: 40px;
+      width: auto;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      transition: left 0.3s ease-in-out;
+      z-index: 1050;
+      padding-top: 60px;
+    }
+
+    .sidebar.show {
+      left: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 1rem;
+      color: #333;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .navbar-toggler-icon {
+      font-size: 1.5rem;
+    }
+
+    @media (min-width: 992px) {
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
 </head>
+<body>
 
-<body style="background: linear-gradient(to right, #74ebd5, #9face6);">
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-light custom-navbar shadow-sm">
-        <div class="container-fluid">
-            <a href="{% url 'admin_panel' %}">
-                <img src="{% static 'paginas/img/logo.png' %}" alt="Logo Prueba" class="d-block" style="height: 50px;">
-            </a>
+  <nav class="navbar navbar-expand-lg px-3">
+    <div class="d-flex align-items-center w-100 justify-content-between">
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+      <button class="btn d-lg-none" id="menu-toggle">
+        <i class="bi bi-list fs-3"></i>
+      </button>
 
-                    <div class="btn-group">
-                        
-                        <div class="btn-group">
-                            <button type="button" class="nav-link active dropdown-toggle" data-bs-toggle="dropdown"> Agregar </button>
-                            <div class="dropdown-menu">
-                            <a class="nav-link active" href="{% url 'agregar_categoria' %}"><i class="bi bi-tags"></i> Agregar Categoría</a>
-                            <a class="nav-link active" href="{% url 'agregar_tipo_material' %}"><i class="bi bi-box"></i> agregar Tipo</a>
-                            <a class="nav-link active" href="{% url 'agregar_marca' %}"><i class="bi bi-award"></i> Agregar Marca</a>
-                            <a class="nav-link active" href="{% url 'agregar_material' %}"><i class="bi bi-plus-square"></i> Agregar Material</a>
-                            </div>
-                            <li class="nav-item"><a class="nav-link active" href="{% url 'reporte_prestamos' %}"><i class="bi bi-file-earmark-bar-graph"></i> Reportes Préstamos</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="{% url 'control_solicitudes' %}"><i class="bi bi-card-checklist"></i> Solicitudes</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="{% url 'gestionar_devoluciones' %}"><i class="bi bi-arrow-counterclockwise"></i> Devoluciones</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Cerrar sesión</a></li>
-                        </div>
-                        
-                    </div>
-                    
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container my-5">
-        {% block content %}
-        {% endblock %}
+      <a href="{% url 'admin_panel' %}">
+        <img src="{% static 'paginas/img/logo.png' %}" alt="Logo" class="logo-img">
+      </a>
+
+      <!-- Opciones en pantallas grandes -->
+      <div class="d-none d-lg-flex gap-4">
+        <a href="{% url 'agregar_material' %}" class="text-decoration-none text-dark"><i class="bi bi-plus-circle me-1"></i>Agregar</a>
+        <a href="{% url 'reporte_prestamos' %}" class="text-decoration-none text-dark"><i class="bi bi-bar-chart me-1"></i>Reportes</a>
+        <a href="{% url 'control_solicitudes' %}" class="text-decoration-none text-dark"><i class="bi bi-card-checklist me-1"></i>Solicitudes</a>
+        <a href="{% url 'gestionar_devoluciones' %}" class="text-decoration-none text-dark"><i class="bi bi-arrow-counterclockwise me-1"></i>Devoluciones</a>
+        <a href="{% url 'logout' %}" class="text-decoration-none text-dark"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
+      </div>
     </div>
+  </nav>
 
-    {% if debug %}
-        <script>
-            // fuerza el recargado de imágenes en desarrollo
-            window.onload = () => document.querySelectorAll('img').forEach(img => img.src += '');
-        </script>
-    {% endif %}
-    <!-- Bootstrap JS (opcional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Sidebar para móvil -->
+  <div class="sidebar" id="sidebar">
+    <a href="{% url 'agregar_material' %}"><i class="bi bi-plus-circle me-2"></i>Agregar</a>
+    <a href="{% url 'reporte_prestamos' %}"><i class="bi bi-bar-chart me-2"></i>Reportes</a>
+    <a href="{% url 'control_solicitudes' %}"><i class="bi bi-card-checklist me-2"></i>Solicitudes</a>
+    <a href="{% url 'gestionar_devoluciones' %}"><i class="bi bi-arrow-counterclockwise me-2"></i>Devoluciones</a>
+    <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
+  </div>
+
+  <!-- Contenido -->
+  <div class="container my-5">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('show');
+    });
+  </script>
 </body>
 </html>
-
