@@ -95,22 +95,17 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Validación de Fechas -->
+<!-- Validación de Fechas con restricción como Código 2 y validación visual -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const hoy = new Date().toISOString().split("T")[0];
     const fechaRetiro = document.getElementById("id_fecha_retiro");
     const fechaDevolucion = document.getElementById("id_fecha_devolucion");
 
-    // No permitir seleccionar fecha de retiro anterior a hoy
+    // Establecer hoy como mínimo para fecha de retiro
     fechaRetiro.setAttribute("min", hoy);
 
-    function obtenerFechaSiguiente(fechaStr) {
-      const fecha = new Date(fechaStr);
-      fecha.setDate(fecha.getDate() + 1);
-      return fecha.toISOString().split("T")[0];
-    }
-
-    // Función para mostrar alerta con SweetAlert
+    // Función para mostrar alerta
     function mostrarAlerta(mensaje) {
       Swal.fire({
         icon: 'error',
@@ -124,35 +119,25 @@
       });
     }
 
-    // Establecer la fecha mínima de devolución según la fecha de retiro
-    fechaRetiro.addEventListener("change", function () {
-      if (this.value) {
-        const minDevolucion = obtenerFechaSiguiente(this.value);
-        fechaDevolucion.value = "";  // limpia la fecha anterior seleccionada
-        fechaDevolucion.setAttribute("min", minDevolucion);
-      } else {
-        fechaDevolucion.removeAttribute("min");
+    // Cuando cambia la fecha de retiro, ajustar la fecha mínima de devolución
+    fechaRetiro?.addEventListener("change", function () {
+        fechaDevolucion.setAttribute("min", this.value);
+    });
+
+    // Validar que fecha de devolución no sea antes de la de retiro
+    fechaDevolucion?.addEventListener("change", function () {
+      if (fechaRetiro?.value && this.value < fechaRetiro.value) {
+        mostrarAlerta("La fecha de devolución no puede ser anterior a la de retiro.");
+        this.value = "";
       }
     });
 
-    // Validar la fecha de devolución
-    fechaDevolucion.addEventListener("change", function () {
-      if (fechaRetiro.value) {
-        const minDevolucion = obtenerFechaSiguiente(fechaRetiro.value);
-        if (this.value < minDevolucion) {
-          mostrarAlerta(`La fecha de devolución debe ser igual o posterior al día siguiente de la fecha de retiro (${minDevolucion}).`);
-          this.value = "";
-        }
-      }
-    });
-
-    // Si ya hay una fecha de retiro al cargar la página
-    if (fechaRetiro.value) {
-      const minDevolucion = obtenerFechaSiguiente(fechaRetiro.value);
-      fechaDevolucion.setAttribute("min", minDevolucion);
+    // Si ya viene preseleccionada la fecha de retiro
+    if (fechaRetiro?.value) {
+      fechaDevolucion?.setAttribute("min", fechaRetiro.value);
     }
 
-    // Confirmación de envío
+    // Confirmación antes de enviar
     const btnConfirmar = document.getElementById('btn-confirmar-envio');
     const form = document.querySelector('form');
 
@@ -162,7 +147,7 @@
       return `${d}-${m}-${a}`;
     }
 
-    btnConfirmar.addEventListener('click', function () {
+    btnConfirmar?.addEventListener('click', function () {
       const fRetiro = fechaRetiro?.value || '';
       const fDevolucion = fechaDevolucion?.value || '';
 
