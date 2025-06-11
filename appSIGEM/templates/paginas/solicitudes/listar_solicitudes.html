@@ -22,11 +22,12 @@
 <div class="container py-4 slide-in-card">
     {% if solicitudes %}
   <br>
+
     <div class="accordion" id="accordionSolicitudes">
       {% for solicitud in solicitudes %}
         <div class="accordion-item mb-4 border-0 shadow-sm overflow-hidden rounded-2">
           <h1 class="accordion-header" id="heading{{ solicitud.id }}">
-            <button class="accordion-button collapsed d-flex justify-content-between border-0 rounded-top-4" type="button"
+            <button class="accordion-button collapsed d-flex justify-content-between border-0 rounded-top-2" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapse{{ solicitud.id }}" aria-expanded="false"
               aria-controls="collapse{{ solicitud.id }}">
               <span class="fw-semibold"> Solicitud  {{ solicitud.numero_solicitud }} Fecha: {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</span>
