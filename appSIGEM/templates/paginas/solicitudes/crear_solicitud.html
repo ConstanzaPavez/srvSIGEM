@@ -2,17 +2,35 @@
 {% load static %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center min-vh-50">
-  <div class="card shadow-lg p-5" style="width: 100%; max-width: 700px;">
+
+<style>
+  @keyframes slideInCard {
+    0% {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .slide-in-card {
+    opacity: 0;
+    animation: slideInCard 0.6s ease-out forwards;
+  }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center min-vh-50 slide-in-card">
+  <div class="card shadow-lg p-5 w-100" style="max-width: 700px;">
     <div class="d-flex justify-content-between mb-3">
       <div><strong>Usuario:</strong> {{ request.user.username }}</div>
-      <div><strong>Fecha :</strong> {{ hoy }}</div>
+      <div><strong>Fecha:</strong> {{ hoy }}</div>
     </div>
 
     <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Crear Solicitud</h1>
     <p class="text-center">Por favor, completa el siguiente formulario para crear tu solicitud.</p>
 
-    <!-- 🧾 Mostrar materiales en el carrito en una tabla -->
     {% if items_carrito %}
       <h5 class="mb-3 text-secondary text-black">Materiales en tu carrito:</h5>
       <div class="table-responsive mb-4">
@@ -37,46 +55,104 @@
       <p class="text-muted text-center mb-4">No hay materiales en tu carrito.</p>
     {% endif %}
 
-    <!-- 📋 Formulario para la solicitud -->
     <form method="post">
       {% csrf_token %}
       {{ form.non_field_errors }}
 
       <div class="mb-4 text-black">
-        <label for="id_fecha_retiro" class="form-label">Fecha de Retiro:</label>
+        <label for="id_fecha_retiro" class="form-label fw-semibold">Fecha de Retiro:</label>
         {{ form.fecha_retiro }}
         {{ form.fecha_retiro.errors }}
       </div>
 
       <div class="mb-3">
-        <label for="id_fecha_devolucion" class="form-label">Fecha de Devolución:</label>
+        <label for="id_fecha_devolucion" class="form-label fw-semibold">Fecha de Devolución:</label>
         {{ form.fecha_devolucion }}
         {{ form.fecha_devolucion.errors }}
       </div>
+
       <div class="mb-3">
-        <label for="id_razon_solicitud" class="form-label">Razón de la Solicitud:</label>
+        <label for="id_razon_solicitud" class="form-label fw-semibold">Razón de la Solicitud:</label>
         {{ form.razon_solicitud }}
         {{ form.razon_solicitud.errors }}
       </div>
 
       <div class="mb-3">
-        <label for="id_ubicacion_solicitud" class="form-label">Ubicación de Uso:</label>
+        <label for="id_ubicacion_solicitud" class="form-label fw-semibold">Ubicación de Uso:</label>
         {{ form.ubicacion_solicitud }}
         {{ form.ubicacion_solicitud.errors }}
       </div>
-            
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      
+
+      <div class="d-flex justify-content-between mt-3">
+        <button type="button" id="btn-confirmar-envio" class="btn btn-primary">Enviar Solicitud</button>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
     </form>
-    <div class="d-flex justify-content-between mt-3">
-      <button type="button" id="btn-confirmar-envio" class="btn btn-primary">Enviar Solicitud</button>
-      <a href="{% url 'index' %}" class="btn btn-secondary">Cancelar</a>
-    </div>
   </div>
 </div>
 
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Validación de Fechas -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    const hoy = new Date().toISOString().split("T")[0];
+    const fechaRetiro = document.getElementById("id_fecha_retiro");
+    const fechaDevolucion = document.getElementById("id_fecha_devolucion");
+
+    // No permitir seleccionar fecha de retiro anterior a hoy
+    fechaRetiro.setAttribute("min", hoy);
+
+    function obtenerFechaSiguiente(fechaStr) {
+      const fecha = new Date(fechaStr);
+      fecha.setDate(fecha.getDate() + 1);
+      return fecha.toISOString().split("T")[0];
+    }
+
+    // Función para mostrar alerta con SweetAlert
+    function mostrarAlerta(mensaje) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Fecha inválida',
+        text: mensaje,
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          confirmButton: 'btn btn-primary'
+        },
+        buttonsStyling: false
+      });
+    }
+
+    // Establecer la fecha mínima de devolución según la fecha de retiro
+    fechaRetiro.addEventListener("change", function () {
+      if (this.value) {
+        const minDevolucion = obtenerFechaSiguiente(this.value);
+        fechaDevolucion.value = "";  // limpia la fecha anterior seleccionada
+        fechaDevolucion.setAttribute("min", minDevolucion);
+      } else {
+        fechaDevolucion.removeAttribute("min");
+      }
+    });
+
+    // Validar la fecha de devolución
+    fechaDevolucion.addEventListener("change", function () {
+      if (fechaRetiro.value) {
+        const minDevolucion = obtenerFechaSiguiente(fechaRetiro.value);
+        if (this.value < minDevolucion) {
+          mostrarAlerta(`La fecha de devolución debe ser igual o posterior al día siguiente de la fecha de retiro (${minDevolucion}).`);
+          this.value = "";
+        }
+      }
+    });
+
+    // Si ya hay una fecha de retiro al cargar la página
+    if (fechaRetiro.value) {
+      const minDevolucion = obtenerFechaSiguiente(fechaRetiro.value);
+      fechaDevolucion.setAttribute("min", minDevolucion);
+    }
+
+    // Confirmación de envío
     const btnConfirmar = document.getElementById('btn-confirmar-envio');
     const form = document.querySelector('form');
 
@@ -87,8 +163,8 @@
     }
 
     btnConfirmar.addEventListener('click', function () {
-      const fechaRetiro = document.getElementById('id_fecha_retiro')?.value || '';
-      const fechaDevolucion = document.getElementById('id_fecha_devolucion')?.value || '';
+      const fRetiro = fechaRetiro?.value || '';
+      const fDevolucion = fechaDevolucion?.value || '';
 
       Swal.fire({
         title: '¿Estás seguro?',
@@ -100,13 +176,12 @@
                 <li><strong>{{ item.material.nom_material }}</strong> — {{ item.cantidad }} unidad{{ item.cantidad|pluralize }}</li>
               {% endfor %}
             </ul>
-            <p><strong>Fecha de Retiro:</strong> ${formatearFecha(fechaRetiro)}</p>
-            <p><strong>Fecha de Devolución:</strong> ${formatearFecha(fechaDevolucion)}</p>
+            <p><strong>Fecha de Retiro:</strong> ${formatearFecha(fRetiro)}</p>
+            <p><strong>Fecha de Devolución:</strong> ${formatearFecha(fDevolucion)}</p>
           </div>
         `,
         icon: 'question',
         showCancelButton: true,
-        focusConfirm: false,
         confirmButtonText: '✅ Sí, enviar',
         cancelButtonText: '❌ Cancelar',
         customClass: {
@@ -126,6 +201,5 @@
     });
   });
 </script>
-
 
 {% endblock %}
