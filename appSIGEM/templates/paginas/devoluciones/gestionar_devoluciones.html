@@ -1,25 +1,19 @@
 {% extends 'base_admin.html' %}
 {% block content %}
 
-<!-- AOS (Animate On Scroll) -->
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init();
-</script>
 
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Gestión de Devoluciones</h1>
 
 <div class="container mt-4">
     {% for solicitud in solicitudes %}
-        <div class="card shadow-sm border-0 mb-4" data-aos="fade-up" data-aos-duration="800">
-            <div class="card-header bg-transparent text-dark fw-semibold border-bottom">
+        <div class="card shadow-sm border-0 mb-4 rounded-2 overflow-hidden" data-aos="fade-up" data-aos-duration="800">
+            <div class="card-header bg-white text-dark fw-semibold border-bottom">
                 <i class="bi bi-person-fill"></i> Usuario: {{ solicitud.usuario.username }} |
                 <i class="bi bi-file-earmark-text"></i> Nº: {{ solicitud.numero_solicitud }}<br>
                 <i class="bi bi-calendar-check"></i> Retiro: {{ solicitud.fecha_retiro }} |
                 <i class="bi bi-calendar-event"></i> Devolución: {{ solicitud.fecha_devolucion }}
             </div>
-            <div class="card-body bg-light">
+            <div class="card-body bg-white">
                 <ul class="list-group list-group-flush">
                     {% for item in solicitud.items_pendientes %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -28,13 +22,12 @@
                                 <span class="badge bg-secondary ms-2">Cantidad: {{ item.cantidad }}</span>
                             </div>
                             <a href="{% url 'gestionar_devolucion' item.id %}" class="btn btn-sm btn-outline-success">
-                                <i class="bi bi-arrow-return-left"></i> Gestionar
+                            <i class="bi bi-arrow-return-left"></i> Gestionar
                             </a>
                         </li>
                     {% empty %}
                         <p>No hay ítems pendientes de devolución.</p>
                     {% endfor %}
-
                 </ul>
             </div>
         </div>
@@ -44,5 +37,10 @@
         </div>
     {% endfor %}
 </div>
+<!-- AOS (Animate On Scroll) -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 
 {% endblock %}
