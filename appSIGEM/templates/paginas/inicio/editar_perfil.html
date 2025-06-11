@@ -4,12 +4,11 @@
 {% block content %}
 <h1 class="mb-4 text-center text-primary-emphasis fw-bold "> Editar Perfil</h1>
 <div class="container d-flex justify-content-center align-items-center min-vh-50 mt-4">
-    <div class="card shadow-sm p-5 bg-white rounded-4 border-0" style="width: 100%; max-width: 900px;">
+    <div class="card shadow-sm p-5 bg-white rounded-2 border-0" style="width: 100%; max-width: 900px;">
         
         <!-- IMPORTANTE: enctype agregado para soporte de imagen -->
         <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
-
             <!-- Datos personales -->
             <div class="row g-3">
                 <h5 class="fw-semibold text-secondary mb-3">Datos Personales</h5>
