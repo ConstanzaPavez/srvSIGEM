@@ -4,14 +4,9 @@
 
 {% block content %}
 
-<!-- AOS Animación -->
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>AOS.init();</script>
-
 <div class="d-flex justify-content-center min-vh-100 text-black">
     <div class="col-md-10" data-aos="fade-up" data-aos-duration="700">
-        <div class="card shadow-sm border-0 rounded-4">
+        <div class="card shadow-sm border-0 rounded-2 overflow-hidden">
             <div class="card-header bg-light border-bottom-0">
                 <h2 class="mb-4 text-center text-primary-emphasis fw-bold">Gestionar Devolución de material: {{ item.material.nom_material }}</h2>
             </div>
@@ -82,5 +77,6 @@
   checkObservacionRequired();
 })();
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
 {% endblock %}
