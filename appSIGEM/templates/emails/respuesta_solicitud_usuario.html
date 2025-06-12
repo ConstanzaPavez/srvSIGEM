@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; padding: 30px; border-radius: 10px; }
+    h2 { color: #1c77ff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📬 Tu solicitud ha sido respondida</h2>
+    <p><strong>Estado:</strong> {{ solicitud.get_estado_display }}</p>
+    <p><strong>ID Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
+    <p><strong>Fecha de respuesta:</strong> {{ solicitud.updated_at }}</p>
+    <p><strong>Comentario:</strong> {{ solicitud.comentario_respuesta }}</p>
+    <p><strong>Razón:</strong> {{ solicitud.razon_solicitud }}</p>
+    <p><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud }}</p>
+  </div>
+</body>
+</html>

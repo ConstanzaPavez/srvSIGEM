@@ -29,7 +29,8 @@ from django.contrib import messages
 from time import timezone
 from datetime import datetime, date, timedelta
 from django.core.mail import EmailMultiAlternatives
-
+from appSIGEM.templatetags.utils import enviar_correo_admin
+from appSIGEM.templatetags.utils import enviar_correo_usuario_respuesta
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -271,6 +272,8 @@ def agregar_categoria(request):
     else:
         form = CategoriaForm()
     return render(request, 'paginas/agregar_cosas/agregar_categoria.html', {'form': form})
+
+#
 
 
 # Agregar tipo de material
@@ -717,7 +720,7 @@ def quitar_del_carrito(request, material_id):
 
 
 
-@login_required
+@login_required 
 def crear_solicitud(request):
     hoy = now().date()
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
@@ -736,8 +739,6 @@ def crear_solicitud(request):
                 messages.error(request, "Debes completar las fechas de retiro y devolución.")
                 return redirect('crear_solicitud')
 
-            
-            
             # Validar solapamientos para cada material del carrito
             materiales_solapados = []
             for item_carrito in carrito.items.all():
@@ -758,7 +759,7 @@ def crear_solicitud(request):
                 messages.error(request, f"No se puede crear la solicitud porque estos materiales están reservados en las fechas indicadas: {nombres}")
                 return redirect('index')
 
-            # Si no hay solapamientos, crear la solicitud
+            # Crear la solicitud
             solicitud = form.save(commit=False)
             solicitud.usuario = request.user
             solicitud.save()
@@ -771,11 +772,12 @@ def crear_solicitud(request):
                 )
             carrito.items.all().delete()
 
+            enviar_correo_admin(solicitud)
+
             messages.success(request, "Solicitud enviada correctamente.")
             return redirect('index')
 
     else:
-        # Inicializar el formulario con fechas desde sesión si existen
         initial_data = {}
         if fecha_inicio_sesion:
             initial_data['fecha_retiro'] = fecha_inicio_sesion
@@ -790,8 +792,6 @@ def crear_solicitud(request):
         'carrito': carrito,
         'items_carrito': carrito.items.all()
     })
-
-
     
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
@@ -839,7 +839,9 @@ def gestionar_solicitud(request, solicitud_id):
             solicitud_actualizada.save()
             solicitud.actualizar_estado()
 
-            # ✅ Mostrar mensaje según resultado
+            enviar_correo_usuario_respuesta(solicitud)
+
+            # Mensaje según el resultado
             total_items = solicitud.items.count()
             total_aprobados = sum(1 for item in solicitud.items.all() if item.aprobado)
 

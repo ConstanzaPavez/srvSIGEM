@@ -1,0 +1,8 @@
+Tu solicitud ha sido respondida.
+
+Estado: {{ solicitud.get_estado_display }}
+ID Solicitud: {{ solicitud.numero_solicitud }}
+Comentario: {{ solicitud.comentario_respuesta }}
+
+Razón: {{ solicitud.razon_solicitud }}
+Ubicación: {{ solicitud.ubicacion_solicitud }}

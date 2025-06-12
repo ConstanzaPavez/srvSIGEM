@@ -1,0 +1,9 @@
+Nueva solicitud ingresada:
+
+Usuario: {{ solicitud.usuario.get_full_name }}
+ID Solicitud: {{ solicitud.numero_solicitud }}
+Fecha de creación: {{ solicitud.fecha_solicitud }}
+Fecha petición: {{ solicitud.fecha_retiro }}
+Fecha devolución: {{ solicitud.fecha_devolucion }}
+Razón: {{ solicitud.razon_solicitud }}
+Ubicación: {{ solicitud.ubicacion_solicitud }}

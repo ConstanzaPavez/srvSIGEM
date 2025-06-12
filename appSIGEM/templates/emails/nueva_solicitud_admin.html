@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; padding: 30px; border-radius: 10px; }
+    h2 { color: #1c77ff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📝 Nueva solicitud ingresada</h2>
+    <p><strong>Usuario:</strong> {{ solicitud.usuario.get_full_name }}</p>
+    <p><strong>ID Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
+    <p><strong>Fecha de creación:</strong> {{ solicitud.fecha_solicitud }}</p>
+    <p><strong>Fecha petición:</strong> {{ solicitud.fecha_retiro }}</p>
+    <p><strong>Fecha devolución:</strong> {{ solicitud.fecha_devolucion }}</p>
+    <p><strong>Razón:</strong> {{ solicitud.razon_solicitud }}</p>
+    <p><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud }}</p>
+  </div>
+</body>
+</html>
