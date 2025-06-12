@@ -1,9 +1,13 @@
-Nueva solicitud ingresada:
+Nueva Solicitud Ingresada - {{ solicitud.numero_solicitud }}
 
-Usuario: {{ solicitud.usuario.get_full_name }}
-ID Solicitud: {{ solicitud.numero_solicitud }}
-Fecha de creación: {{ solicitud.fecha_solicitud }}
-Fecha petición: {{ solicitud.fecha_retiro }}
-Fecha devolución: {{ solicitud.fecha_devolucion }}
+Usuario: {{ solicitud.usuario.get_full_name }} ({{ solicitud.usuario.username }})
+Fecha de Solicitud: {{ solicitud.fecha_solicitud }}
+Fecha de Petición: {{ solicitud.fecha_retiro }}
+Fecha de Devolución: {{ solicitud.fecha_devolucion }}
+Ubicación de uso: {{ solicitud.ubicacion_solicitud }}
 Razón: {{ solicitud.razon_solicitud }}
-Ubicación: {{ solicitud.ubicacion_solicitud }}
+
+Materiales solicitados:
+{% for item in solicitud.items.all %}
+- {{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}
+{% endfor %}

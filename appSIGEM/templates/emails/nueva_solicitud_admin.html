@@ -1,23 +1,76 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-    .container { background: #fff; padding: 30px; border-radius: 10px; }
-    h2 { color: #1c77ff; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Nueva Solicitud</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F5F7FA;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e2e2e2;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 10px;
+        }
+        .header img {
+            height: 80px;
+        }
+        .highlight {
+            background-color: #002D62;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .materiales {
+            margin-top: 10px;
+        }
+        .materiales ul {
+            padding-left: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📝 Nueva solicitud ingresada</h2>
-    <p><strong>Usuario:</strong> {{ solicitud.usuario.get_full_name }}</p>
-    <p><strong>ID Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
-    <p><strong>Fecha de creación:</strong> {{ solicitud.fecha_solicitud }}</p>
-    <p><strong>Fecha petición:</strong> {{ solicitud.fecha_retiro }}</p>
-    <p><strong>Fecha devolución:</strong> {{ solicitud.fecha_devolucion }}</p>
-    <p><strong>Razón:</strong> {{ solicitud.razon_solicitud }}</p>
-    <p><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud }}</p>
-  </div>
+<div class="container">
+    <div class="header">
+        <img src="{{ protocol }}://{{ domain }}{% static 'img/logo_sigem.png' %}" alt="SIGEM Logo">
+    </div>
+    <div class="highlight">
+        📩 Nueva Solicitud Ingresada
+    </div>
+
+    <div class="section">
+        <p><strong>Usuario:</strong> {{ solicitud.usuario.get_full_name }} ({{ solicitud.usuario.username }})</p>
+        <p><strong>Número de Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
+        <p><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud }}</p>
+        <p><strong>Fecha de Petición:</strong> {{ solicitud.fecha_retiro }}</p>
+        <p><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion }}</p>
+        <p><strong>Ubicación de uso:</strong> {{ solicitud.ubicacion_solicitud }}</p>
+        <p><strong>Razón de la solicitud:</strong> {{ solicitud.razon_solicitud }}</p>
+    </div>
+
+    <div class="section materiales">
+        <strong>Materiales solicitados:</strong>
+        <ul>
+            {% for item in solicitud.items.all %}
+                <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 </body>
 </html>

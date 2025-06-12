@@ -1,22 +1,90 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-    .container { background: #fff; padding: 30px; border-radius: 10px; }
-    h2 { color: #1c77ff; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Respuesta a tu solicitud</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F6F8;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+        .header {
+            text-align: center;
+        }
+        .header img {
+            height: 80px;
+        }
+        .status {
+            background-color: #002D62;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📬 Tu solicitud ha sido respondida</h2>
-    <p><strong>Estado:</strong> {{ solicitud.get_estado_display }}</p>
-    <p><strong>ID Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
-    <p><strong>Fecha de respuesta:</strong> {{ solicitud.updated_at }}</p>
-    <p><strong>Comentario:</strong> {{ solicitud.comentario_respuesta }}</p>
-    <p><strong>Razón:</strong> {{ solicitud.razon_solicitud }}</p>
-    <p><strong>Ubicación:</strong> {{ solicitud.ubicacion_solicitud }}</p>
-  </div>
+<div class="container">
+    <div class="header">
+        <img src="{{ protocol }}://{{ domain }}{% static 'img/logo_sigem.png' %}" alt="SIGEM Logo">
+    </div>
+    <div class="status">
+        Resultado de tu solicitud: {{ solicitud.get_estado_display }}
+    </div>
+
+    <div class="section">
+        <p><strong>Número de Solicitud:</strong> {{ solicitud.numero_solicitud }}</p>
+        <p><strong>Fecha de Solicitud:</strong> {{ solicitud.fecha_solicitud }}</p>
+        <p><strong>Fecha de Petición:</strong> {{ solicitud.fecha_retiro }}</p>
+        <p><strong>Fecha de Devolución:</strong> {{ solicitud.fecha_devolucion }}</p>
+    </div>
+
+    {% if solicitud.estado == 'RECH' %}
+        <div class="section">
+            <strong>Motivo del rechazo:</strong>
+            <p>{{ solicitud.comentario_respuesta }}</p>
+        </div>
+    {% elif solicitud.estado == 'PAR' %}
+        <div class="section">
+            <strong>Materiales aprobados parcialmente:</strong>
+            <ul>
+                {% for item in solicitud.items.all %}
+                    {% if item.aprobado %}
+                        <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <strong>Motivo de respuesta:</strong>
+            <p>{{ solicitud.comentario_respuesta }}</p>
+        </div>
+    {% elif solicitud.estado == 'APR' %}
+        <div class="section">
+            <strong>Materiales aprobados:</strong>
+            <ul>
+                {% for item in solicitud.items.all %}
+                    <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
 </body>
 </html>

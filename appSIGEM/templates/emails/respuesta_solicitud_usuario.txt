@@ -1,8 +1,25 @@
-Tu solicitud ha sido respondida.
+Resultado de tu solicitud: {{ solicitud.get_estado_display }}
 
-Estado: {{ solicitud.get_estado_display }}
-ID Solicitud: {{ solicitud.numero_solicitud }}
-Comentario: {{ solicitud.comentario_respuesta }}
+Número: {{ solicitud.numero_solicitud }}
+Fecha de Solicitud: {{ solicitud.fecha_solicitud }}
+Fecha de Petición: {{ solicitud.fecha_retiro }}
+Fecha de Devolución: {{ solicitud.fecha_devolucion }}
 
-Razón: {{ solicitud.razon_solicitud }}
-Ubicación: {{ solicitud.ubicacion_solicitud }}
+{% if solicitud.estado == 'RECH' %}
+Motivo del rechazo:
+{{ solicitud.comentario_respuesta }}
+{% elif solicitud.estado == 'PAR' %}
+Materiales aprobados parcialmente:
+{% for item in solicitud.items.all %}
+{% if item.aprobado %}
+- {{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}
+{% endif %}
+{% endfor %}
+
+Motivo: {{ solicitud.comentario_respuesta }}
+{% elif solicitud.estado == 'APR' %}
+Materiales aprobados:
+{% for item in solicitud.items.all %}
+- {{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}
+{% endfor %}
+{% endif %}
