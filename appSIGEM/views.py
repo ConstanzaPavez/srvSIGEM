@@ -454,7 +454,7 @@ def listar_materiales(request):
             fecha_fin = None
 
         if fecha_inicio and fecha_fin:
-            margen_dias = timedelta(days=2)
+            margen_dias = timedelta(days=0)
             fecha_inicio_margen = fecha_inicio - margen_dias
 
             # Obtenemos reservas activas o futuras en el rango extendido con margen
