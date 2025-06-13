@@ -1149,140 +1149,93 @@ def cancelar_solicitud(request, solicitud_id):
 
 
 
-from collections import defaultdict
-from django.db.models import Q
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from openpyxl import Workbook
-from openpyxl.chart import BarChart, Reference, PieChart
-from openpyxl.utils import get_column_letter
-from .models import Solicitud
+from datetime import date
+import openpyxl
+from openpyxl.styles import Font
 
-def generar_reporte_excel(request):
-    try:
-        fecha_desde = request.GET.get('desde')
-        fecha_hasta = request.GET.get('hasta')
-        usuario_nombre = request.GET.get('usuario')
+@login_required
+@user_passes_test(is_admin)
+def reporte_excel(request):
+    solicitudes = Solicitud.objects.filter(estado__in=['APR', 'FIN', 'PAR', 'PEND', 'RECH']) \
+        .select_related('usuario') \
+        .prefetch_related('items__material') \
+        .order_by('-fecha_solicitud')
 
-        filtros = Q()
-        if fecha_desde:
-            try:
-                fecha_desde_dt = datetime.datetime.strptime(fecha_desde, "%Y-%m-%d").date()
-                filtros &= Q(fecha_solicitud__date__gte=fecha_desde_dt)
-            except ValueError:
-                pass
+    fecha_inicio = request.GET.get('inicio')
+    fecha_fin = request.GET.get('fin')
+    usuario_id = request.GET.get('usuario')
 
-        if fecha_hasta:
-            try:
-                fecha_hasta_dt = datetime.datetime.strptime(fecha_hasta, "%Y-%m-%d").date()
-                filtros &= Q(fecha_solicitud__date__lte=fecha_hasta_dt)
-            except ValueError:
-                pass
+    # Validar y limpiar valores 'None' o vacíos
+    if fecha_inicio in [None, '', 'None']:
+        fecha_inicio = None
+    if fecha_fin in [None, '', 'None']:
+        fecha_fin = None
+    if usuario_id in [None, '', 'None']:
+        usuario_id = None
 
-        if usuario_nombre:
-            filtros &= (
-                Q(usuario__username__icontains=usuario_nombre) |
-                Q(usuario__first_name__icontains=usuario_nombre) |
-                Q(usuario__last_name__icontains=usuario_nombre)
-            )
+    if fecha_inicio:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
+    if fecha_fin:
+        solicitudes = solicitudes.filter(fecha_solicitud__date__lte=fecha_fin)
+    if usuario_id:
+        solicitudes = solicitudes.filter(usuario__id=usuario_id)
 
-        solicitudes = Solicitud.objects.filter(filtros).prefetch_related(
-            "items__material__categoria",
-            "items__material__tipo_material",
-            "items__material__marca"
-        ).order_by('fecha_solicitud')
+    import openpyxl
+    from openpyxl.utils import get_column_letter
+    from django.http import HttpResponse
 
-        # Diccionarios para estadísticas
-        conteo_materiales = defaultdict(int)
-        conteo_usuarios = defaultdict(int)
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Reporte Préstamos"
 
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "Detalle de Solicitudes"
+    headers = ['ID Solicitud', 'Fecha Solicitud', 'Estado', 'Usuario', 'Fecha Retiro', 'Fecha Devolución',
+               'Material', 'Cantidad', 'Estado Solicitud', 'Fecha Devolución Real', 'Estado Ingreso', 'Ubicación']
+    ws.append(headers)
 
-        headers = [
-            "Nº Solicitud", "Usuario", "Fecha Solicitud", "Fecha Retiro", "Fecha Devolución Esperada",
-            "Material", "Categoría", "Tipo", "Marca", "Cantidad",
-            "Fecha Devolución Real", "Estado Ingreso"
-        ]
-        ws.append(headers)
+    for solicitud in solicitudes:
+        # Mostrar todos los items sin filtrar por aprobado
+        for item in solicitud.items.all():
+            estado_item = 'Aprobado' if item.aprobado else 'Pendiente'
+            if item.rechazado:
+                estado_item = 'Rechazado'
 
-        for solicitud in solicitudes:
-            user_name = solicitud.usuario.get_full_name() or solicitud.usuario.username
-            conteo_usuarios[user_name] += 1
+            # Ajustar valores para items rechazados
+            fecha_devolucion_real = 'No aplica' if item.rechazado else (item.fecha_devolucion_real.strftime('%d-%m-%Y') if item.fecha_devolucion_real else 'Pendiente')
+            estado_ingreso = 'No aplica' if item.rechazado else (item.get_estado_ingreso_display() or 'Pendiente')
 
-            for item in solicitud.items.all():
-                material = item.material
-                conteo_materiales[material.nom_material] += item.cantidad
-                fila = [
-                    solicitud.numero_solicitud,
-                    user_name,
-                    solicitud.fecha_solicitud.date(),
-                    solicitud.fecha_retiro,
-                    solicitud.fecha_devolucion,
-                    material.nom_material,
-                    material.categoria.nombre_categoria,
-                    material.tipo_material.nombre_tipo_material,
-                    material.marca.nom_marca,
-                    item.cantidad,
-                    item.fecha_devolucion_real,
-                    item.get_estado_ingreso_display() or "Pendiente"
-                ]
-                ws.append(fila)
+            row = [
+                solicitud.numero_solicitud,
+                solicitud.fecha_solicitud.strftime('%d-%m-%Y %H:%M'),
+                solicitud.get_estado_display(),
+                solicitud.usuario.get_full_name() or solicitud.usuario.username,
+                solicitud.fecha_retiro.strftime('%d-%m-%Y') if solicitud.fecha_retiro else '',
+                solicitud.fecha_devolucion.strftime('%d-%m-%Y') if solicitud.fecha_devolucion else '',
+                item.material.nom_material if item.material else '',
+                item.cantidad,
+                estado_item,
+                fecha_devolucion_real,
+                estado_ingreso,
+                solicitud.ubicacion_solicitud or '',
+            ]
+            ws.append(row)
 
-        # Ajustar anchos
-        for col in ws.columns:
-            max_length = max(len(str(cell.value or '')) for cell in col)
-            ws.column_dimensions[get_column_letter(col[0].column)].width = max_length + 2
+    for col in ws.columns:
+        max_length = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        adjusted_width = max_length + 2
+        ws.column_dimensions[col_letter].width = adjusted_width
 
-        # Hoja de gráficos
-        ws_stats = wb.create_sheet(title="Estadísticas")
-
-        # Datos de materiales más solicitados
-        ws_stats.append(["Material", "Cantidad Solicitada"])
-        for nombre, total in sorted(conteo_materiales.items(), key=lambda x: -x[1])[:10]:
-            ws_stats.append([nombre, total])
-
-        chart1 = BarChart()
-        chart1.title = "Top 10 Materiales Más Solicitados"
-        chart1.y_axis.title = 'Cantidad'
-        chart1.x_axis.title = 'Material'
-
-        data = Reference(ws_stats, min_col=2, min_row=1, max_row=ws_stats.max_row)
-        categories = Reference(ws_stats, min_col=1, min_row=2, max_row=ws_stats.max_row)
-        chart1.add_data(data, titles_from_data=True)
-        chart1.set_categories(categories)
-        chart1.width = 20
-        chart1.height = 10
-        ws_stats.add_chart(chart1, "D2")
-
-        # Datos de usuarios con más solicitudes
-        row_offset = ws_stats.max_row + 3
-        ws_stats.append([])
-        ws_stats.append(["Usuario", "Cantidad de Solicitudes"])
-        for nombre, total in sorted(conteo_usuarios.items(), key=lambda x: -x[1])[:10]:
-            ws_stats.append([nombre, total])
-
-        chart2 = PieChart()
-        chart2.title = "Top 10 Usuarios con Más Solicitudes"
-        data = Reference(ws_stats, min_col=2, min_row=row_offset + 2, max_row=ws_stats.max_row)
-        labels = Reference(ws_stats, min_col=1, min_row=row_offset + 2, max_row=ws_stats.max_row)
-        chart2.add_data(data, titles_from_data=False)
-        chart2.set_categories(labels)
-        chart2.width = 10
-        chart2.height = 10
-        ws_stats.add_chart(chart2, f"D{row_offset + 2}")
-
-        # Exportar como Excel
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        filename = f"reporte_solicitudes_{datetime.date.today().isoformat()}.xlsx"
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        wb.save(response)
-        return response
-
-    except Exception as e:
-        return HttpResponse(f"Error al generar el reporte Excel: {e}", status=500)
-
-
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=reporte_prestamos.xlsx'
+    wb.save(response)
+    return response
 
 
 

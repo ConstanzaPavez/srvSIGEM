@@ -15,9 +15,12 @@
           <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-outline-danger rounded-pill shadow-sm">
             Descargar PDF
           </a>
-          <a href="{% url 'reporte_excel' %}" class="btn btn-outline-success rounded-pill shadow-sm">
+     
+        <a href="{% url 'reporte_excel' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-outline-success rounded-pill shadow-sm">
             Descargar Excel
-          </a>
+        </a>
+
+
         </div>
       </div>
 

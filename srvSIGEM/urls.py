@@ -39,7 +39,8 @@ urlpatterns = [
     path('materiales/<int:pk>/editar/', views.editar_materiales, name='editar_material'),
     path('materiales/<int:pk>/eliminar/', views.eliminar_materiales, name='eliminar_material'),
 
-    path("reporte_excel/", views.generar_reporte_excel, name="reporte_excel"),
+    path("reporte_excel/", views.reporte_excel, name="reporte_excel"),
+
     path('reporte/prestamos/', views.reporte_prestamos, name='reporte_prestamos'),
     path('reporte/prestamos/pdf/', views.exportar_reporte_pdf, name='reporte_prestamos_pdf'),
 
