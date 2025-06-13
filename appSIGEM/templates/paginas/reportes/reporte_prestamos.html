@@ -24,14 +24,14 @@
       <!-- Filtros -->
       <form id="filtro-form" class="row g-4 mb-4">
         <div class="col-md-3">
-          <label class="form-label fw-semibold text-muted">Desde:</label>
-          <input type="date" name="inicio" class="form-control rounded-3 shadow-sm" value="{{ fecha_inicio }}">
-        </div>
+  <label class="form-label fw-semibold text-muted">Desde:</label>
+  <input type="date" name="inicio" class="form-control rounded-3 shadow-sm" value="{{ fecha_inicio }}" max="{{ hoy }}">
+</div>
 
-        <div class="col-md-3">
-          <label class="form-label fw-semibold text-muted">Hasta:</label>
-          <input type="date" name="fin" class="form-control rounded-3 shadow-sm" value="{{ fecha_fin }}">
-        </div>
+<div class="col-md-3">
+  <label class="form-label fw-semibold text-muted">Hasta:</label>
+  <input type="date" name="fin" class="form-control rounded-3 shadow-sm" value="{{ fecha_fin }}" max="{{ hoy }}">
+</div>
 
         <div class="col-md-4">
           <label class="form-label fw-semibold text-muted">Usuario:</label>

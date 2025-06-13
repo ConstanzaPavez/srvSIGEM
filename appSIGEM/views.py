@@ -1014,7 +1014,7 @@ def reporte_prestamos(request):
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
     usuario_id = request.GET.get('usuario')
-
+    hoy = date.today().isoformat()
     if fecha_inicio:
         solicitudes = solicitudes.filter(fecha_solicitud__date__gte=fecha_inicio)
     if fecha_fin:
@@ -1038,9 +1038,10 @@ def reporte_prestamos(request):
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
         'usuario_id': usuario_id,
+        'hoy': hoy,
     }
-
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        
         return render(request, 'paginas/reportes/_lista_solicitudes.html', context)
     else:
         return render(request, 'paginas/reportes/reporte_prestamos.html', context)
