@@ -60,7 +60,6 @@
       display: block;
     }
 
-    /* Fondo oscuro al abrir menú */
     #overlay {
       display: none;
       position: fixed;
@@ -91,8 +90,8 @@
     <a href="{% url 'admin_panel' %}">
       <img src="{% static 'paginas/img/logo.png' %}" alt="Logo SIGEM" class="logo-img">
     </a>
+
     <!-- Menú escritorio -->
-    
     <div class="d-none d-lg-flex gap-4 align-items-center ms-auto">
       <div class="dropdown position-relative">
         <a class="dropdown-toggle text-decoration-none text-dark d-flex align-items-center gap-1" href="#">
@@ -114,13 +113,19 @@
     </div>
 
     <!-- Botón hamburguesa -->
-    <div id="menu-area" class="position-relative">
+    <div id="menu-area" class="position-relative ms-3">
       <button class="btn d-lg-none" id="menu-toggle">
         <i class="bi bi-list fs-3"></i>
       </button>
 
-      <!-- Sidebar (móvil y escritorio si se quiere) -->
-      <div class="sidebar" id="sidebar">
+      <!-- Sidebar móvil -->
+      <div class="sidebar animate__animated" id="sidebar">
+        <!-- Botón cerrar -->
+        <div class="text-end px-3">
+          <button id="close-sidebar" class="btn btn-link text-dark fs-4">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
         <a href="{% url 'agregar_marca' %}"><i class="bi bi-award me-2"></i>Agregar Marca</a>
         <a href="{% url 'agregar_categoria' %}"><i class="bi bi-tags me-2"></i>Agregar Categoría</a>
         <a href="{% url 'agregar_tipo_material' %}"><i class="bi bi-box me-2"></i>Agregar Tipo</a>
@@ -154,18 +159,29 @@
   const toggleButton = document.getElementById('menu-toggle');
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
+  const closeButton = document.getElementById('close-sidebar');
   const menuArea = document.getElementById('menu-area');
 
   toggleButton.addEventListener('click', () => {
-    sidebar.classList.toggle('show');
-    overlay.classList.toggle('active');
+    sidebar.classList.remove('animate__fadeOutRight');
+    sidebar.classList.add('animate__fadeInRight');
+    sidebar.classList.add('show');
+    overlay.classList.add('active');
   });
 
-  // Cierra si se hace clic fuera
+  closeButton.addEventListener('click', () => {
+    sidebar.classList.remove('animate__fadeInRight');
+    sidebar.classList.add('animate__fadeOutRight');
+    overlay.classList.remove('active');
+    setTimeout(() => sidebar.classList.remove('show'), 300);
+  });
+
   document.addEventListener('click', function (e) {
     if (!menuArea.contains(e.target) && sidebar.classList.contains('show')) {
-      sidebar.classList.remove('show');
+      sidebar.classList.remove('animate__fadeInRight');
+      sidebar.classList.add('animate__fadeOutRight');
       overlay.classList.remove('active');
+      setTimeout(() => sidebar.classList.remove('show'), 300);
     }
   });
 </script>

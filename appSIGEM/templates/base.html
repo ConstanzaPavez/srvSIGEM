@@ -2,125 +2,149 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}SIGEM{% endblock %}</title>
+  <meta charset="UTF-8">
+  <title>{% block title %}SIGEM{% endblock %}</title>
 
-    <!-- Estilos -->
-    <link rel="stylesheet" href="{% static 'paginas/css/base_c/base.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Estilos -->
+  <link rel="stylesheet" href="{% static 'paginas/css/base_c/base.css' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <style>
-        body {
-            background: linear-gradient(to right, #74ebd5, #9face6);
-        }
+  <style>
+    body {
+      background: linear-gradient(to right, #74ebd5, #9face6);
+    }
 
-        .logo-img {
-            height: 45px;
-            width: auto;
-        }
+    .logo-img {
+      height: 45px;
+      width: auto;
+    }
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100%;
-            background-color: #ffffff;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            transition: left 0.3s ease-in-out;
-            z-index: 1050;
-            padding-top: 60px;
-        }
+    .navbar {
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
 
-        .sidebar.show {
-            left: 0;
-        }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      transition: right 0.3s ease-in-out;
+      z-index: 1051;
+      padding-top: 60px;
+    }
 
-        .sidebar a {
-            display: block;
-            padding: 1rem;
-            color: #333;
-            text-decoration: none;
-        }
+    .sidebar.show {
+      right: 0;
+    }
 
-        .sidebar a:hover {
-            background-color: #f1f1f1;
-        }
+    .sidebar a {
+      display: block;
+      padding: 1rem;
+      color: #333;
+      text-decoration: none;
+    }
 
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
+    .sidebar a:hover {
+      background-color: #f1f1f1;
+    }
 
-        @media (min-width: 992px) {
-            .sidebar {
-                display: none;
-            }
-        }
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.4);
+      z-index: 1050;
+    }
 
-        .carousel-img {
-            height: 450px;
-            object-fit: cover;
-            width: 100%;
-        }
-    </style>
+    #overlay.active {
+      display: block;
+    }
+
+    @media (min-width: 992px) {
+      .sidebar, #overlay {
+        display: none !important;
+      }
+    }
+
+    .carousel-img {
+      height: 450px;
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
-    <!-- Navbar estilo Gmail -->
-    <nav class="navbar navbar-expand-lg px-3">
-        <div class="d-flex align-items-center w-100 justify-content-between">
-            
-            <!-- Botón menú hamburguesa en móviles -->
-            <button class="btn d-lg-none" id="menu-toggle">
-                <i class="bi bi-list fs-3"></i>
-            </button>
+  <!-- Overlay al abrir menú -->
+  <div id="overlay"></div>
 
-            <!-- Logo -->
-            <a href="{% url 'index' %}">
-                <img src="{% static 'paginas/img/logo.png' %}" alt="Logo SIGEM" class="logo-img">
-            </a>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg px-3">
+    <div class="container-fluid d-flex align-items-center">
+      <!-- Logo izquierda -->
+      <a href="{% url 'index' %}" class="me-auto">
+        <img src="{% static 'paginas/img/logo.png' %}" alt="Logo SIGEM" class="logo-img">
+      </a>
 
-            <!-- Menú horizontal en pantallas grandes -->
-            <div class="d-none d-lg-flex gap-4">
-                <a href="{% url 'listar_materiales' %}" class="text-decoration-none text-dark"><i class="bi bi-box"></i> Inventario</a>
-                <a href="{% url 'listar_solicitudes' %}" class="text-decoration-none text-dark"><i class="bi bi-card-checklist"></i> Mis Solicitudes</a>
-                <a href="{% url 'perfil' %}" class="text-decoration-none text-dark"><i class="bi bi-person-circle"></i> Perfil</a>
-                <a href="{% url 'logout' %}" class="text-decoration-none text-dark"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
-            </div>
-        </div>
-    </nav>
+      <!-- Menú desktop a la derecha -->
+      <div class="d-none d-lg-flex gap-4 align-items-center">
+        <a href="{% url 'listar_materiales' %}" class="text-decoration-none text-dark"><i class="bi bi-box"></i> Inventario</a>
+        <a href="{% url 'listar_solicitudes' %}" class="text-decoration-none text-dark"><i class="bi bi-card-checklist"></i> Mis Solicitudes</a>
+        <a href="{% url 'perfil' %}" class="text-decoration-none text-dark"><i class="bi bi-person-circle"></i> Perfil</a>
+        <a href="{% url 'logout' %}" class="text-decoration-none text-dark"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+      </div>
 
-    <!-- Menú lateral para móviles -->
-    <div class="sidebar" id="sidebar">
-        <a href="{% url 'listar_materiales' %}"><i class="bi bi-box me-2"></i>Inventario</a>
-        <a href="{% url 'listar_solicitudes' %}"><i class="bi bi-card-checklist me-2"></i>Mis Solicitudes</a>
-        <a href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Perfil</a>
-        <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a>
+      <!-- Botón hamburguesa a la derecha (móvil) -->
+      <button class="btn d-lg-none ms-3" id="menu-toggle">
+        <i class="bi bi-list fs-3"></i>
+      </button>
     </div>
+  </nav>
 
-    <!-- Contenido -->
-    <div class="container my-5">
-        {% block content %}
-        {% endblock %}
-    </div>
+  <!-- Sidebar móvil desde derecha -->
+  <div class="sidebar" id="sidebar">
+    <a href="{% url 'listar_materiales' %}"><i class="bi bi-box me-2"></i>Inventario</a>
+    <a href="{% url 'listar_solicitudes' %}"><i class="bi bi-card-checklist me-2"></i>Mis Solicitudes</a>
+    <a href="{% url 'perfil' %}"><i class="bi bi-person-circle me-2"></i>Perfil</a>
+    <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a>
+  </div>
 
-    {% if debug %}
-    <script>
-        window.onload = () => document.querySelectorAll('img').forEach(img => img.src += '');
-    </script>
-    {% endif %}
+  <!-- Contenido principal -->
+  <div class="container my-5">
+    {% block content %}
+    {% endblock %}
+  </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('menu-toggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
-    </script>
+  {% if debug %}
+  <script>
+    window.onload = () => document.querySelectorAll('img').forEach(img => img.src += '');
+  </script>
+  {% endif %}
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const toggleButton = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+      overlay.classList.remove('active');
+    });
+  </script>
 </body>
 </html>
