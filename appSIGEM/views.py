@@ -1281,3 +1281,43 @@ def generar_reporte_excel(request):
 
     except Exception as e:
         return HttpResponse(f"Error al generar el reporte Excel: {e}", status=500)
+
+
+
+
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from datetime import datetime
+
+@require_POST
+def verificar_reservas_ajax(request):
+    fecha_retiro = request.POST.get('fecha_retiro')
+    fecha_devolucion = request.POST.get('fecha_devolucion')
+
+    if not fecha_retiro or not fecha_devolucion:
+        return JsonResponse({'error': 'Fechas no proporcionadas.'}, status=400)
+
+    try:
+        fecha_retiro = datetime.strptime(fecha_retiro, '%Y-%m-%d').date()
+        fecha_devolucion = datetime.strptime(fecha_devolucion, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse({'error': 'Formato de fecha inválido.'}, status=400)
+
+    carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
+    materiales_solapados = []
+
+    for item_carrito in carrito.items.all():
+        existe_solapamiento = ItemSolicitud.objects.filter(
+            material=item_carrito.material,
+            solicitud__estado__in=['PEND', 'APR', 'PAR'],
+            fecha_devolucion_real__isnull=True
+        ).filter(
+            solicitud__fecha_retiro__lte=fecha_devolucion,
+            solicitud__fecha_devolucion__gte=fecha_retiro,
+        ).exists()
+
+        if existe_solapamiento:
+            materiales_solapados.append(item_carrito.material.nom_material)
+
+    return JsonResponse({'conflictos': materiales_solapados})

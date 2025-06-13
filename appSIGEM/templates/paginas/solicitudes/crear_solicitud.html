@@ -147,43 +147,82 @@
       return `${d}-${m}-${a}`;
     }
 
-    btnConfirmar?.addEventListener('click', function () {
-      const fRetiro = fechaRetiro?.value || '';
-      const fDevolucion = fechaDevolucion?.value || '';
+btnConfirmar?.addEventListener('click', function () {
+  const fRetiro = fechaRetiro?.value || '';
+  const fDevolucion = fechaDevolucion?.value || '';
 
+  if (!fRetiro || !fDevolucion) {
+    mostrarAlerta("Debes seleccionar las fechas antes de enviar.");
+    return;
+  }
+
+  fetch("{% url 'verificar_reservas_ajax' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      fecha_retiro: fRetiro,
+      fecha_devolucion: fDevolucion,
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.conflictos && data.conflictos.length > 0) {
       Swal.fire({
-        title: '¿Estás seguro?',
-        html: `
-          <div class="text-start fs-6">
-            <p><strong>Productos seleccionados:</strong></p>
-            <ul class="mb-3" style="padding-left: 1.2rem;">
-              {% for item in items_carrito %}
-                <li><strong>{{ item.material.nom_material }}</strong> — {{ item.cantidad }} unidad{{ item.cantidad|pluralize }}</li>
-              {% endfor %}
-            </ul>
-            <p><strong>Fecha de Retiro:</strong> ${formatearFecha(fRetiro)}</p>
-            <p><strong>Fecha de Devolución:</strong> ${formatearFecha(fDevolucion)}</p>
-          </div>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '✅ Sí, enviar',
-        cancelButtonText: '❌ Cancelar',
+        icon: 'error',
+        title: 'Materiales reservados',
+        html: `<p>Los siguientes materiales ya están reservados para esas fechas:</p>
+               <ul>${data.conflictos.map(m => `<li>${m}</li>`).join("")}</ul>`,
+        confirmButtonText: 'Aceptar',
         customClass: {
-          popup: 'p-4 rounded-4',
-          title: 'fw-bold fs-4 text-dark',
-          htmlContainer: 'text-dark',
-          actions: 'd-flex justify-content-center gap-3 mt-4',
-          confirmButton: 'btn btn-success px-4 py-2',
-          cancelButton: 'btn btn-danger px-4 py-2'
+          confirmButton: 'btn btn-primary'
         },
         buttonsStyling: false
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
       });
-    });
+    } else {
+      confirmarEnvio(fRetiro, fDevolucion);
+    }
+  })
+  .catch(() => {
+    mostrarAlerta("Error al verificar disponibilidad de materiales.");
+  });
+});
+function confirmarEnvio(fRetiro, fDevolucion) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    html: `
+      <div class="text-start fs-6">
+        <p><strong>Productos seleccionados:</strong></p>
+        <ul class="mb-3" style="padding-left: 1.2rem;">
+          {% for item in items_carrito %}
+            <li><strong>{{ item.material.nom_material }}</strong> — {{ item.cantidad }} unidad{{ item.cantidad|pluralize }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Fecha de Retiro:</strong> ${formatearFecha(fRetiro)}</p>
+        <p><strong>Fecha de Devolución:</strong> ${formatearFecha(fDevolucion)}</p>
+      </div>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: '✅ Sí, enviar',
+    cancelButtonText: '❌ Cancelar',
+    customClass: {
+      popup: 'p-4 rounded-4',
+      title: 'fw-bold fs-4 text-dark',
+      htmlContainer: 'text-dark',
+      actions: 'd-flex justify-content-center gap-3 mt-4',
+      confirmButton: 'btn btn-success px-4 py-2',
+      cancelButton: 'btn btn-danger px-4 py-2'
+    },
+    buttonsStyling: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.submit();
+    }
+  });
+}
   });
 </script>
 

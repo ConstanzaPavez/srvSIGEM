@@ -52,6 +52,8 @@ urlpatterns = [
 
     path('panel-admin/materiales-danados/', views.listar_materiales_danados, name='listar_materiales_danados'),
     path('panel-admin/materiales-danados/reparar/<int:item_id>/', views.reparar_material, name='reparar_material'),
+    
+    path('verificar-reservas/', views.verificar_reservas_ajax, name='verificar_reservas_ajax'),
 
     # Recuperación de contraseña personalizada
     path('password_reset/', auth_views.PasswordResetView.as_view(
@@ -71,6 +73,9 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='paginas/auth/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+
+
 ]
 
 # Archivos estáticos y media
