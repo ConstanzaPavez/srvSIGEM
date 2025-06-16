@@ -578,10 +578,7 @@ def reparar_material(request, item_id):
     item.estado_ingreso = 'UTI'
     item.save()
 
-    # Sumar stock a la categoría
-    categoria = item.material.categoria
-    categoria.stock += item.cantidad
-    categoria.save()
+
 
     messages.success(request, f"Material '{item.material.nom_material}' devuelto a inventario correctamente.")
     return redirect('listar_materiales_danados')
