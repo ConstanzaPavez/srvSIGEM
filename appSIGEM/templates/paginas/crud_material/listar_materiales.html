@@ -2,6 +2,7 @@
 {% load utils dict_filters static filtros custom_tags %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 
 <style>
@@ -89,17 +90,22 @@
       <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
         <i class="bi bi-sliders"></i> Filtros avanzados
       </button>
-    </div>
+  </div>
+    
 
-    <!-- Botón Carrito alineado a la derecha -->
-    <div class="col-md-3 ms-auto text-end">
-      <a href="{% url 'ver_carrito' %}" class="btn btn-success w-100">
-        <i></i> Ir al carrito
-      </a>
-    </div>
+  <!-- Botón Carrito alineado a la derecha -->
+  <div class="col-md-3 ms-auto text-end">
+    <a href="{% url 'ver_carrito' %}" class="btn btn-light w-100">
+      <i class="fa fa-shopping-cart" style="color: black;"></i> Ir al carrito
+    </a>
   </div>
 
   <!-- Filtros avanzados colapsables -->
+
+  <a href="{% url 'seleccion_masiva_materiales' %}" class="btn btn-primary">
+    <i class="fa fa-list" style="margin-right: 6px;"></i> Selección Masiva de Materiales
+  </a>
+
   <div class="collapse" id="filtrosAvanzados">
     <div class="card card-body bg-light shadow-sm">
       <div class="row g-3">

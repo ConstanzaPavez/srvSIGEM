@@ -7,7 +7,7 @@ from .forms import CategoriaForm
 from .forms import TipoMaterialForm
 from .forms import MarcaForm
 from .forms import MaterialForm
-from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud, CategoriaDj
+from .models import Material, Carrito, ItemCarrito, Solicitud, ItemSolicitud, CategoriaDj, Marca, TipoMaterial
 from .forms import LoginForm, CrearUsuarioForm
 from django.contrib import messages
 from .forms import GestionarSolicitudForm
@@ -1271,3 +1271,115 @@ def verificar_reservas_ajax(request):
             materiales_solapados.append(item_carrito.material.nom_material)
 
     return JsonResponse({'conflictos': materiales_solapados})
+
+
+from collections import defaultdict
+from datetime import datetime
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+def calcular_disponibilidad(material, fecha_inicio, fecha_fin):
+    return not material.itemsolicitud_set.filter(
+        solicitud__estado__in=['APR', 'PAR', 'PEND'],
+        solicitud__fecha_retiro__lte=fecha_fin,
+        solicitud__fecha_devolucion__gte=fecha_inicio,
+        rechazado=False
+    ).exists()
+
+@login_required
+def seleccion_masiva_materiales(request):
+    categoria_id = request.GET.get('categoria')
+    marca_id = request.GET.get('marca')
+    tipo_id = request.GET.get('tipo')
+    fecha_retiro = request.GET.get('fecha_retiro')
+    fecha_devolucion = request.GET.get('fecha_devolucion')
+
+    materiales = Material.objects.all()
+
+    if categoria_id:
+        materiales = materiales.filter(categoria__id_categoria=categoria_id)
+    if marca_id:
+        materiales = materiales.filter(marca__id_marca=marca_id)
+    if tipo_id:
+        materiales = materiales.filter(tipo_material__id_tipo_material=tipo_id)
+
+    # Parsear fechas
+    retiro, devolucion = None, None
+    if fecha_retiro and fecha_devolucion:
+        try:
+            retiro = datetime.strptime(fecha_retiro, "%Y-%m-%d").date()
+            devolucion = datetime.strptime(fecha_devolucion, "%Y-%m-%d").date()
+        except ValueError:
+            retiro = devolucion = None
+
+    # Filtrar solo materiales disponibles en rango
+    materiales_filtrados = []
+    if retiro and devolucion:
+        for m in materiales:
+            if calcular_disponibilidad(m, retiro, devolucion):
+                materiales_filtrados.append(m)
+    else:
+        materiales_filtrados = list(materiales)
+
+    # Agrupar por (categoria, marca, tipo_material, nombre similar)
+    grupos = defaultdict(list)
+    for mat in materiales_filtrados:
+        key = (mat.categoria.id_categoria, mat.marca.id_marca, mat.tipo_material.id_tipo_material, mat.nom_material
+)
+        grupos[key].append(mat)
+
+    # Crear lista de grupos con cantidad
+    grupos_agrupados = []
+    for key, mats in grupos.items():
+        categoria = mats[0].categoria
+        marca = mats[0].marca
+        tipo = mats[0].tipo_material
+        nombre = mats[0].nom_material
+        cantidad = len(mats)
+        grupos_agrupados.append({
+            'categoria': categoria,
+            'marca': marca,
+            'tipo': tipo,
+            'nombre': nombre,
+            'cantidad': cantidad,
+            'materiales': mats,
+        })
+
+    if request.method == 'POST':
+        total_solicitado = 0
+        for grupo in grupos_agrupados:
+            grupo_id = grupo['materiales'][0].id_material  # Usamos el ID del primer material como identificador único
+            cantidad_str = request.POST.get(f'cantidad_{grupo_id}')  # nombre del input: cantidad_123
+            try:
+                cantidad = int(cantidad_str)
+            except (TypeError, ValueError):
+                cantidad = 0
+
+            if cantidad > grupo['cantidad']:
+                messages.error(request, f"No puedes solicitar más que {grupo['cantidad']} del grupo {grupo['nombre']}.")
+                return redirect(request.path + f"?categoria={categoria_id}&marca={marca_id}&tipo={tipo_id}&fecha_retiro={fecha_retiro}&fecha_devolucion={fecha_devolucion}")
+
+            if cantidad > 0:
+                for mat in grupo['materiales'][:cantidad]:
+                    agregar_al_carrito(request, mat.id_material)
+                total_solicitado += cantidad
+
+        if total_solicitado > 0:
+            messages.success(request, f'Se agregaron {total_solicitado} materiales al carrito.')
+            return redirect('ver_carrito')
+        else:
+            messages.error(request, 'No se seleccionó ninguna cantidad válida.')
+
+    context = {
+        'grupos_agrupados': grupos_agrupados,
+        'fecha_retiro': fecha_retiro or '',
+        'fecha_devolucion': fecha_devolucion or '',
+        'categorias': CategoriaDj.objects.all(),
+        'marcas': Marca.objects.all(),
+        'tipos': TipoMaterial.objects.all(),
+        'categoria_id': categoria_id or '',
+        'marca_id': marca_id or '',
+        'tipo_id': tipo_id or '',
+    }
+    return render(request, 'paginas/inventario/seleccion_masiva.html', context)

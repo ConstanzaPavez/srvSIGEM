@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from appSIGEM.views import gestionar_solicitud
 from django.contrib.auth import views as auth_views
+from appSIGEM.views import seleccion_masiva_materiales
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -56,6 +57,8 @@ urlpatterns = [
     
     path('verificar-reservas/', views.verificar_reservas_ajax, name='verificar_reservas_ajax'),
 
+    path('seleccion-masiva-materiales/', seleccion_masiva_materiales, name='seleccion_masiva_materiales'),
+    
     # Recuperación de contraseña personalizada
     path('password_reset/', auth_views.PasswordResetView.as_view(
         template_name='paginas/auth/password_reset_form.html',
