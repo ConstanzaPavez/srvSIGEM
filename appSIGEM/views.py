@@ -1287,6 +1287,8 @@ def calcular_disponibilidad(material, fecha_inicio, fecha_fin):
         rechazado=False
     ).exists()
 
+from datetime import datetime, date
+
 @login_required
 def seleccion_masiva_materiales(request):
     categoria_id = request.GET.get('categoria')
@@ -1294,6 +1296,20 @@ def seleccion_masiva_materiales(request):
     tipo_id = request.GET.get('tipo')
     fecha_retiro = request.GET.get('fecha_retiro')
     fecha_devolucion = request.GET.get('fecha_devolucion')
+
+    # Si no hay fechas en el GET, usar hoy como predeterminado
+    if not fecha_retiro or not fecha_devolucion:
+        hoy = date.today()   # USAR date.today() para evitar errores
+        fecha_retiro = hoy.isoformat()
+        fecha_devolucion = hoy.isoformat()
+
+    # Parsear fechas a objeto date
+    try:
+        retiro = datetime.strptime(fecha_retiro, "%Y-%m-%d").date()
+        devolucion = datetime.strptime(fecha_devolucion, "%Y-%m-%d").date()
+    except ValueError:
+        # Si por alguna razón falla, usar hoy
+        retiro = devolucion = date.today()
 
     materiales = Material.objects.all()
 
@@ -1304,29 +1320,16 @@ def seleccion_masiva_materiales(request):
     if tipo_id:
         materiales = materiales.filter(tipo_material__id_tipo_material=tipo_id)
 
-    # Parsear fechas
-    retiro, devolucion = None, None
-    if fecha_retiro and fecha_devolucion:
-        try:
-            retiro = datetime.strptime(fecha_retiro, "%Y-%m-%d").date()
-            devolucion = datetime.strptime(fecha_devolucion, "%Y-%m-%d").date()
-        except ValueError:
-            retiro = devolucion = None
-
     # Filtrar solo materiales disponibles en rango
     materiales_filtrados = []
-    if retiro and devolucion:
-        for m in materiales:
-            if calcular_disponibilidad(m, retiro, devolucion):
-                materiales_filtrados.append(m)
-    else:
-        materiales_filtrados = list(materiales)
+    for m in materiales:
+        if calcular_disponibilidad(m, retiro, devolucion):
+            materiales_filtrados.append(m)
 
     # Agrupar por (categoria, marca, tipo_material, nombre similar)
     grupos = defaultdict(list)
     for mat in materiales_filtrados:
-        key = (mat.categoria.id_categoria, mat.marca.id_marca, mat.tipo_material.id_tipo_material, mat.nom_material
-)
+        key = (mat.categoria.id_categoria, mat.marca.id_marca, mat.tipo_material.id_tipo_material, mat.nom_material)
         grupos[key].append(mat)
 
     # Crear lista de grupos con cantidad
@@ -1349,8 +1352,8 @@ def seleccion_masiva_materiales(request):
     if request.method == 'POST':
         total_solicitado = 0
         for grupo in grupos_agrupados:
-            grupo_id = grupo['materiales'][0].id_material  # Usamos el ID del primer material como identificador único
-            cantidad_str = request.POST.get(f'cantidad_{grupo_id}')  # nombre del input: cantidad_123
+            grupo_id = grupo['materiales'][0].id_material
+            cantidad_str = request.POST.get(f'cantidad_{grupo_id}')
             try:
                 cantidad = int(cantidad_str)
             except (TypeError, ValueError):
@@ -1373,8 +1376,8 @@ def seleccion_masiva_materiales(request):
 
     context = {
         'grupos_agrupados': grupos_agrupados,
-        'fecha_retiro': fecha_retiro or '',
-        'fecha_devolucion': fecha_devolucion or '',
+        'fecha_retiro': fecha_retiro,
+        'fecha_devolucion': fecha_devolucion,
         'categorias': CategoriaDj.objects.all(),
         'marcas': Marca.objects.all(),
         'tipos': TipoMaterial.objects.all(),
