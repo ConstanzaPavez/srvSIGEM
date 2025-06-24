@@ -37,9 +37,12 @@ urlpatterns = [
     path('solicitudes/<str:numero_solicitud>/', views.detalle_solicitud, name='detalle_solicitud'),
     path('cancelar-solicitud/<int:solicitud_id>/', views.cancelar_solicitud, name='cancelar_solicitud'),
 
-    path('materiales/<int:pk>/editar/', views.editar_materiales, name='editar_material'),
-    path('materiales/<int:pk>/eliminar/', views.eliminar_materiales, name='eliminar_material'),
+    # urls.py
+    path('panel_admin/materiales/', views.admin_listar_materiales, name='admin_listar_materiales'),
+    path('panel_admin/materiales/<int:pk>/editar/', views.admin_editar_material, name='admin_editar_material'),
+    path('panel_admin/materiales/<int:pk>/eliminar/', views.admin_eliminar_material, name='admin_eliminar_material'),
 
+    
     path("reporte_excel/", views.reporte_excel, name="reporte_excel"),
 
     path('reporte/prestamos/', views.reporte_prestamos, name='reporte_prestamos'),

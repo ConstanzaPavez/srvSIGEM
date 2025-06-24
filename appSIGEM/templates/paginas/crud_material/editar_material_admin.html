@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Editar Material: {{ material.nom_material }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a href="{% url 'admin_listar_materiales' %}" class="btn btn-secondary ms-2">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

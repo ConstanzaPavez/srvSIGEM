@@ -583,26 +583,6 @@ def reparar_material(request, item_id):
     messages.success(request, f"Material '{item.material.nom_material}' devuelto a inventario correctamente.")
     return redirect('listar_materiales_danados')
 
-
-
-def editar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        form = MaterialForm(request.POST, request.FILES, instance=material)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_materiales')
-    else:
-        form = MaterialForm(instance=material)
-    return render(request, 'paginas/crud_material/editar_materiales.html', {'form': form})
-
-def eliminar_materiales(request, pk):
-    material = get_object_or_404(Material, pk=pk)
-    if request.method == 'POST':
-        material.delete()
-        return redirect('listar_materiales')
-    return render(request, 'paginas/crud_material/eliminar_materiales.html', {'material': material})
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -1415,3 +1395,43 @@ def seleccion_masiva_materiales(request):
 def detalle_material(request, id):
     material = get_object_or_404(Material, id_material=id)
     return render(request, 'paginas/detalle/detalle_material.html', {'material': material})
+
+
+@login_required
+def admin_listar_materiales(request):
+    materiales = Material.objects.all().order_by('categoria', 'nom_material')
+
+    # Mando un diccionario vacío para que no explote el filtro
+    reserva_info = {}
+
+    return render(request, 'paginas/crud_material/listar_materiales_admin.html', {
+        'materiales': materiales,
+        'reserva_info': reserva_info
+    })
+    
+    
+@login_required
+def admin_editar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, request.FILES, instance=material)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Material editado correctamente.')
+            return redirect('admin_listar_materiales')
+    else:
+        form = MaterialForm(instance=material)
+
+    return render(request, 'paginas/crud_material/editar_material_admin.html', {'form': form, 'material': material})
+
+@login_required
+def admin_eliminar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+
+    if request.method == 'POST':
+        material.delete()
+        messages.success(request, 'Material eliminado correctamente.')
+        return redirect('admin_listar_materiales')
+
+    return render(request, 'paginas/crud_material/eliminar_material_admin.html', {'material': material})

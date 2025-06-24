@@ -1,0 +1,27 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 fw-bold text-center">Listado de Materiales</h2>
+
+    {% if materiales %}
+        <div class="list-group shadow-sm">
+            {% for material in materiales %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">{{ material.nom_material }}</h5>
+                        <small class="text-muted">{{ material.marca }} | {{ material.categoria }}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-primary btn-sm">Editar</a>
+                        <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted fst-italic">No hay materiales registrados.</p>
+    {% endif %}
+</div>
+{% endblock %}
