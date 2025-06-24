@@ -993,6 +993,29 @@ def listar_usuarios(request):
     usuarios = User.objects.all()
     return render(request, 'paginas/admin/listar_usuarios.html', {'usuarios': usuarios})
 
+
+
+
+@login_required
+@user_passes_test(is_admin)
+def desactivar_usuario(request, usuario_id):
+    usuario = get_object_or_404(User, id=usuario_id)
+    if usuario != request.user:  # No dejar que se desactive a sí mismo
+        usuario.is_active = False
+        usuario.save()
+    return redirect('listar_usuarios')
+
+@login_required
+@user_passes_test(is_admin)
+def activar_usuario(request, usuario_id):
+    usuario = get_object_or_404(User, id=usuario_id)
+    usuario.is_active = True
+    usuario.save()
+    return redirect('listar_usuarios')
+
+
+
+
 @login_required
 @user_passes_test(is_admin)
 def ver_solicitudes_usuario(request, user_id):
