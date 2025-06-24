@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>{{ material.nom_material }}</h2>
+
+  <div class="row">
+    <div class="col-md-6">
+      {% if material.img_material %}
+        <img src="{{ material.img_material.url }}" alt="{{ material.nom_material }}" class="img-fluid rounded">
+      {% else %}
+        <img src="{% static 'paginas/img/default-material.png' %}" alt="Sin imagen" class="img-fluid rounded">
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Contenido:</strong> {{ material.contenido_material }}</li>
+        <li class="list-group-item"><strong>Código de barra:</strong> {{ material.codigo_barra|default:"-" }}</li>
+        <li class="list-group-item"><strong>Modelo:</strong> {{ material.modelo_material|default:"-" }}</li>
+        <li class="list-group-item"><strong>Color:</strong> {{ material.color|default:"-" }}</li>
+        <li class="list-group-item"><strong>Fecha compra:</strong> {{ material.fecha_compra|date:"d/m/Y" }}</li>
+        <li class="list-group-item"><strong>Categoría:</strong> {{ material.categoria.nombre_categoria }}</li>
+        <li class="list-group-item"><strong>Tipo:</strong> {{ material.tipo_material.nombre_tipo_material }}</li>
+        <li class="list-group-item"><strong>Marca:</strong> {{ material.marca.nom_marca }}</li>
+      </ul>
+
+<div class="col-md-6">
+  <ul class="list-group">
+    <!-- tus list items -->
+  </ul>
+
+  <div class="d-flex justify-content-between mt-3">
+    <a href="{% url 'listar_materiales' %}" class="btn btn-secondary">
+      Volver al listado
+    </a>
+    
+    <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="mb-0">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-cart-plus"></i> Agregar al carrito
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

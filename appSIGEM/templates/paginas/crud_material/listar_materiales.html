@@ -150,56 +150,64 @@
 
      </div>
 
-  <!-- Listado de materiales -->
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 slide-in-card" id="listado-materiales">
-    {% for material in materiales %}
-      <div class="col" id="material-{{ material.id_material }}">
-        <div class="card h-100 shadow-sm">
+     
+<!-- Listado de materiales -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 slide-in-card" id="listado-materiales">
+  {% for material in materiales %}
+    <div class="col" id="material-{{ material.id_material }}">
+      <div class="card h-100 shadow-sm">
+
+        <a href="{% url 'detalle_material' material.id_material %}">
           {% if material.img_material %}
             <img src="{{ material.img_material.url }}" class="card-img-top object-fit-cover" style="height: 200px; border-bottom: 1px solid #dee2e6;">
           {% else %}
             <img src="{% static 'img/default_material.png' %}" class="card-img-top object-fit-cover" style="height: 200px; border-bottom: 1px solid #dee2e6;">
           {% endif %}
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title mb-2">{{ material.nom_material }}</h5>
-            <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
-            <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
-            <p class="card-text mb-3"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
+        </a>
 
-            <div class="btn-carrito-container mt-auto">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title mb-2">
+            <a href="{% url 'detalle_material' material.id_material %}" class="text-decoration-none text-dark">
+              {{ material.nom_material }}
+            </a>
+          </h5>
 
-              <div class="reserva-info mb-2">
-                {% if reserva_info|get_item:material.id_material %}
-                  <small class="text-warning d-block" id="reserva-info-{{ material.id_material }}">
-                    <i class="bi bi-exclamation-circle"></i>
-                    {{ reserva_info|get_item:material.id_material }}
-                  </small>
-                {% endif %}
-              </div>
+          <p class="card-text mb-1"><strong>Marca:</strong> {{ material.marca }}</p>
+          <p class="card-text mb-1"><strong>Categoría:</strong> {{ material.categoria }}</p>
+          <p class="card-text mb-3"><strong>Tipo:</strong> {{ material.tipo_material }}</p>
 
-              <div class="boton-carrito" id="boton-carrito-{{ material.id_material }}">
-                {% if material.id_material in materiales_en_carrito %}
-                  <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger w-100">
-                      <i class="bi bi-cart-dash"></i> Quitar del carrito
-                    </button>
-                  </form>
-                {% else %}
-                  <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary w-100">
-                      <i class="bi bi-cart-plus"></i> Agregar al carrito
-                    </button>
-                  </form>
-                {% endif %}
-              </div>
+          <div class="btn-carrito-container mt-auto">
+            <div class="reserva-info mb-2">
+              {% if reserva_info|get_item:material.id_material %}
+                <small class="text-warning d-block" id="reserva-info-{{ material.id_material }}">
+                  <i class="bi bi-exclamation-circle"></i>
+                  {{ reserva_info|get_item:material.id_material }}
+                </small>
+              {% endif %}
+            </div>
+
+            <div class="boton-carrito" id="boton-carrito-{{ material.id_material }}">
+              {% if material.id_material in materiales_en_carrito %}
+                <form action="{% url 'quitar_del_carrito' material.id_material %}" method="post" class="quitar-carrito">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger w-100">
+                    <i class="bi bi-cart-dash"></i> Quitar del carrito
+                  </button>
+                </form>
+              {% else %}
+                <form action="{% url 'agregar_al_carrito' material.id_material %}" method="post" class="agregar-carrito">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                  </button>
+                </form>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 </div>
 
 

@@ -1409,3 +1409,9 @@ def seleccion_masiva_materiales(request):
         'tipo_id': tipo_id or '',
     }
     return render(request, 'paginas/inventario/seleccion_masiva.html', context)
+
+
+
+def detalle_material(request, id):
+    material = get_object_or_404(Material, id_material=id)
+    return render(request, 'paginas/detalle/detalle_material.html', {'material': material})

@@ -61,7 +61,7 @@ urlpatterns = [
     
     path('usuarios/desactivar/<int:usuario_id>/', views.desactivar_usuario, name='desactivar_usuario'),
     path('usuarios/activar/<int:usuario_id>/', views.activar_usuario, name='activar_usuario'),
-
+     path('material/<int:id>/', views.detalle_material, name='detalle_material'),
     
     # Recuperación de contraseña personalizada
     path('password_reset/', auth_views.PasswordResetView.as_view(
