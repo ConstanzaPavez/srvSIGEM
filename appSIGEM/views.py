@@ -379,7 +379,8 @@ def listar_materiales(request):
         fecha_fin_str = request.session.get('fecha_fin_filtro', '')
 
     # Query inicial
-    materiales = Material.objects.all()
+    materiales = Material.objects.filter(activo=True)
+
 
     # Excluir materiales dañados
     materiales = materiales.exclude(
@@ -1399,7 +1400,8 @@ def detalle_material(request, id):
 
 @login_required
 def admin_listar_materiales(request):
-    materiales = Material.objects.all().order_by('categoria', 'nom_material')
+    materiales = Material.objects.filter(activo=True).order_by('categoria', 'nom_material')
+
 
     # Mando un diccionario vacío para que no explote el filtro
     reserva_info = {}
@@ -1425,13 +1427,39 @@ def admin_editar_material(request, pk):
 
     return render(request, 'paginas/crud_material/editar_material_admin.html', {'form': form, 'material': material})
 
+
+
+from django.db.models import ProtectedError
+
+
 @login_required
 def admin_eliminar_material(request, pk):
     material = get_object_or_404(Material, pk=pk)
 
     if request.method == 'POST':
-        material.delete()
-        messages.success(request, 'Material eliminado correctamente.')
+        try:
+            material.delete()
+            messages.success(request, 'Material eliminado correctamente.')
+        except ProtectedError:
+            material.activo = False
+            material.save()
+            messages.warning(request, 'El material no se puede eliminar porque tiene transacciones. Ha sido desactivado y ya no aparecerá en el listado.')
         return redirect('admin_listar_materiales')
 
     return render(request, 'paginas/crud_material/eliminar_material_admin.html', {'material': material})
+
+
+
+@login_required
+def admin_listar_materiales_inactivos(request):
+    materiales = Material.objects.filter(activo=False)
+    return render(request, 'paginas/crud_material/materiales_inactivos.html', {'materiales': materiales})
+
+
+@login_required
+def reactivar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    material.activo = True
+    material.save()
+    messages.success(request, 'Material reactivado correctamente.')
+    return redirect('admin_listar_materiales_inactivos')

@@ -72,6 +72,7 @@ class Material(models.Model):
     modelo_material = models.CharField(max_length=50, null=True, blank=True)
     color = models.CharField(max_length=50, null=True, blank=True)
     fecha_compra = models.DateField(null=True, blank=True)
+    activo = models.BooleanField(default=True) 
 
     # Relaciones foráneas
     categoria = models.ForeignKey('CategoriaDj', on_delete=models.PROTECT)

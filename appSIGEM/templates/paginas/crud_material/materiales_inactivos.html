@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Listado de Materiales</h2>
-        <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-secondary btn-sm">
-            Ver materiales desactivados
+    <h2 class="mb-4 fw-bold text-center">Materiales Desactivados</h2>
+
+    <div class="mb-3 text-end">
+        <a href="{% url 'admin_listar_materiales' %}" class="btn btn-outline-primary btn-sm">
+            Volver al listado activo
         </a>
     </div>
 
@@ -17,17 +18,19 @@
                         <h5 class="mb-1">{{ material.nom_material }}</h5>
                         <small class="text-muted">{{ material.marca }} | {{ material.categoria }}</small>
                     </div>
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-primary btn-sm">Editar</a>
-                        <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
-                    </div>
+                    <form method="post" action="{% url 'reactivar_material' material.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Reactivar</button>
+                    </form>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted fst-italic text-center">No hay materiales registrados.</p>
+        <p class="text-muted fst-italic">No hay materiales desactivados.</p>
     {% endif %}
 </div>
+
+
 
 {% if messages %}
   <div aria-live="polite" aria-atomic="true" class="position-relative">
@@ -55,4 +58,7 @@
     });
   });
 </script>
+
+
+
 {% endblock %}
