@@ -74,9 +74,9 @@ class Material(models.Model):
     fecha_compra = models.DateField(null=True, blank=True)
 
     # Relaciones foráneas
-    categoria = models.ForeignKey('CategoriaDj', on_delete=models.CASCADE)
-    tipo_material = models.ForeignKey('TipoMaterial', on_delete=models.CASCADE)
-    marca = models.ForeignKey('Marca', on_delete=models.CASCADE)
+    categoria = models.ForeignKey('CategoriaDj', on_delete=models.PROTECT)
+    tipo_material = models.ForeignKey('TipoMaterial', on_delete=models.PROTECT)
+    marca = models.ForeignKey('Marca', on_delete=models.PROTECT)
 
     def __str__(self):
         return self.nom_material
@@ -91,7 +91,7 @@ def actualizar_stock_categoria(sender, instance, created, **kwargs):
         
         
 class Carrito(models.Model):
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     creado = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -101,7 +101,7 @@ class Carrito(models.Model):
         return sum(item.cantidad for item in self.items.all())
 
 class ItemCarrito(models.Model):
-    carrito = models.ForeignKey(Carrito, related_name='items', on_delete=models.CASCADE)
+    carrito = models.ForeignKey(Carrito, related_name='items', on_delete=models.PROTECT)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
 
@@ -120,7 +120,7 @@ class Solicitud(models.Model):
         ('CAN', 'Cancelada'),
     ]
 
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=5, choices=ESTADOS, default='PEND')
     estado_anterior = models.CharField(max_length=5, choices=ESTADOS[:-1], blank=True, null=True)
@@ -160,8 +160,8 @@ class Solicitud(models.Model):
     
     
 class ItemSolicitud(models.Model):
-    solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.CASCADE)
-    material = models.ForeignKey('Material', on_delete=models.CASCADE)
+    solicitud = models.ForeignKey(Solicitud, related_name='items', on_delete=models.PROTECT)
+    material = models.ForeignKey('Material', on_delete=models.PROTECT)
     cantidad = models.PositiveIntegerField()
     observacion = models.TextField(blank=True, null=True)
     fecha_devolucion_real = models.DateField(blank=True, null=True)
