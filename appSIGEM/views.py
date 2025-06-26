@@ -1402,14 +1402,46 @@ def detalle_material(request, id):
 def admin_listar_materiales(request):
     materiales = Material.objects.filter(activo=True).order_by('categoria', 'nom_material')
 
+    # Obtener filtros de GET o sesión
+    q_nombre = request.GET.get('q_nombre') or request.session.get('q_nombre', '')
+    q_marca = request.GET.get('q_marca') or request.session.get('q_marca', '')
+    q_modelo = request.GET.get('q_modelo') or request.session.get('q_modelo', '')
+    q_serie = request.GET.get('q_serie') or request.session.get('q_serie', '')
 
-    # Mando un diccionario vacío para que no explote el filtro
+    # Limpiar filtros si no hay GET
+    if not request.GET:
+        request.session.pop('q_nombre', None)
+        request.session.pop('q_marca', None)
+        request.session.pop('q_modelo', None)
+        request.session.pop('q_serie', None)
+    else:
+        # Guardar filtros en sesión
+        request.session['q_nombre'] = q_nombre
+        request.session['q_marca'] = q_marca
+        request.session['q_modelo'] = q_modelo
+        request.session['q_serie'] = q_serie
+
+    # Aplicar filtros
+    if q_nombre:
+        materiales = materiales.filter(nom_material__icontains=q_nombre)
+    if q_marca:
+        materiales = materiales.filter(marca__nom_marca__icontains=q_marca)
+    if q_modelo:
+        materiales = materiales.filter(modelo_material__icontains=q_modelo)
+    if q_serie:
+        materiales = materiales.filter(codigo_barra__icontains=q_serie)
+
     reserva_info = {}
 
     return render(request, 'paginas/crud_material/listar_materiales_admin.html', {
         'materiales': materiales,
-        'reserva_info': reserva_info
+        'reserva_info': reserva_info,
+        'q_nombre': q_nombre,
+        'q_marca': q_marca,
+        'q_modelo': q_modelo,
+        'q_serie': q_serie,
     })
+
     
     
 @login_required
@@ -1463,3 +1495,9 @@ def reactivar_material(request, pk):
     material.save()
     messages.success(request, 'Material reactivado correctamente.')
     return redirect('admin_listar_materiales_inactivos')
+
+
+@login_required
+def detalle_material_admin(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    return render(request, 'paginas/crud_material/detalle_material_admin.html', {'material': material})

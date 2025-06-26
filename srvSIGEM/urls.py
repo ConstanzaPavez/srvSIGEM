@@ -6,6 +6,7 @@ from django.conf import settings
 from appSIGEM.views import gestionar_solicitud
 from django.contrib.auth import views as auth_views
 from appSIGEM.views import seleccion_masiva_materiales
+from appSIGEM.views import detalle_material_admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -65,6 +66,7 @@ urlpatterns = [
     path('usuarios/desactivar/<int:usuario_id>/', views.desactivar_usuario, name='desactivar_usuario'),
     path('usuarios/activar/<int:usuario_id>/', views.activar_usuario, name='activar_usuario'),
     path('material/<int:id>/', views.detalle_material, name='detalle_material'),
+    path('panel_admin/materiales/<int:pk>/detalle/', detalle_material_admin, name='detalle_material_admin'),
 
     
     path('panel_admin/materiales/<int:pk>/reactivar/', views.reactivar_material, name='reactivar_material'),
