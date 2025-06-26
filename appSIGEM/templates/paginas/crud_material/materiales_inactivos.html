@@ -9,6 +9,17 @@
       Volver al listado activo
     </a>
   </div>
+  
+  <form method="get" class="mb-4 d-flex align-items-center gap-2 w-100" style="flex-wrap: nowrap; overflow-x: auto;">
+    <input type="text" name="q_nombre" class="form-control form-control-sm flex-grow-1" placeholder="Filtrar por nombre" value="{{ q_nombre }}" style="min-width: 150px; max-width: 250px;">
+    <input type="text" name="q_marca" class="form-control form-control-sm flex-grow-1" placeholder="Filtrar por marca" value="{{ q_marca }}" style="min-width: 150px; max-width: 250px;">
+    <input type="text" name="q_modelo" class="form-control form-control-sm flex-grow-1" placeholder="Filtrar por modelo" value="{{ q_modelo }}" style="min-width: 150px; max-width: 250px;">
+    <input type="text" name="q_serie" class="form-control form-control-sm flex-grow-1" placeholder="Filtrar por N° serie" value="{{ q_serie }}" style="min-width: 150px; max-width: 250px;">
+
+    <button type="submit" class="btn btn-primary btn-sm" style="min-width: 90px;">Filtrar</button>
+    
+    <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-secondary btn-sm" style="min-width: 90px;">Limpiar</a>
+  </form>
 
   {% if materiales %}
     <div class="list-group shadow-sm">

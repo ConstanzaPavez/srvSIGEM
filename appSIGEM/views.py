@@ -1484,8 +1484,30 @@ def admin_eliminar_material(request, pk):
 
 @login_required
 def admin_listar_materiales_inactivos(request):
+    q_nombre = request.GET.get('q_nombre', '').strip()
+    q_marca = request.GET.get('q_marca', '').strip()
+    q_modelo = request.GET.get('q_modelo', '').strip()
+    q_serie = request.GET.get('q_serie', '').strip()
+
     materiales = Material.objects.filter(activo=False)
-    return render(request, 'paginas/crud_material/materiales_inactivos.html', {'materiales': materiales})
+
+    if q_nombre:
+        materiales = materiales.filter(nom_material__icontains=q_nombre)
+    if q_marca:
+        materiales = materiales.filter(marca__nom_marca__icontains=q_marca)
+    if q_modelo:
+        materiales = materiales.filter(modelo_material__icontains=q_modelo)
+    if q_serie:
+        materiales = materiales.filter(codigo_barra__icontains=q_serie)
+
+    context = {
+        'materiales': materiales,
+        'q_nombre': q_nombre,
+        'q_marca': q_marca,
+        'q_modelo': q_modelo,
+        'q_serie': q_serie,
+    }
+    return render(request, 'paginas/crud_material/materiales_inactivos.html', context)
 
 
 @login_required
