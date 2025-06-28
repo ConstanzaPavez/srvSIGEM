@@ -1314,8 +1314,6 @@ def seleccion_masiva_materiales(request):
     if request.GET.get('fecha_devolucion'):
         request.session['fecha_fin_filtro'] = request.GET['fecha_devolucion']
 
-        
-    
     # Si aún no hay fechas, usar hoy como predeterminado
     if not fecha_retiro or not fecha_devolucion:
         hoy = date.today()
@@ -1327,6 +1325,12 @@ def seleccion_masiva_materiales(request):
         devolucion = datetime.strptime(fecha_devolucion, "%Y-%m-%d").date()
     except ValueError:
         retiro = devolucion = date.today()
+
+    # Validar que la fecha de devolución no sea anterior a la de retiro
+    if devolucion < retiro:
+        messages.error(request, "La fecha de devolución no puede ser anterior a la fecha de retiro. Se corrigió automáticamente para que coincida con la fecha de retiro.")
+        devolucion = retiro
+        fecha_devolucion = retiro.isoformat()  # Actualizar para la plantilla y contexto
 
     materiales = Material.objects.all()
 
