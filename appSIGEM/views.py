@@ -697,7 +697,6 @@ def quitar_del_carrito(request, material_id):
 
 
 
-
 @login_required 
 def crear_solicitud(request):
     hoy = now().date()
@@ -737,6 +736,10 @@ def crear_solicitud(request):
                 messages.error(request, f"No se puede crear la solicitud porque estos materiales están reservados en las fechas indicadas: {nombres}")
                 return redirect('index')
 
+            # Guardar fechas en sesión para que persistan
+            request.session['fecha_inicio_filtro'] = fecha_retiro.isoformat()
+            request.session['fecha_fin_filtro'] = fecha_devolucion.isoformat()
+
             # Crear la solicitud
             solicitud = form.save(commit=False)
             solicitud.usuario = request.user
@@ -770,7 +773,9 @@ def crear_solicitud(request):
         'carrito': carrito,
         'items_carrito': carrito.items.all()
     })
-    
+
+
+
 def listar_solicitudes(request):
     solicitudes = Solicitud.objects.filter(usuario=request.user).order_by('-fecha_solicitud')
     return render(request, 'paginas/solicitudes/listar_solicitudes.html', {'solicitudes': solicitudes})    
@@ -1298,21 +1303,27 @@ def seleccion_masiva_materiales(request):
     categoria_id = request.GET.get('categoria')
     marca_id = request.GET.get('marca')
     tipo_id = request.GET.get('tipo')
-    fecha_retiro = request.GET.get('fecha_retiro')
-    fecha_devolucion = request.GET.get('fecha_devolucion')
 
-    # Si no hay fechas en el GET, usar hoy como predeterminado
+    # Obtener fechas del GET o desde la sesión
+    fecha_retiro = request.GET.get('fecha_retiro') or request.session.get('rango_fecha_retiro')
+    fecha_devolucion = request.GET.get('fecha_devolucion') or request.session.get('rango_fecha_devolucion')
+
+    # Si las fechas vienen en el GET, actualiza la sesión
+    if request.GET.get('fecha_retiro'):
+        request.session['rango_fecha_retiro'] = request.GET['fecha_retiro']
+    if request.GET.get('fecha_devolucion'):
+        request.session['rango_fecha_devolucion'] = request.GET['fecha_devolucion']
+
+    # Si aún no hay fechas, usar hoy como predeterminado
     if not fecha_retiro or not fecha_devolucion:
-        hoy = date.today()   # USAR date.today() para evitar errores
+        hoy = date.today()
         fecha_retiro = hoy.isoformat()
         fecha_devolucion = hoy.isoformat()
 
-    # Parsear fechas a objeto date
     try:
         retiro = datetime.strptime(fecha_retiro, "%Y-%m-%d").date()
         devolucion = datetime.strptime(fecha_devolucion, "%Y-%m-%d").date()
     except ValueError:
-        # Si por alguna razón falla, usar hoy
         retiro = devolucion = date.today()
 
     materiales = Material.objects.all()
@@ -1325,34 +1336,28 @@ def seleccion_masiva_materiales(request):
         materiales = materiales.filter(tipo_material__id_tipo_material=tipo_id)
 
     # Filtrar solo materiales disponibles en rango
-    materiales_filtrados = []
-    for m in materiales:
-        if calcular_disponibilidad(m, retiro, devolucion):
-            materiales_filtrados.append(m)
+    materiales_filtrados = [
+        m for m in materiales if calcular_disponibilidad(m, retiro, devolucion)
+    ]
 
-    # Agrupar por (categoria, marca, tipo_material, nombre similar)
+    # Agrupar materiales
     grupos = defaultdict(list)
     for mat in materiales_filtrados:
         key = (mat.categoria.id_categoria, mat.marca.id_marca, mat.tipo_material.id_tipo_material, mat.nom_material)
         grupos[key].append(mat)
 
-    # Crear lista de grupos con cantidad
     grupos_agrupados = []
     for key, mats in grupos.items():
-        categoria = mats[0].categoria
-        marca = mats[0].marca
-        tipo = mats[0].tipo_material
-        nombre = mats[0].nom_material
-        cantidad = len(mats)
         grupos_agrupados.append({
-            'categoria': categoria,
-            'marca': marca,
-            'tipo': tipo,
-            'nombre': nombre,
-            'cantidad': cantidad,
+            'categoria': mats[0].categoria,
+            'marca': mats[0].marca,
+            'tipo': mats[0].tipo_material,
+            'nombre': mats[0].nom_material,
+            'cantidad': len(mats),
             'materiales': mats,
         })
 
+    # Procesar POST
     if request.method == 'POST':
         total_solicitado = 0
         for grupo in grupos_agrupados:
@@ -1390,7 +1395,6 @@ def seleccion_masiva_materiales(request):
         'tipo_id': tipo_id or '',
     }
     return render(request, 'paginas/inventario/seleccion_masiva.html', context)
-
 
 
 def detalle_material(request, id):
