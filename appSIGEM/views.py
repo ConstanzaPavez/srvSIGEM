@@ -1304,16 +1304,18 @@ def seleccion_masiva_materiales(request):
     marca_id = request.GET.get('marca')
     tipo_id = request.GET.get('tipo')
 
-    # Obtener fechas del GET o desde la sesión
-    fecha_retiro = request.GET.get('fecha_retiro') or request.session.get('rango_fecha_retiro')
-    fecha_devolucion = request.GET.get('fecha_devolucion') or request.session.get('rango_fecha_devolucion')
+    # Obtener fechas del GET o desde la sesión (con claves compatibles con crear_solicitud)
+    fecha_retiro = request.GET.get('fecha_retiro') or request.session.get('fecha_inicio_filtro')
+    fecha_devolucion = request.GET.get('fecha_devolucion') or request.session.get('fecha_fin_filtro')
 
-    # Si las fechas vienen en el GET, actualiza la sesión
+    # Si las fechas vienen en el GET, actualiza la sesión con las claves correctas
     if request.GET.get('fecha_retiro'):
-        request.session['rango_fecha_retiro'] = request.GET['fecha_retiro']
+        request.session['fecha_inicio_filtro'] = request.GET['fecha_retiro']
     if request.GET.get('fecha_devolucion'):
-        request.session['rango_fecha_devolucion'] = request.GET['fecha_devolucion']
+        request.session['fecha_fin_filtro'] = request.GET['fecha_devolucion']
 
+        
+    
     # Si aún no hay fechas, usar hoy como predeterminado
     if not fecha_retiro or not fecha_devolucion:
         hoy = date.today()
