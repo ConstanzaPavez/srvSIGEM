@@ -43,7 +43,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
-
+from django.contrib.messages import get_messages
 import requests
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
@@ -110,7 +110,7 @@ def index(request):
     else:
         print("Error al obtener noticias:", response.status_code)
         print(response.json())
-
+    list(get_messages(request))
     return render(request, 'paginas/inicio/index.html', {
         'noticias': noticias,
         'indices': range(9)
