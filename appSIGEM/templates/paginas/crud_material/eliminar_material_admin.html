@@ -1,6 +1,10 @@
 {% extends 'base_admin.html' %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-4">
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow border-0 rounded-2">
+            <div class="card-body p-4">
   <h2>Confirmar eliminación</h2>
   <p>¿Estás seguro que deseas eliminar el material <strong>{{ material.nom_material }}</strong>?</p>
   <form method="post">
@@ -8,5 +12,9 @@
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a href="{% url 'admin_listar_materiales' %}" class="btn btn-secondary ms-2">Cancelar</a>
   </form>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock %}

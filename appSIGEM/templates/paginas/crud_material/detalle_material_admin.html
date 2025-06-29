@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="fw-bold mb-4 list-group-item py-2">{{ material.nom_material }}</h2>
-
+  <h1 class="mb-4  fw-bold text-primary-emphasis">{{ material.nom_material }}</h1>
   <div class="row">
+
     <div class="col-md-5 mb-4 mb-md-0">
       {% if material.img_material %}
         <img src="{{ material.img_material.url }}" alt="Imagen de {{ material.nom_material }}" class="img-fluid rounded shadow-sm">
@@ -20,31 +20,31 @@
     <div class="p-3 rounded shadow-sm" style="background: #f9fafb; border: 1px solid #e2e8f0;">
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Marca:</span>
-        <span class="fw-semibold text-muted">{{ material.marca }}</span>
+        <span class="fw-semibold text-dark">{{ material.marca }}</span>
         </div>
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Modelo:</span>
-        <span class="fw-semibold text-muted">{{ material.modelo_material|default:"-" }}</span>
+        <span class="fw-semibold text-dark">{{ material.modelo_material|default:"-" }}</span>
         </div>
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">N° de serie:</span>
-        <span class="fw-semibold text-muted">{{ material.codigo_barra|default:"-" }}</span>
+        <span class="fw-semibold text-dark">{{ material.codigo_barra|default:"-" }}</span>
         </div>
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Contenido:</span>
-        <span class="fw-semibold text-muted">{{ material.contenido_material }}</span>
+        <span class="fw-semibold text-dark">{{ material.contenido_material }}</span>
         </div>
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Categoría:</span>
-        <span class="fw-semibold text-muted">{{ material.categoria }}</span>
+        <span class="fw-semibold text-dark">{{ material.categoria }}</span>
         </div>
         <div class="mb-3 d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Tipo de material:</span>
-        <span class="fw-semibold text-muted">{{ material.tipo_material }}</span>
+        <span class="fw-semibold text-dark">{{ material.tipo_material }}</span>
         </div>
         <div class="d-flex justify-content-between align-items-center">
         <span class="fw-bold text-dark">Fecha de compra:</span>
-        <span class="fw-semibold text-muted">{{ material.fecha_compra|date:"d-m-Y" }}</span>
+        <span class="fw-semibold text-dark">{{ material.fecha_compra|date:"d-m-Y" }}</span>
         </div>
     </div>
     
