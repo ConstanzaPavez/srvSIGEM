@@ -1,185 +1,161 @@
 {% extends "base.html" %}
 
 {% block title %}Selección Masiva de Materiales{% endblock %}
+
 {% block content %}
 <style>
-  .contenedor-filtros {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
-    justify-content: center;
-    max-width: 1000px;
-    margin-inline: auto;
-  }
+    .contenedor-filtros {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
-  .contenedor-filtros select,
-  .contenedor-filtros input[type="date"] {
-    flex: 1;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid #ced4da;
-    background-color: #f8f9fa;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  }
+    .contenedor-filtros select,
+    .contenedor-filtros input[type="date"] {
+        flex: 1;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
 
-  .contenedor-filtros select:focus,
-  .contenedor-filtros input[type="date"]:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
-    outline: none;
-  }
+    .grupo-material {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
 
-  .grupo-material {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 25px;
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    transition: transform 0.2s ease;
-  }
+    .grupo-material img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
 
-  .grupo-material:hover {
-    transform: scale(1.01);
-  }
+    .grupo-info {
+        flex-grow: 1;
+    }
 
-  .grupo-material img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
+    .grupo-info h5 {
+        margin: 0;
+        font-size: 18px;
+    }
 
-  .grupo-info h5 {
-    margin: 0;
-    font-size: 20px;
-    color: #0d6efd;
-    font-weight: 600;
-  }
+    .grupo-info p {
+        margin: 4px 0;
+        color: #555;
+    }
 
-  .grupo-info p {
-    margin: 6px 0;
-    color: #495057;
-  }
+    .cantidad-input {
+        width: 80px;
+        margin-top: 10px;
+    }
 
-  .cantidad-input {
-    width: 100px;
-    margin-top: 10px;
-  }
+    .btn-submit {
+        display: block;
+        margin: 30px auto 0;
+        padding: 10px 30px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 
-  .btn-submit {
-    display: block;
-    margin: 40px auto 0;
-  }
+    .btn-submit:hover {
+        background-color: #0056b3;
+    }
 
-  .mensaje-vacio {
-    text-align: center;
-    font-style: italic;
-    color: #777;
-    margin-top: 30px;
-  }
+    .mensaje-vacio {
+        text-align: center;
+        font-style: italic;
+        color: #777;
+        margin-top: 30px;
+    }
 </style>
 
-<h2 class="text-center mb-4">Selección Masiva de Materiales</h2>
+<h2 class="mb-4 text-center text-primary-emphasis fw-bold">Selección Masiva de Materiales</h2>
 
 <!-- Filtros -->
-<form method="get" class="contenedor-filtros">
-  <select name="categoria" onchange="this.form.submit()">
-    <option value="">Toda Categoría</option>
-    {% for cat in categorias %}
-      <option value="{{ cat.id_categoria }}" {% if categoria_id|stringformat:"s" == cat.id_categoria|stringformat:"s" %}selected{% endif %}>
-        {{ cat.nombre_categoria }}
-      </option>
-    {% endfor %}
-  </select>
-  <select name="marca" onchange="this.form.submit()">
-    <option value="">Toda Marca</option>
-    {% for mar in marcas %}
-      <option value="{{ mar.id_marca }}" {% if marca_id|stringformat:"s" == mar.id_marca|stringformat:"s" %}selected{% endif %}>
-        {{ mar.nom_marca }}
-      </option>
-    {% endfor %}
-  </select>
+<form method="get" class="contenedor-filtros" style="max-width: 900px; margin: auto;">
+    <select name="categoria" onchange="this.form.submit()">
+        <option value="">Toda Categoría</option>
+        {% for cat in categorias %}
+            <option value="{{ cat.id_categoria }}" {% if categoria_id|stringformat:"s" == cat.id_categoria|stringformat:"s" %}selected{% endif %}>{{ cat.nombre_categoria }}</option>
+        {% endfor %}
+    </select>
 
-  <select name="tipo" onchange="this.form.submit()">
-    <option value="">Todo Tipo Material</option>
-    {% for tip in tipos %}
-      <option value="{{ tip.id_tipo_material }}" {% if tipo_id|stringformat:"s" == tip.id_tipo_material|stringformat:"s" %}selected{% endif %}>
-        {{ tip.nombre_tipo_material }}
-      </option>
-    {% endfor %}
-  </select>
+    <select name="marca" onchange="this.form.submit()">
+        <option value="">Toda Marca</option>
+        {% for mar in marcas %}
+            <option value="{{ mar.id_marca }}" {% if marca_id|stringformat:"s" == mar.id_marca|stringformat:"s" %}selected{% endif %}>{{ mar.nom_marca }}</option>
+        {% endfor %}
+    </select>
 
-  <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="form-control" placeholder="Fecha inicio">
-  <input type="date" id="fecha_fin" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="form-control" placeholder="Fecha fin">
+    <select name="tipo" onchange="this.form.submit()">
+        <option value="">Todo Tipo Material</option>
+        {% for tip in tipos %}
+            <option value="{{ tip.id_tipo_material }}" {% if tipo_id|stringformat:"s" == tip.id_tipo_material|stringformat:"s" %}selected{% endif %}>{{ tip.nombre_tipo_material }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="date" name="fecha_retiro" value="{{ fecha_retiro }}" required onchange="this.form.submit()">
+    <input type="date" name="fecha_devolucion" value="{{ fecha_devolucion }}" required onchange="this.form.submit()">
 </form>
 
-<hr style="max-width: 950px; margin: 20px auto;">
+<hr style="max-width: 900px; margin: 20px auto;">
 
-<!-- Formulario de selección -->
-<form method="post" style="max-width: 950px; margin: auto;">
-  {% csrf_token %}
-  {% for grupo in grupos_agrupados %}
-    <div class="grupo-material">
-      <div>
-        {% if grupo.materiales.0.img_material %}
-          <img src="{{ grupo.materiales.0.img_material.url }}" alt="Imagen del material">
-        {% else %}
-          <div style="width:120px; height:120px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid #ccc;">
-            <span class="text-muted">Sin imagen</span>
-          </div>
-        {% endif %}
-      </div>
-      <div class="grupo-info">
-        <h5>{{ grupo.nombre }}</h5>
-        <p>
-          <strong>Categoría:</strong> {{ grupo.categoria.nombre_categoria }} |
-          <strong>Marca:</strong> {{ grupo.marca.nom_marca }} |
-          <strong>Tipo:</strong> {{ grupo.tipo.nombre_tipo_material }} |
-          <strong>Disponibles:</strong> {{ grupo.cantidad }}
-        </p>
-        <label for="cantidad_{{ grupo.materiales.0.id_material }}">Cantidad:</label>
-        <input
-          type="number"
-          name="cantidad_{{ grupo.materiales.0.id_material }}"
-          id="cantidad_{{ grupo.materiales.0.id_material }}"
-          min="0"
-          max="{{ grupo.cantidad }}"
-          value="0"
-          class="form-control cantidad-input shadow-sm"
-        >
-      </div>
-    </div>
-  {% empty %}
-    <p class="mensaje-vacio">No hay materiales disponibles para estos filtros y fechas.</p>
-  {% endfor %}
+<!-- Formulario para enviar cantidades -->
+<form method="post" style="max-width: 900px; margin: auto;">
+    {% csrf_token %}
+    {% for grupo in grupos_agrupados %}
+        <div class="grupo-material">
+            <!-- Imagen del primer material del grupo -->
+                <!-- Imagen del primer material del grupo -->
+                <div>
+                    {% if grupo.materiales.0.img_material %}
+                        <img src="{{ grupo.materiales.0.img_material.url }}" alt="Imagen del material">
+                    {% else %}
+                        <div style="width:120px; height:120px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid #ccc;">
+                            <span class="text-muted">Sin imagen</span>
+                        </div>
+                    {% endif %}
+                </div>
+            <!-- Información del grupo -->
+            <div class="grupo-info">
+                <h5>{{ grupo.nombre }}</h5>
+                <p>
+                    <strong>Categoría:</strong> {{ grupo.categoria.nombre_categoria }} |
+                    <strong>Marca:</strong> {{ grupo.marca.nom_marca }} |
+                    <strong>Tipo:</strong> {{ grupo.tipo.nombre_tipo_material }} |
+                    <strong>Disponibles:</strong> {{ grupo.cantidad }}
+                </p>
 
-  <button type="submit" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm btn-submit">
-    Agregar al carrito
-  </button>
+                <label for="cantidad_{{ grupo.materiales.0.id_material }}">Cantidad:</label>
+                <input
+                    type="number"
+                    name="cantidad_{{ grupo.materiales.0.id_material }}"
+                    id="cantidad_{{ grupo.materiales.0.id_material }}"
+                    min="0"
+                    max="{{ grupo.cantidad }}"
+                    value="0"
+                    class="form-control cantidad-input"
+                >
+            </div>
+        </div>
+    {% empty %}
+        <p class="mensaje-vacio">No hay materiales disponibles para estos filtros y fechas.</p>
+    {% endfor %}
+
+    <button type="submit" class="btn-submit">Agregar al carrito</button>
 </form>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hoy = new Date().toISOString().split("T")[0];
-    const fechaInicio = document.getElementById("fecha_inicio");
-    const fechaFin = document.getElementById("fecha_fin");
-
-    fechaInicio.setAttribute("min", hoy);
-
-    fechaInicio.addEventListener("change", function () {
-      fechaFin.setAttribute("min", this.value);
-    });
-
-    if (fechaInicio.value) {
-      fechaFin.setAttribute("min", fechaInicio.value);
-    }
-  });
-</script>
 {% endblock %}
