@@ -13,11 +13,10 @@
 </style>
 
 <div class="container mt-5">
-
   <!-- Encabezado -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Listado de Materiales</h1>
-    <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-secondary btn-sm fw-semibold shadow-sm">
+    <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-primary btn-sm fw-semibold">
       Ver materiales desactivados
     </a>
   </div>
@@ -40,7 +39,7 @@
       <button type="submit" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm">Filtrar</button>
     </div>
     <div class="col-auto">
-      <a href="{% url 'admin_listar_materiales' %}" class="btn btn-outline-secondary btn-sm fw-semibold shadow-sm">Limpiar</a>
+      <a href="{% url 'admin_listar_materiales' %}" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm">Limpiar</a>
     </div>
   </form>
 
@@ -79,8 +78,8 @@
 
           <!-- Botones -->
           <div class="d-flex flex-column gap-2 ms-3" style="min-width: 90px;">
-            <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm">Editar</a>
-            <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-outline-danger btn-sm rounded-pill shadow-sm">Eliminar</a>
+            <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-outline-primary btn-sm  shadow-sm">Editar</a>
+            <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-outline-danger btn-sm shadow-sm">Eliminar</a>
           </div>
         </div>
       {% endfor %}
