@@ -1433,13 +1433,13 @@ def admin_listar_materiales(request):
 
     # Aplicar filtros
     if q_nombre:
-        materiales = materiales.filter(nom_material__icontains=q_nombre)
+        materiales = materiales.filter(nom_material__istartswith=q_nombre)
     if q_marca:
-        materiales = materiales.filter(marca__nom_marca__icontains=q_marca)
+        materiales = materiales.filter(marca__nom_marca__istartswith=q_marca)
     if q_modelo:
-        materiales = materiales.filter(modelo_material__icontains=q_modelo)
+        materiales = materiales.filter(modelo_material__istartswith=q_modelo)
     if q_serie:
-        materiales = materiales.filter(codigo_barra__icontains=q_serie)
+        materiales = materiales.filter(codigo_barra__istartswith=q_serie)
 
     reserva_info = {}
 
