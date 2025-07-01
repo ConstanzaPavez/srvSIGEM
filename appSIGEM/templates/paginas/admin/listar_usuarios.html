@@ -1,7 +1,8 @@
 {% extends 'base_admin.html' %}
 {% block content %}
+
 <div class="container mt-5">
-    <h2 class="mb-4 text-center fw-bold">Usuarios Registrados</h2>
+    <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Usuarios Registrados</h1>
 
     {% if usuarios %}
     <div class="list-group shadow-sm rounded">
@@ -23,11 +24,11 @@
                     </a>
                     {% if usuario != request.user %} {# No dejar que se desactive a sí mismo #}
                         {% if usuario.is_active %}
-                            <a href="{% url 'desactivar_usuario' usuario.id %}" class="btn btn-warning btn-sm">
+                            <a href="{% url 'desactivar_usuario' usuario.id %}" class="btn btn-outline-primary btn-sm">
                                 Desactivar
                             </a>
                         {% else %}
-                            <a href="{% url 'activar_usuario' usuario.id %}" class="btn btn-success btn-sm">
+                            <a href="{% url 'activar_usuario' usuario.id %}" class="btn btn-outline-primary btn-sm">
                                 Activar
                             </a>
                         {% endif %}
