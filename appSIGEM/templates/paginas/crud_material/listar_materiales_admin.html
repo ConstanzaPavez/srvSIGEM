@@ -1,5 +1,11 @@
 {% extends 'base_admin.html' %}
+
 {% block content %}
+<!-- AOS Animaciones -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
+
 <style>
   .material-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -11,110 +17,78 @@
     z-index: 1;
   }
 </style>
-
-<div class="container mt-5">
-  <!-- Encabezado -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Listado de Materiales</h1>
-    <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-primary btn-sm fw-semibold">
-      Ver materiales desactivados
-    </a>
-  </div>
-
-  <!-- Filtros -->
-  <form method="get" class="row g-2 mb-4">
-    <div class="col-md-2">
-      <input type="text" name="q_nombre" class="form-control form-control-sm fw-semibold shadow-sm" placeholder="Nombre" value="{{ q_nombre }}">
-    </div>
-    <div class="col-md-2">
-      <input type="text" name="q_marca" class="form-control form-control-sm fw-semibold shadow-sm" placeholder="Marca" value="{{ q_marca }}">
-    </div>
-    <div class="col-md-2">
-      <input type="text" name="q_modelo" class="form-control form-control-sm fw-semibold shadow-sm" placeholder="Modelo" value="{{ q_modelo }}">
-    </div>
-    <div class="col-md-2">
-      <input type="text" name="q_serie" class="form-control form-control-sm fw-semibold shadow-sm" placeholder="N° serie" value="{{ q_serie }}">
-    </div>
-    <div class="col-auto">
-      <button type="submit" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm">Filtrar</button>
-    </div>
-    <div class="col-auto">
-      <a href="{% url 'admin_listar_materiales' %}" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm">Limpiar</a>
-    </div>
-  </form>
-
-  <!-- Lista de materiales -->
-  {% if materiales %}
-    <div class="list-group shadow-sm">
-      {% for material in materiales %}
-        <div class="list-group-item d-flex align-items-center justify-content-between py-3 px-4 rounded-3 mb-3 border shadow-sm material-card">
-
-          <!-- Imagen -->
-          <div class="me-3">
-            {% if material.img_material %}
-              <img src="{{ material.img_material.url }}" alt="Imagen de {{ material.nom_material }}" class="rounded shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
-            {% else %}
-              <div class="bg-light d-flex align-items-center justify-content-center text-muted rounded shadow-sm" style="width: 80px; height: 80px;">Sin imagen</div>
-            {% endif %}
-          </div>
-
-          <!-- Información -->
-          <div class="flex-grow-1">
-            <h5 class="mb-1 fw-semibold">
-              <a href="{% url 'detalle_material_admin' material.pk %}" class="text-decoration-none text-dark">
-                {{ material.nom_material }}
-              </a>
-            </h5>
-            <div class="text-muted small d-flex flex-wrap gap-3">
-              <span><strong>Marca:</strong> {{ material.marca }}</span>
-              {% if material.modelo_material %}
-                <span><strong>Modelo:</strong> {{ material.modelo_material }}</span>
-              {% endif %}
-              {% if material.codigo_barra %}
-                <span><strong>N° serie:</strong> {{ material.codigo_barra }}</span>
-              {% endif %}
-            </div>
-          </div>
-
-          <!-- Botones -->
-          <div class="d-flex flex-column gap-2 ms-3" style="min-width: 90px;">
-            <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-outline-primary btn-sm  shadow-sm">Editar</a>
-            <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-outline-danger btn-sm shadow-sm">Eliminar</a>
-          </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-4 text-center text-primary-emphasis fw-bold">Listado de Materiales</h1>
+        <a href="{% url 'admin_listar_materiales_inactivos' %}" class="btn btn-outline-primary btn-sm xshadow-sm fw-semibold">
+          Ver materiales desactivados
+        </a>
+      </div>
+<div class="container mt-4">
+  <div class="card shadow-sm border-0 rounded-2" data-aos="fade-up" data-aos-duration="600">
+    <div class="card-body p-4">
+      <!-- Filtros -->
+      <form method="get" class="row g-4 mb-4 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted">Nombre</label>
+          <input type="text" name="q_nombre" class="form-control rounded-2 shadow-sm" value="{{ q_nombre }}">
         </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="text-muted fst-italic text-center">No hay materiales registrados.</p>
-  {% endif %}
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted">Marca</label>
+          <input type="text" name="q_marca" class="form-control rounded-2 shadow-sm" value="{{ q_marca }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted">Modelo</label>
+          <input type="text" name="q_modelo" class="form-control rounded-2 shadow-sm" value="{{ q_modelo }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold text-muted">N° Serie</label>
+          <input type="text" name="q_serie" class="form-control rounded-2 shadow-sm" value="{{ q_serie }}">
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-50 shadow-sm">Filtrar</button>
+          <a href="{% url 'admin_listar_materiales' %}" class="btn btn-outline-primary w-50 shadow-sm">Limpiar</a>
+        </div>
+      </form>
 
+      {% if materiales %}
+        <div class="d-flex flex-column gap-3">
+          {% for material in materiales %}
+            <div class="d-flex align-items-center justify-content-between p-3 px-4 rounded-3 shadow-sm bg-white material-card">
+              <!-- Imagen -->
+              <div class="me-3">
+                {% if material.img_material %}
+                  <img src="{{ material.img_material.url }}" class="rounded shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                {% else %}
+                  <div class="bg-light d-flex align-items-center justify-content-center text-muted rounded shadow-sm" style="width: 80px; height: 80px; font-size: 12px;">
+                    <span class="text-center">Sin<br>imagen</span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Info -->
+              <div class="flex-grow-1">
+                <h5 class="mb-1 fw-semibold">
+                  <a href="{% url 'detalle_material_admin' material.pk %}" class="text-decoration-none text-dark">{{ material.nom_material }}</a>
+                </h5>
+                <div class="text-muted small d-flex flex-wrap gap-3">
+                  <span><strong>Marca:</strong> {{ material.marca }}</span>
+                  {% if material.modelo_material %}<span><strong>Modelo:</strong> {{ material.modelo_material }}</span>{% endif %}
+                  {% if material.codigo_barra %}<span><strong>N° serie:</strong> {{ material.codigo_barra }}</span>{% endif %}
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="d-flex flex-column gap-2 ms-3" style="min-width: 90px;">
+                <a href="{% url 'admin_editar_material' material.pk %}" class="btn btn-outline-primary btn-sm shadow-sm">Editar</a>
+                <a href="{% url 'admin_eliminar_material' material.pk %}" class="btn btn-outline-danger btn-sm shadow-sm">Eliminar</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted text-center fst-italic">No hay materiales registrados.</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
-
-<!-- Toasts de Django messages -->
-{% if messages %}
-  <div aria-live="polite" aria-atomic="true" class="position-relative">
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
-      {% for message in messages %}
-        <div class="toast align-items-center text-bg-{{ message.tags }} border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="d-flex">
-            <div class="toast-body">
-              {{ message }}
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    toastElList.forEach(function (toastEl) {
-      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-      toast.show();
-    });
-  });
-</script>
 {% endblock %}

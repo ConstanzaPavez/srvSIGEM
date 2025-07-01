@@ -31,10 +31,9 @@
           <label class="form-label fw-semibold text-muted">Fecha Solicitud</label>
           <input type="date" name="fecha_solicitud" class="form-control rounded-3 shadow-sm" value="{{ fecha_filtro }}">
         </div>
-
         <div class="col-md-3 d-flex gap-2">
-          <button type="submit" class="btn btn-primary w-50 rounded-pill shadow-sm">Filtrar</button>
-          <a href="?estado={{ estado_filtrado }}" class="btn btn-outline-secondary w-50 rounded-pill shadow-sm">Limpiar</a>
+          <button type="submit" class="btn btn-primary w-50  shadow-sm">Filtrar</button>
+          <a href="?estado={{ estado_filtrado }}" class="btn btn-outline-bg-primary w-50 shadow-sm">Limpiar</a>
         </div>
       </form>
 
@@ -42,7 +41,7 @@
       <div class="d-flex flex-wrap gap-2 mb-4">
         {% for codigo, nombre in estados %}
           <a href="?estado={{ codigo }}{% if usuario_filtro %}&usuario={{ usuario_filtro }}{% endif %}{% if fecha_filtro %}&fecha_solicitud={{ fecha_filtro }}{% endif %}{% if numero_filtro %}&numero_solicitud={{ numero_filtro }}{% endif %}"
-            class="btn {% if estado_filtrado == codigo %}btn-dark{% else %}btn-outline-dark{% endif %} btn-sm rounded-pill">
+            class="btn {% if estado_filtrado == codigo %}btn-dark{% else %}btn-outline-dark{% endif %} btn-sm">
             {{ nombre }}
           </a>
         {% endfor %}
