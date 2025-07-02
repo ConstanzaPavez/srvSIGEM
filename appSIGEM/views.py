@@ -1304,15 +1304,42 @@ def seleccion_masiva_materiales(request):
     marca_id = request.GET.get('marca')
     tipo_id = request.GET.get('tipo')
 
-    # Obtener fechas del GET o desde la sesión (con claves compatibles con crear_solicitud)
-    fecha_retiro = request.GET.get('fecha_retiro') or request.session.get('fecha_inicio_filtro')
-    fecha_devolucion = request.GET.get('fecha_devolucion') or request.session.get('fecha_fin_filtro')
 
-    # Si las fechas vienen en el GET, actualiza la sesión con las claves correctas
-    if request.GET.get('fecha_retiro'):
-        request.session['fecha_inicio_filtro'] = request.GET['fecha_retiro']
-    if request.GET.get('fecha_devolucion'):
-        request.session['fecha_fin_filtro'] = request.GET['fecha_devolucion']
+    # Inicializar fechas
+    fecha_retiro = None
+    fecha_devolucion = None
+
+    # Manejar fecha_retiro
+    if 'fecha_retiro' in request.GET:
+        valor = request.GET.get('fecha_retiro')
+        if valor:
+            fecha_retiro = valor
+            request.session['fecha_inicio_filtro'] = valor
+        else:
+            request.session.pop('fecha_inicio_filtro', None)  # Borrar de sesión si vacío
+
+    # Manejar fecha_devolucion
+    if 'fecha_devolucion' in request.GET:
+        valor = request.GET.get('fecha_devolucion')
+        if valor:
+            fecha_devolucion = valor
+            request.session['fecha_fin_filtro'] = valor
+        else:
+            request.session.pop('fecha_fin_filtro', None)
+
+    # Si no vienen en el GET, usar lo guardado en la sesión
+    if not fecha_retiro:
+        fecha_retiro = request.session.get('fecha_inicio_filtro')
+    if not fecha_devolucion:
+        fecha_devolucion = request.session.get('fecha_fin_filtro')
+
+    # Si aún no hay fechas, usar hoy como predeterminado
+    if not fecha_retiro or not fecha_devolucion:
+        hoy = date.today()
+        fecha_retiro = hoy.isoformat()
+        fecha_devolucion = hoy.isoformat()
+
+
 
     # Si aún no hay fechas, usar hoy como predeterminado
     if not fecha_retiro or not fecha_devolucion:
@@ -1328,9 +1355,8 @@ def seleccion_masiva_materiales(request):
 
     # Validar que la fecha de devolución no sea anterior a la de retiro
     if devolucion < retiro:
-        messages.error(request, "La fecha de devolución no puede ser anterior a la fecha de retiro. Se corrigió automáticamente para que coincida con la fecha de retiro.")
-        devolucion = retiro
-        fecha_devolucion = retiro.isoformat()  # Actualizar para la plantilla y contexto
+        messages.error(request, "La fecha de devolución no puede ser anterior a la fecha de retiro.")
+
 
     materiales = Material.objects.all()
 
