@@ -618,7 +618,7 @@ def agregar_al_carrito(request, material_id):
         if not creado:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'estado': 'error', 'mensaje': 'Este material ya está en tu carrito.'})
-            messages.warning(request, "Este material ya está en tu carrito.")
+          
         else:
             item.cantidad = 1
             item.save()
@@ -1410,7 +1410,6 @@ def seleccion_masiva_materiales(request):
                 total_solicitado += cantidad
 
         if total_solicitado > 0:
-            messages.success(request, f'Se agregaron {total_solicitado} materiales al carrito.')
             return redirect('ver_carrito')
         else:
             messages.error(request, 'No se seleccionó ninguna cantidad válida.')
