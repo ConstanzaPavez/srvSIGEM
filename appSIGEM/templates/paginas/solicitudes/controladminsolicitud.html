@@ -73,7 +73,7 @@
                 <td>{{ solicitud.get_estado_display }}</td>
                 <td class="text-center">
                   {% if solicitud.estado in 'PEND APR PAR RECH' %}
-                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">Gestionar</a>
+                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-outline-primary btn-sm px-3">Gestionar</a>
                   {% else %}
                     <span class="text-muted">—</span>
                   {% endif %}
@@ -84,6 +84,7 @@
         </table>
       </div>
 
+      
       <!-- Paginación -->
       <nav class="mt-4">
         <ul class="pagination justify-content-center">
