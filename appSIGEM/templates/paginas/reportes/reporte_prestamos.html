@@ -12,11 +12,11 @@
       <!-- Botones de descarga -->
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2">
         <div class="d-flex gap-2">
-          <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn shadow-sm">
+          <a id="descargar-pdf" href="{% url 'reporte_prestamos_pdf' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-outline-primary shadow-sm">
             Descargar PDF
           </a>
 
-        <a href="{% url 'reporte_excel' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn  shadow-sm">
+        <a href="{% url 'reporte_excel' %}?inicio={{ fecha_inicio }}&fin={{ fecha_fin }}&usuario={{ usuario_id }}" class="btn btn-outline-primary shadow-sm">
             Descargar Excel
         </a>
 
