@@ -21,8 +21,10 @@
         .header {
             text-align: center;
         }
-        .header img {
-            height: 80px;
+        .header h1 {
+            color: #002D62;
+            font-size: 32px;
+            margin: 0;
         }
         .status {
             background-color: #002D62;
@@ -44,7 +46,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <img src="{{ protocol }}://{{ domain }}{% static 'img/logo_sigem.png' %}" alt="SIGEM Logo">
+        <h1>SIGEM</h1>
     </div>
     <div class="status">
         Resultado de tu solicitud: {{ solicitud.get_estado_display }}
