@@ -102,9 +102,12 @@
 
   <!-- Filtros avanzados colapsables -->
 
-  <a href="{% url 'seleccion_masiva_materiales' %}?fecha_retiro={{ fecha_inicio }}&fecha_devolucion={{ fecha_fin }}" class="btn btn-primary">
-    <i class="fa fa-list" style="margin-right: 6px;"></i> Selección Masiva de Materiales
-  </a>
+ <!-- Botón Selección Masiva reducido -->
+  <div class="col-md-3 text-end mt-2">
+      <a href="{% url 'seleccion_masiva_materiales' %}?fecha_retiro={{ fecha_inicio }}&fecha_devolucion={{ fecha_fin }}" class="btn btn-primary btn-sm">
+        <i class="fa fa-list me-1"></i> Selección Masiva de Materiales
+      </a>
+  </div>
 
 
   <div class="collapse" id="filtrosAvanzados">
