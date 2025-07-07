@@ -64,9 +64,10 @@
             <strong>Motivo del rechazo:</strong>
             <p>{{ solicitud.comentario_respuesta }}</p>
         </div>
+
     {% elif solicitud.estado == 'PAR' %}
         <div class="section">
-            <strong>Materiales aprobados parcialmente:</strong>
+            <strong>Materiales aprobados:</strong>
             <ul>
                 {% for item in solicitud.items.all %}
                     {% if item.aprobado %}
@@ -74,9 +75,20 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+
+            <strong>Materiales no aprobados:</strong>
+            <ul>
+                {% for item in solicitud.items.all %}
+                    {% if not item.aprobado %}
+                        <li>{{ item.material.nom_material }} - Cantidad: {{ item.cantidad }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
             <strong>Motivo de respuesta:</strong>
             <p>{{ solicitud.comentario_respuesta }}</p>
         </div>
+
     {% elif solicitud.estado == 'APR' %}
         <div class="section">
             <strong>Materiales aprobados:</strong>
