@@ -1,0 +1,16 @@
+{% extends 'base_admin.html' %}
+{% block title %}{{ modo }} Slide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4 text-center">{{ modo }} Slide del Carrusel</h2>
+  <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-primary">{{ modo }}</button>
+      <a href="{% url 'editar_carrusel' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

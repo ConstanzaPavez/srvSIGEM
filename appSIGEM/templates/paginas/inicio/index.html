@@ -195,96 +195,36 @@
 }
 </style>
 
-<div class="carousel-container slide-in  rounded-2">
-  <div id="cittCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      {% for i in indices %}
-        <button type="button" data-bs-target="#cittCarousel" data-bs-slide-to="{{ i }}" 
-                class="{% if forloop.first %}active{% endif %}" 
-                aria-current="{% if forloop.first %}true{% endif %}" 
-                aria-label="Slide {{ i|add:1 }}"></button>
-      {% endfor %}
-    </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="{% static 'paginas/img/3d.jpg' %}" class="d-block w-100 carousel-img" alt="Impresión 3D">
+<div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+  <div class="carousel-inner">
+    {% for slide in slides %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <img src="{{ slide.imagen.url }}" class="d-block w-100 carousel-img" alt="{{ slide.titulo }}">
         <div class="carousel-caption d-none d-md-block">
-          <h5>Impresión 3D</h5>
-          <p>Tecnología que permite fabricar objetos físicos a partir de diseños digitales, ideal para prototipos y producción rápida.</p>
+          <h5>{{ slide.titulo }}</h5>
+          <p>{{ slide.descripcion }}</p>
         </div>
       </div>
+    {% endfor %}
+  </div>
 
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/ia.jpg' %}" class="d-block w-100 carousel-img" alt="Inteligencia Artificial">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Inteligencia Artificial (IA)</h5>
-          <p>Simulación de inteligencia humana por máquinas para reconocimiento de voz, visión computacional y automatización.</p>
-        </div>
-      </div>
-            <div class="carousel-item">
-        <img src="{% static 'paginas/img/iot.png' %}" class="d-block w-100 carousel-img" alt="IoT y 5G">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>IoT + 5G</h5>
-          <p>Conectividad de dispositivos en tiempo real usando redes 5G, con aplicaciones en ciudades inteligentes, salud y logística.</p>
-        </div>
-      </div>
+  <!-- Controles para moverse manualmente -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
 
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/drones.jpg' %}" class="d-block w-100 carousel-img" alt="Drones">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Drones</h5>
-          <p>Vehículos aéreos no tripulados utilizados en agricultura, inspección, fotografía aérea y entrega de productos.</p>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/web.png' %}" class="d-block w-100 carousel-img" alt="Web Apps">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Desarrollo de Aplicaciones Web</h5>
-          <p>Creación de plataformas accesibles desde cualquier navegador, con tecnologías como Django, React o Node.js.</p>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/rv.jpg' %}" class="d-block w-100 carousel-img" alt="Realidad Virtual">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Realidad Virtual</h5>
-          <p>Simulación digital inmersiva de entornos 3D para entrenamiento, educación, entretenimiento y más.</p>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/robotica.jpg' %}" class="d-block w-100 carousel-img" alt="Robótica">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Robótica</h5>
-          <p>Diseño y programación de máquinas autónomas que ayudan en tareas industriales, médicas o educativas.</p>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/videojuegos.jpeg' %}" class="d-block w-100 carousel-img" alt="Videojuegos">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Videojuegos</h5>
-          <p>Desarrollo interactivo que combina arte, música y lógica para crear experiencias lúdicas en múltiples plataformas.</p>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <img src="{% static 'paginas/img/ciberseguridad.jpg' %}" class="d-block w-100 carousel-img" alt="Ciberseguridad">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Ciberseguridad</h5>
-          <p>Protección de datos y sistemas frente a amenazas digitales. Clave en cualquier sistema informático moderno.</p>
-        </div>
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#cittCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#cittCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Siguiente</span>
-    </button>
+  <!-- Indicadores (opcionales) -->
+  <div class="carousel-indicators">
+    {% for slide in slides %}
+      <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="{{ forloop.counter0 }}" 
+              class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}" 
+              aria-label="Slide {{ forloop.counter }}"></button>
+    {% endfor %}
   </div>
 </div>
 

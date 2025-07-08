@@ -91,6 +91,11 @@ urlpatterns = [
         template_name='paginas/auth/password_reset_complete.html'
     ), name='password_reset_complete'),
 
+    path('panel/carrusel/', views.editar_carrusel, name='editar_carrusel'),
+    path('panel/carrusel/agregar/', views.agregar_slide, name='agregar_slide'),
+    path('panel/carrusel/editar/<int:pk>/', views.editar_slide, name='editar_slide'),
+    path('panel/carrusel/eliminar/<int:pk>/', views.eliminar_slide, name='eliminar_slide'),
+
 
 
 ]

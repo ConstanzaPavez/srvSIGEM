@@ -1,0 +1,37 @@
+{% extends 'base_admin.html' %}
+{% block title %}Editar Carrusel{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">Gestión del Carrusel</h2>
+
+  <div class="text-end mb-3">
+    <a href="{% url 'agregar_slide' %}" class="btn btn-success">
+      <i class="bi bi-plus-circle"></i> Agregar Slide
+    </a>
+  </div>
+
+  {% if slides %}
+    <div class="row">
+      {% for slide in slides %}
+        <div class="col-md-4">
+          <div class="card mb-4 shadow-sm">
+            <img src="{{ slide.imagen.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ slide.titulo }}</h5>
+              <p class="card-text">{{ slide.descripcion|truncatewords:15 }}</p>
+              <div class="d-flex justify-content-between">
+                <a href="{% url 'editar_slide' slide.pk %}" class="btn btn-outline-primary btn-sm">Editar</a>
+                <a href="{% url 'eliminar_slide' slide.pk %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este slide?')">Eliminar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No hay slides en el carrusel actualmente.</p>
+  {% endif %}
+</div>
+{% endblock %}

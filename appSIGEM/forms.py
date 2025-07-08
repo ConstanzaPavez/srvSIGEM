@@ -13,6 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.utils import timezone
 from django import forms
 import re  
+from .models import SlideCarrusel
 
 User = get_user_model()
 
@@ -236,3 +237,13 @@ class EditarPerfilForm(forms.ModelForm):
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Este correo ya está registrado con otra cuenta.")
         return email
+    
+class SlideCarruselForm(forms.ModelForm):
+    class Meta:
+        model = SlideCarrusel
+        fields = ['imagen', 'titulo', 'descripcion']
+        labels = {
+            'imagen': 'Imagen del Slide',
+            'titulo': 'Título',
+            'descripcion': 'Descripción',
+        }

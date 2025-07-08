@@ -45,6 +45,9 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib.messages import get_messages
 import requests
+from .models import SlideCarrusel
+from .forms import SlideCarruselForm
+
 
 User = get_user_model()  # Obtiene el modelo de usuario actual de Django
 
@@ -95,10 +98,9 @@ class LoginView(View):
                 'error': "Usuario y/o contraseña no válidos."
             })
 
-# Vista del índice
 @login_required
 def index(request):
-    api_key = '251ce61d7fd44f4395658df3e3606ff5' # Api publica en el repositorio de GitHub
+    api_key = '251ce61d7fd44f4395658df3e3606ff5'
     url = f'https://newsapi.org/v2/everything?q=tecnología&language=es&sortBy=publishedAt&pageSize=6&apiKey={api_key}'
 
     response = requests.get(url)
@@ -109,13 +111,13 @@ def index(request):
         noticias = data.get('articles', [])[:3]
     else:
         print("Error al obtener noticias:", response.status_code)
-        print(response.json())
-    list(get_messages(request))
+
+    slides = SlideCarrusel.objects.all()
+
     return render(request, 'paginas/inicio/index.html', {
         'noticias': noticias,
-        'indices': range(9)
+        'slides': slides,
     })
-
 # Vista de logout
 @login_required
 def logout_view(request):
@@ -1558,3 +1560,34 @@ def reactivar_material(request, pk):
 def detalle_material_admin(request, pk):
     material = get_object_or_404(Material, pk=pk)
     return render(request, 'paginas/crud_material/detalle_material_admin.html', {'material': material})
+
+
+def editar_carrusel(request):
+    slides = SlideCarrusel.objects.all()
+    return render(request, 'paginas/panel_admin/panel_admin_carrusel.html', {'slides': slides})
+
+def agregar_slide(request):
+    if request.method == 'POST':
+        form = SlideCarruselForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('editar_carrusel')
+    else:
+        form = SlideCarruselForm()
+    return render(request, 'paginas/panel_admin/form_slide.html', {'form': form, 'modo': 'Agregar'})
+
+def editar_slide(request, pk):
+    slide = get_object_or_404(SlideCarrusel, pk=pk)
+    if request.method == 'POST':
+        form = SlideCarruselForm(request.POST, request.FILES, instance=slide)
+        if form.is_valid():
+            form.save()
+            return redirect('editar_carrusel')
+    else:
+        form = SlideCarruselForm(instance=slide)
+    return render(request, 'paginas/panel_admin/form_slide.html', {'form': form, 'modo': 'Editar'})
+
+def eliminar_slide(request, pk):
+    slide = get_object_or_404(SlideCarrusel, pk=pk)
+    slide.delete()
+    return redirect('editar_carrusel')

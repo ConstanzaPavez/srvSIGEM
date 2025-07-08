@@ -184,4 +184,10 @@ class ItemSolicitud(models.Model):
 
 
 
+class SlideCarrusel(models.Model):
+    imagen = models.ImageField(upload_to='carrusel/')
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.titulo
